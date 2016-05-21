@@ -21,6 +21,7 @@ angular.module('starter.controllers', [])
   });
 
 //
+//
   $scope.GetUser = function (search_input,artistNum) 
   {
         /*
