@@ -1,0 +1,86 @@
+<ion-view view-title="Dashboard">
+<ion-content class="padding">
+<h2>Welcome to Ionic</h2>
+
+<div class="list">
+
+  <div class="item item-input-inset">
+    <label class="item-input-wrapper">
+      <input id="firstSearchField" type="text" placeholder="Soundcloud Username" ng-model="firstSearchText" ng-change="autoCompleteUsername(firstSearchText,'1')">
+    </label>
+    <button class="button button-small" ng-click="GetUser(firstSearchText,'1')">
+      Submit
+    </button>
+  </div>
+  <ul class="list" ng-show="first_show_suggestions" id="first_autocomplete_list">
+        <li class="item" ng-repeat="i_suggestion in input_suggestions | limitTo:10" ng-click="selectUser(i_suggestion,'1')" id="$index">
+          <div class="row">
+            <div class="col col-10">
+              <img class="full-image" src="{{i_suggestion.avatar_url}}">
+            </div>
+            <div class="col">
+
+          <div>{{i_suggestion.username}}</div><div>
+          {{i_suggestion.country}}, {{i_suggestion.city}}</div>
+        </div>
+      </div>
+        </li>
+      </ul>
+  <div class="item item-input-inset">
+    <label class="item-input-wrapper">
+      <input id="secondSearchField" type="text" placeholder="Soundcloud Username" ng-model="secondSearchText" ng-change="autoCompleteUsername(secondSearchText, '2')">
+    </label>
+    <button class="button button-small" ng-click="GetUser(secondSearchText,'2')">
+      Submit
+    </button>
+
+  </div>
+  <ul class="list" ng-show="second_show_suggestions" id="second_autocomplete_list">
+        <li class="item" ng-repeat="i_suggestion in input_suggestions | limitTo:10" ng-click="selectUser(i_suggestion,'2')" id="$index">
+          <div class="row">
+            <div class="col col-10">
+              <img class="full-image" src="{{i_suggestion.avatar_url}}">
+            </div>
+            <div class="col">
+
+          <div>{{i_suggestion.username}}</div><div>
+          {{i_suggestion.country}}, {{i_suggestion.city}}</div>
+        </div>
+      </div>
+        </li>
+      </ul>
+</div>
+
+ <!--<img id="avatar_img" class="full-image" src="">-->
+<div class="row">
+  <div class="col col-10"></div>
+  <div class="col">
+    <img id="first_avatar_img" class="full-image" src="">
+    <label id="firstArtistLabel"></label>
+
+  </div>
+  <div class="col col-10"></div>
+  <div class="col">
+    <img id="second_avatar_img" class="full-image" src="">
+    <label id="secondArtistLabel"></label>
+  </div>
+  <div class="col col-10"></div>
+
+<p></p>
+<!--
+<div class="list">
+
+  <div class="item item-input-inset">
+    <label class="item-input-wrapper">
+      <input id="searchField" type="text" placeholder="Soundcloud Username" ng-model="searchText">
+    </label>
+    <button class="button button-small" ng-click="GetUser(searchText)">
+      Submit
+    </button>
+
+  </div>
+
+</div>
+-->
+</ion-content>
+</ion-view>
