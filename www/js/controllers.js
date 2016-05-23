@@ -1,6 +1,118 @@
 angular.module('starter.controllers', [])
 
 
+.controller('ChatsCtrl', function($scope, Chats, UserObject) 
+{
+  SC.initialize({
+    client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
+    redirect_uri: 'https://soundcloud.com/user-8492062'
+  });
+  $scope.UserObject = UserObject;
+  $scope.searchText = "";
+  $scope.show_suggestions = false;
+  var avatarPath = "";
+
+  $scope.retrieveLikes = function()
+  {
+    var stringToPass = "/users/" + UserObject.get().id + "/favorites";
+    console.log("boy he bout to do it");
+    console.log(stringToPass);
+    SC.get(stringToPass, {limit: 100}).then(function(favs) 
+    {
+        console.log(favs);
+    });
+  }
+
+  $scope.GetUser = function (search_input) 
+  {    
+    SC.get("/users/" + search_input + "/tracks", {limit: 100}).then(function(tracks) 
+    {
+        console.log(tracks);
+    });
+ 
+    this.show_suggestions = false;
+    var stringToPass = "/resolve.json?url=http://soundcloud.com/";
+      search_input = $scope.UserObject.get().permalink;
+    stringToPass += search_input;
+    stringToPass += "&client_id=a06eaada6b3052bb0a3dff20329fdbf9";
+
+    SC.get("/users/" + search_input + "/tracks", {limit: 100}).then(function(tracks) 
+    {
+        console.log(tracks);
+    });
+    SC.get(stringToPass).then(function(artistObj)
+    {
+        console.log(artistObj);
+        UserObject.set(artistObj);
+        avatarPath = artistObj.avatar_url;
+        avatarPath = avatarPath.replace("-large.jpg","-t500x500.jpg");
+        var doc = document.getElementById("avatar_img");
+        var attr = doc.attributes;
+        doc.attributes[2].nodeValue = avatarPath;
+        document.getElementById("artistLabel").innerHTML = UserObject.get().username;//ArtistObjects.getFirst().username;
+        document.getElementById("searchField").value = "";
+        $scope.autoCompleteUsername("a",'1');
+    });
+    $scope.retrieveLikes();
+  }
+
+  $scope.autoCompleteUsername = function(input)
+  {
+    console.log("auto complete was called");
+    console.log(input);
+    if(input && input.length >= 3) 
+    {
+      this.show_suggestions = true;
+    
+      //document.getElementById('autocomplete_list').style.visibility = "visible";
+
+      $scope.input_suggestions = [];
+      SC.get('/users', {q: input, limit: 200, track_count: {from: 2}}).then(function(users) 
+      {
+        console.log(users);
+        $scope.input_suggestions = users;
+        //setTimeout(function () {
+        $scope.$apply(function () {
+            $scope.message = "Timeout called!";
+        });
+    //},);
+      });
+    }
+    else
+    {
+      console.log("reached the else condition");
+      $scope.show_suggestions = false;
+    }
+  }
+
+  $scope.selectUser = function(selectedUser)
+  {
+    this.show_suggestions = false;
+      console.log("selected user:");
+      console.log(selectedUser);
+      UserObject.set(selectedUser);
+      this.show_suggestions = false;
+      document.getElementById("searchField").value = selectedUser.username;
+      document.getElementById("autocomplete_list").attributes[1].nodeValue = false;
+      $scope.show_suggestions = false;
+      $scope.input_suggestions = [];
+  }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .controller('DashCtrl', function($scope, ArtistObjects) {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
@@ -24,12 +136,12 @@ angular.module('starter.controllers', [])
 //
   $scope.GetUser = function (search_input,artistNum) 
   {
-        /*
+        
     SC.get("/users/" + search_input + "/tracks", {limit: 100}).then(function(tracks) 
     {
         console.log(tracks);
     });
-*/ 
+ 
     this.first_show_suggestions = false;
     var stringToPass = "/resolve.json?url=http://soundcloud.com/";
     if(artistNum == "1")
@@ -38,6 +150,10 @@ angular.module('starter.controllers', [])
       search_input = $scope.ArtistObjects.getSecond().permalink;
     stringToPass += search_input;
     stringToPass += "&client_id=a06eaada6b3052bb0a3dff20329fdbf9";
+    SC.get("/users/" + search_input + "/tracks", {limit: 100}).then(function(tracks) 
+    {
+        console.log(tracks);
+    });
     SC.get(stringToPass).then(function(artistObj)
     {
       if(artistNum == "1")
@@ -149,20 +265,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('ChatsCtrl', function($scope, Chats) {
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
 
-$scope.chats = Chats.all();
-$scope.remove = function(chat) {
-  Chats.remove(chat);
-};
-})
 
 .controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
   $scope.chat = Chats.get($stateParams.chatId);

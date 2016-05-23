@@ -1,16 +1,64 @@
 <ion-view view-title="Chats">
-  <ion-content>
-    <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="chat in chats" type="item-text-wrap" href="#/tab/chats/{{chat.id}}">
-        <img ng-src="{{chat.face}}">
-        <h2>{{chat.name}}</h2>
-        <p>{{chat.lastText}}</p>
-        <i class="icon ion-chevron-right icon-accessory"></i>
+  <ion-content class="padding">
+<h2>Tracks For You</h2>
 
-        <ion-option-button class="button-assertive" ng-click="remove(chat)">
-          Delete
-        </ion-option-button>
-      </ion-item>
-    </ion-list>
-  </ion-content>
+<div class="list">
+  <label>What's your username?</label>
+  <div class="item item-input-inset">
+
+    <label class="item-input-wrapper">
+
+      <input id="searchField" type="text" placeholder="Soundcloud Username" ng-model="searchText" ng-change="autoCompleteUsername(searchText)">
+    </label>
+    <button class="button button-small" ng-click="GetUser(searchText)">
+      Submit
+    </button>
+  </div>
+  <ul class="list" ng-show="show_suggestions" id="autocomplete_list">
+        <li class="item" ng-repeat="i_suggestion in input_suggestions | limitTo:10" ng-click="selectUser(i_suggestion)" id="$index">
+          <div class="row">
+            <div class="col col-10">
+              <img class="full-image" src="{{i_suggestion.avatar_url}}">
+            </div>
+            <div class="col">
+
+          <div>{{i_suggestion.username}}</div><div>
+          {{i_suggestion.country}}, {{i_suggestion.city}}</div>
+        </div>
+      </div>
+        </li>
+      </ul>
+</div>
+
+ <!--<img id="avatar_img" class="full-image" src="">-->
+<div class="row">
+  <div class="col col-25">
+    <div><label id="artistLabel"></label>
+    <div class="item item-input-inset">
+      
+    <img id="avatar_img" class="full-image" src="">
+  </div>
+  </div>
+  </div>
+  <div class="col">
+    <div class="item item-input-inset"></div>
+  </div>
+
+<p></p>
+<!--
+<div class="list">
+
+  <div class="item item-input-inset">
+    <label class="item-input-wrapper">
+      <input id="searchField" type="text" placeholder="Soundcloud Username" ng-model="searchText">
+    </label>
+    <button class="button button-small" ng-click="GetUser(searchText)">
+      Submit
+    </button>
+
+  </div>
+
+</div>
+-->
+</ion-content>
 </ion-view>

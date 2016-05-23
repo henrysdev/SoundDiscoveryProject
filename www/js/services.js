@@ -24,6 +24,20 @@ angular.module('starter.services', [])
   };
 })
 
+.factory("UserObject", function($http) {
+
+  var user = null;
+
+  return {
+    set: function(obj_) {
+      user = obj_;
+    },
+    get: function()
+    {
+      return user;
+    }
+  };
+})
 
 
 .factory('Chats', function() {
