@@ -1,7 +1,28 @@
 angular.module('starter.services', [])
 
 
-.factory("ArtistObjects", function($http) {
+.factory('Retrieve', function($http) {
+    //var user_id = 0;
+    var getData = function(str) {
+      //user_id = i;
+
+        //return SC.get("/users/" + user_id, {limit: 100}).then(function(artist_obj) 
+        return SC.get(str, {limit:200}).then(function(data_) 
+        {
+          //return $http({method:"GET", url:"/my/url"}).then(function(result){
+          // What we return here is the data that will be accessible 
+          // to us after the promise resolves
+            return data_;
+        });
+    };
+
+    return { 
+      getData: getData 
+    };
+})
+
+
+.factory("ArtistObjects", function() {
 
   var firstArtist = null;
   var secondArtist = null;
@@ -24,7 +45,24 @@ angular.module('starter.services', [])
   };
 })
 
-.factory("UserObject", function($http) {
+
+
+.factory("FollowingObjects", function() {
+
+  var following = null;
+
+  return {
+
+    set: function(obj_) {
+      following = obj_;
+    },
+    get: function()
+    {
+      return following;
+    }
+  };
+})
+.factory("UserObject", function() {
 
   var user = null;
 
@@ -36,6 +74,45 @@ angular.module('starter.services', [])
     {
       return user;
     }
+  };
+})
+
+
+.factory("UserFavs", function() {
+
+  var favs = null;
+  var ind_ = 0;
+  return {
+    set: function(obj_) {
+      favs = obj_;
+    },
+    get: function()
+    {
+      return favs;
+    },
+    setInd: function(ind)
+    {
+      ind_ = ind;
+    },
+    getInd: function()
+    {
+      return ind_
+    }
+  };
+})
+
+
+.factory("UserArtists", function() {
+
+  artists = null;
+  return {
+    set: function(obj_) {
+      artists = obj_;
+    },
+    get: function()
+    {
+      return artists;
+    },
   };
 })
 

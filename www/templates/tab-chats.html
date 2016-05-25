@@ -33,16 +33,24 @@
  <!--<img id="avatar_img" class="full-image" src="">-->
 <div class="row">
   <div class="col col-25">
-    <div><label id="artistLabel"></label>
-    <div class="item item-input-inset">
+    <div>
       
-    <img id="avatar_img" class="full-image" src="">
-  </div>
-  </div>
+      <div class="item item-input-inset">   
+        <img id="avatar_img" class="full-image" src="">
+      </div>
+    </div>
+    <label id="artistLabel"></label>
   </div>
   <div class="col">
-    <div class="item item-input-inset"></div>
+    <div class="item item-input-inset">
+      <ul class="list" ng-show="show_suggestions" id="artist_list">
+        <li class="item" ng-repeat="i_suggestion in input_suggestions">
+          <label>{{i_suggestion.username}}</label>
+        </li>
+      </ul>
+    </div>
   </div>
+</div>
 
 <p></p>
 <!--
