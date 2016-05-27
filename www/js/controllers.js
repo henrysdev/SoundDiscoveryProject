@@ -7,8 +7,8 @@ angular.module('starter.controllers', [])
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
     redirect_uri: 'https://soundcloud.com/user-8492062'
   });
-  var popularity_factor = 0.420;
-  var max_artists_computed = 10;
+  var popularity_factor = 0;//0.420
+  var max_artists_computed = 5;
   $scope.UserObject = UserObject;
   $scope.input_suggestions = [];
   //$scope.UserFavs = UserFavs;
@@ -26,25 +26,24 @@ angular.module('starter.controllers', [])
     {
       for(var n = 0; n < allFollowerLists[i].collection.length; n++)
       {
-        /*
-        var result = findById( likedArtists, newArtist.id);
-            if(result != null)
-            {
-              result.FREQ_FACTOR ++;
-              result.COMPOSITE_VALUE = (result.FREQ_FACTOR * popularity_factor) + result.NEW_FACTOR;
-            }
-     
-            else
-            {
-              newArtist.COMPOSITE_VALUE = (newArtist.FREQ_FACTOR * popularity_factor) + newArtist.NEW_FACTOR;
-              //console.log("new artist w composite: ", newArtist.COMPOSITE_VALUE);
-              likedArtists.push(newArtist);
-              
-            }
-            */
-        masterList.push(allFollowerLists[i].collection[n]);
+        var currentArtist = allFollowerLists[i].collection[n];
+        allFollowerLists[i].collection[n].FREQ = 1;
+        allFollowerLists[i].collection[n].SCORE = 0;
+        var result = findById(masterList, currentArtist.id);
+        if(result != null)
+        {
+          console.log("common artist being followed:");
+          console.log(result);
+          result.FREQ ++;
+          result.SCORE = result.FREQ + (result.FREQ / result.followings_count);
+        }
+        else
+        {
+          masterList.push(allFollowerLists[i].collection[n]);         
+        }         
       }
     }
+    masterList.sort(function(a,b) {return (a.SCORE < b.SCORE) ? 1 : ((b.SCORE < a.SCORE) ? -1 : 0);} ); 
     console.log("HERE IT IS");
     console.log(masterList);
   }
@@ -57,6 +56,8 @@ angular.module('starter.controllers', [])
       artistsSaved.splice(max_artists_computed, (artistsSaved.length - max_artists_computed));
       console.log(artistsSaved);
     }
+    else
+      max_artists_computed = artistsSaved.length;
     UserArtists.set(artistsSaved);
     artistsSaved = UserArtists.get();
     var followerLists = [];
@@ -64,7 +65,7 @@ angular.module('starter.controllers', [])
     var i = 0;
     for(i = 0; i < max_artists_computed; i++)
     {
-      var stringToPass = "/users/" + artistsSaved[i].id + "/followings";
+      var stringToPass = "/users/" + artistsSaved[i].id + "/followers";
       var myDataPromise = Retrieve.getData(stringToPass);
       myDataPromise.then(function(responseFollowings)
       {  
@@ -146,7 +147,8 @@ angular.module('starter.controllers', [])
 
 function findById(source, id_) {
   for (var i = 0; i < source.length; i++) {
-    if (source[i].id === id_) {
+    if (source[i].id === id_) 
+    {
       return source[i];
     }
   }

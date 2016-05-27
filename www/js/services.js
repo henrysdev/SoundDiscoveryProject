@@ -22,6 +22,9 @@ angular.module('starter.services', [])
 })
 
 
+
+
+
 .factory("ArtistObjects", function() {
 
   var firstArtist = null;
