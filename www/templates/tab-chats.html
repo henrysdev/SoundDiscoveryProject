@@ -42,10 +42,10 @@
     <label id="artistLabel"></label>
   </div>
   <div class="col">
-    <div class="item item-input-inset">
-      <ul class="list" ng-show="show_suggestions" id="artist_list">
-        <li class="item" ng-repeat="i_suggestion in input_suggestions">
-          <label>{{i_suggestion.username}}</label>
+    <div class="item item-input-inset" id="recList">
+      <ul class="list" id="artist_list">
+        <li class="item" ng-repeat="i_rec in recommendedTracks">
+          <a class="button" href="{{i_rec.permalink_url}}">{{i_rec.permalink_url}}</a>
         </li>
       </ul>
     </div>

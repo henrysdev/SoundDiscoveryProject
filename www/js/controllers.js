@@ -1,7 +1,6 @@
 angular.module('starter.controllers', [])
 
-
-.controller('ChatsCtrl', function($scope, Chats, UserObject, UserFavs, UserArtists, FollowingObjects, Retrieve) 
+.controller('ChatsCtrl', function($scope, Chats, UserObject, UserFavs, UserArtists, FollowingObjects, RecommendedArtistObjects, Retrieve) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
@@ -9,19 +8,71 @@ angular.module('starter.controllers', [])
   });
   var popularity_factor = 0;//0.420
   var max_artists_computed = 5;
+  var max_recs_computed = 10;
+  var max_tracks_per_rec = 3;
   $scope.UserObject = UserObject;
   $scope.input_suggestions = [];
-  //$scope.UserFavs = UserFavs;
+  $scope.recommendedTracks = [];
   $scope.searchText = "";
   $scope.show_suggestions = false;
   var avatarPath = "";
-
+  $scope.getTopTracks = function(recs)
+  {
+    var recArtists = recs;
+    var masterList = [];
+    var p = 0;
+    var i = 0;
+    var max_tracks_local = max_tracks_per_rec;
+    $scope.recommendedTracks = [];
+    for(i = 0; i < max_recs_computed; i++)
+    {
+      var stringToPass = "/users/" + recArtists[i].permalink + "/tracks";
+      console.log(stringToPass);
+      var myDataPromise = Retrieve.getData(stringToPass);
+      myDataPromise.then(function(responseTracks)
+      {  
+        var miniTracklist = [];
+        for(var n = 0; n < responseTracks.length; n++)
+        {
+          responseTracks[n].COMP_SCORE = 0;
+          responseTracks[n].COMP_SCORE = (responseTracks[n].favoritings_count/responseTracks[n].playback_count);
+          miniTracklist.push(responseTracks[n]);
+        }
+        miniTracklist.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
+        if(miniTracklist.length > max_tracks_local)
+        {
+          miniTracklist.splice(max_tracks_local, (miniTracklist.length - max_tracks_local));
+        }
+        else
+          max_tracks_local = miniTracklist.length;
+        //masterList.push(miniTracklist);
+        for(var l = 0; l < miniTracklist.length; l++)
+          masterList.push(miniTracklist[l]);
+        p++;
+        if(p == max_recs_computed)
+        {
+          //masterList.reverse();
+          console.log("HERES ALL THE RECOMMENDED TRACKS: ");
+          masterList.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
+          console.log(masterList);
+          $scope.recommendedTracks = masterList;
+          var attr = document.getElementById("recList");
+          console.log(attr);
+          $scope.$apply();
+          $scope.$apply(function () {
+            $scope.message = "Timeout called!";
+            $scope.recommendedTracks = masterList;
+          });
+        }
+      });
+    }
+  }
   $scope.combineAndCompare = function()
   {
     var allFollowerLists = FollowingObjects.get();
     var masterList = [];
-    console.log("ORIG: ");
-    console.log(allFollowerLists);
+    //console.log("ORIG: ");
+    //console.log(allFollowerLists);
     for(var i = 0; i < max_artists_computed; i ++)
     {
       for(var n = 0; n < allFollowerLists[i].collection.length; n++)
@@ -32,8 +83,8 @@ angular.module('starter.controllers', [])
         var result = findById(masterList, currentArtist.id);
         if(result != null)
         {
-          console.log("common artist being followed:");
-          console.log(result);
+          //console.log("common artist being followed:");
+          //console.log(result);
           result.FREQ ++;
           result.SCORE = result.FREQ + (result.FREQ / result.followings_count);
         }
@@ -43,9 +94,11 @@ angular.module('starter.controllers', [])
         }         
       }
     }
-    masterList.sort(function(a,b) {return (a.SCORE < b.SCORE) ? 1 : ((b.SCORE < a.SCORE) ? -1 : 0);} ); 
-    console.log("HERE IT IS");
-    console.log(masterList);
+    masterList.sort(function(a,b) {return (a.FREQ < b.FREQ) ? 1 : ((b.FREQ < a.FREQ) ? -1 : 0);} ); 
+    //RecommendedArtistObjects.set(masterList);
+    //console.log("HERE IT IS");
+    //console.log(masterList);
+    $scope.getTopTracks(masterList);
   }
   $scope.getFollowerLists = function()
   {
@@ -54,7 +107,7 @@ angular.module('starter.controllers', [])
     if(artistsSaved.length > max_artists_computed)
     {
       artistsSaved.splice(max_artists_computed, (artistsSaved.length - max_artists_computed));
-      console.log(artistsSaved);
+      //console.log(artistsSaved);
     }
     else
       max_artists_computed = artistsSaved.length;
@@ -65,17 +118,17 @@ angular.module('starter.controllers', [])
     var i = 0;
     for(i = 0; i < max_artists_computed; i++)
     {
-      var stringToPass = "/users/" + artistsSaved[i].id + "/followers";
+      var stringToPass = "/users/" + artistsSaved[i].id + "/followings";
       var myDataPromise = Retrieve.getData(stringToPass);
       myDataPromise.then(function(responseFollowings)
       {  
-        console.log(responseFollowings);
+        //console.log(responseFollowings);
         p++;
         followerLists.push(responseFollowings);
-        console.log(p);
+        //console.log(p);
         if(p == max_artists_computed)
         {
-          console.log("done");
+          //console.log("done");
           FollowingObjects.set(followerLists);
           $scope.combineAndCompare();
         }
@@ -84,8 +137,6 @@ angular.module('starter.controllers', [])
   }
   $scope.artistList = function(len)
   {
-    console.log("len: ");
-    console.log(len);
     var likedArtists = [];
     var lookup = {};
     var likedTracks = UserFavs.get();
@@ -93,16 +144,12 @@ angular.module('starter.controllers', [])
     var i = 0;
     for(i = 0; i < len; i++)
     {
-      //console.log(i);
-      //UserFavs.setInd(i);
-    //likedTracks[i].user_id// <-- what should (ideally) be passed to the factory to change get URL as for loop progresses
       var stringToPass = "/users/" + likedTracks[i].user_id;
       var myDataPromise = Retrieve.getData(stringToPass);
       myDataPromise.then(function(artist_obj)
       {       
         var newArtist = artist_obj;
-          //console.log(UserFavs.getInd());
-          console.log(artist_obj);
+          //console.log(artist_obj);
           p++;
           newArtist.FREQ_FACTOR = 0;
           newArtist.NEW_FACTOR = len - p;
@@ -140,8 +187,6 @@ angular.module('starter.controllers', [])
           }
       });
     }  
-    console.log("for loop has finished");
-
   }
 
 
@@ -187,11 +232,11 @@ stringToPass += "&client_id=a06eaada6b3052bb0a3dff20329fdbf9";
 
 SC.get("/users/" + search_input + "/tracks", {limit: 100}).then(function(tracks) 
 {
-  console.log(tracks);
+  //console.log(tracks);
 });
 SC.get(stringToPass).then(function(artistObj)
 {
-  console.log(artistObj);
+  //console.log(artistObj);
   UserObject.set(artistObj);
   avatarPath = artistObj.avatar_url;
   avatarPath = avatarPath.replace("-large.jpg","-t500x500.jpg");

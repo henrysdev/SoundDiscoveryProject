@@ -23,7 +23,20 @@ angular.module('starter.services', [])
 
 
 
-
+.factory("RecommendedArtistObjects", function()
+{
+  var recommendedArtists = null;
+  return{
+    set: function(ob_)
+    {
+      recommendedArtists = obj_;
+    },
+    get: function()
+    {
+      return recommendedArtists;
+    }
+  };
+})
 
 .factory("ArtistObjects", function() {
 
@@ -65,6 +78,7 @@ angular.module('starter.services', [])
     }
   };
 })
+
 .factory("UserObject", function() {
 
   var user = null;
