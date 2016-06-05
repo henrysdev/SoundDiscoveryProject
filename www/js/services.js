@@ -1,17 +1,54 @@
 angular.module('starter.services', [])
 
+.filter('trusted', ['$sce', function ($sce) {
+    return function(url) {
+        return $sce.trustAsResourceUrl(url);
+    };
+}])
+
+.factory('StoredEmbedLinks', function() {
+  var embedLinks = [];
+
+  return{
+    set: function(new_obj)
+    {
+      embedLinks.push(new_obj);
+      console.log(embedLinks);
+    },
+    get: function(id_)
+    {
+      console.log("looking for: ");
+      console.log(id_);
+      console.log(embedLinks);
+      for(var i = 0; i < embedLinks.length; i++)
+      {
+        if(embedLinks[i].trackID == id_)
+        {
+          console.log(embedLinks[i]);
+          return embedLinks[i].streamLink;
+          break;
+        }
+      }
+    }
+  }
+})
+
+.factory('Embed', function($http) {
+
+    var getData = function(track_url) 
+    {
+      return SC.oEmbed(track_url, { auto_play: false }).then(function(oEmbed) 
+      {
+        return oEmbed;
+      });
+    };
+    return { getData: getData };
+})
 
 .factory('Retrieve', function($http) {
-    //var user_id = 0;
     var getData = function(str) {
-      //user_id = i;
-
-        //return SC.get("/users/" + user_id, {limit: 100}).then(function(artist_obj) 
         return SC.get(str, {limit:200}).then(function(data_) 
         {
-          //return $http({method:"GET", url:"/my/url"}).then(function(result){
-          // What we return here is the data that will be accessible 
-          // to us after the promise resolves
             return data_;
         });
     };

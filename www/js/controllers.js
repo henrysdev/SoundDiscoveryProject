@@ -1,6 +1,7 @@
 angular.module('starter.controllers', [])
 
-.controller('ChatsCtrl', function($scope, Chats, UserObject, UserFavs, UserArtists, FollowingObjects, RecommendedArtistObjects, Retrieve) 
+
+.controller('ChatsCtrl', function($scope, Chats, UserObject, UserFavs, UserArtists, FollowingObjects, RecommendedArtistObjects, Retrieve, Embed, StoredEmbedLinks) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
@@ -9,13 +10,44 @@ angular.module('starter.controllers', [])
   var popularity_factor = 0;//0.420
   var max_artists_computed = 5;
   var max_recs_computed = 10;
-  var max_tracks_per_rec = 3;
+  var max_tracks_per_rec = 2;
+  $scope.StoredEmbedLinks = StoredEmbedLinks;
   $scope.UserObject = UserObject;
   $scope.input_suggestions = [];
   $scope.recommendedTracks = [];
   $scope.searchText = "";
-  $scope.show_suggestions = false;
+  $scope.show_tracks = false;
+  $scope.show_suggestions = true;
   var avatarPath = "";
+  $scope.embed = function(list_) 
+  {
+    var givenList = list_;
+    var f = 0;
+    for(var b = 0; b < givenList.length; b++)
+    {
+      var track_url = givenList[b].permalink_url;
+      var myDataPromise = Embed.getData(track_url);
+      myDataPromise.then(function(oEmbed){
+      var id_ = givenList[f].id;
+      f++;
+      
+      var html_orig = oEmbed.html;
+      var htmlSplice = html_orig.split(" ");
+      var refinedString = htmlSplice[5];
+      refinedString = refinedString.substring(5,refinedString.length-11);
+      var obj_to_store = {streamLink: refinedString, trackID:id_};
+      StoredEmbedLinks.set(obj_to_store);
+      if(f == givenList.length)
+      {
+        $scope.$apply(function () {
+        $scope.recommendedTracks = list_;
+        $scope.show_tracks = true;
+        });
+        console.log("MADE IT");
+      }
+      })
+    }
+  }
   $scope.getTopTracks = function(recs)
   {
     var recArtists = recs;
@@ -35,6 +67,7 @@ angular.module('starter.controllers', [])
         for(var n = 0; n < responseTracks.length; n++)
         {
           responseTracks[n].COMP_SCORE = 0;
+          responseTracks[n].favoritings_count;
           responseTracks[n].COMP_SCORE = (responseTracks[n].favoritings_count/responseTracks[n].playback_count);
           miniTracklist.push(responseTracks[n]);
         }
@@ -51,19 +84,12 @@ angular.module('starter.controllers', [])
         p++;
         if(p == max_recs_computed)
         {
-          //masterList.reverse();
           console.log("HERES ALL THE RECOMMENDED TRACKS: ");
           masterList.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
-          console.log(masterList);
-          $scope.recommendedTracks = masterList;
-          var attr = document.getElementById("recList");
-          console.log(attr);
-          $scope.$apply();
-          $scope.$apply(function () {
-            $scope.message = "Timeout called!";
-            $scope.recommendedTracks = masterList;
-          });
+          $scope.embed(masterList);
         }
+        $scope.recommendedTracks = masterList;
+        
       });
     }
   }
