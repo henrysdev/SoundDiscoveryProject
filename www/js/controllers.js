@@ -8,9 +8,9 @@ angular.module('starter.controllers', [])
     redirect_uri: 'https://soundcloud.com/user-8492062'
   });
   var popularity_factor = 0;//0.420
-  var max_artists_computed = 5;
+  var max_artists_computed = 10;
   var max_recs_computed = 10;
-  var max_tracks_per_rec = 2;
+  var max_tracks_per_rec = 3;
   $scope.StoredEmbedLinks = StoredEmbedLinks;
   $scope.UserObject = UserObject;
   $scope.input_suggestions = [];
@@ -67,8 +67,10 @@ angular.module('starter.controllers', [])
         for(var n = 0; n < responseTracks.length; n++)
         {
           responseTracks[n].COMP_SCORE = 0;
-          responseTracks[n].favoritings_count;
+          //responseTracks[n].favoritings_count;
           responseTracks[n].COMP_SCORE = (responseTracks[n].favoritings_count/responseTracks[n].playback_count);
+          if(responseTracks[n].favoritings_count == 0)
+            responseTracks[n].COMP_SCORE = -100;
           miniTracklist.push(responseTracks[n]);
         }
         miniTracklist.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
@@ -86,6 +88,7 @@ angular.module('starter.controllers', [])
         {
           console.log("HERES ALL THE RECOMMENDED TRACKS: ");
           masterList.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
+          console.log(masterList);
           $scope.embed(masterList);
         }
         $scope.recommendedTracks = masterList;
@@ -145,10 +148,12 @@ angular.module('starter.controllers', [])
     for(i = 0; i < max_artists_computed; i++)
     {
       var stringToPass = "/users/" + artistsSaved[i].id + "/followings";
+      //var stringToPass = "/users/" + artistsSaved[i].id + "/favorites";
       var myDataPromise = Retrieve.getData(stringToPass);
       myDataPromise.then(function(responseFollowings)
       {  
         //console.log(responseFollowings);
+        //var nextStringToPass = "/tracks/" + responseFollowings.user_id + ""
         p++;
         followerLists.push(responseFollowings);
         //console.log(p);
