@@ -1,7 +1,7 @@
 angular.module('starter.controllers', [])
 
 
-.controller('ChatsCtrl', function($scope, Chats, UserObject, UserFavs, UserArtists, FollowingObjects, RecommendedArtistObjects, Retrieve, Embed, StoredEmbedLinks) 
+.controller('ChatsCtrl', function($scope, Chats, UserObject, UserFavs, UserArtists, FollowingObjects, FavoritesLists, RecommendedArtistObjects, Retrieve, Embed, StoredEmbedLinks) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
@@ -9,8 +9,8 @@ angular.module('starter.controllers', [])
   });
   var popularity_factor = 0;//0.420
   var max_artists_computed = 10;
-  var max_recs_computed = 10;
-  var max_tracks_per_rec = 3;
+  var max_recs_computed = 20;
+  var max_tracks_per_rec = 1;
   $scope.StoredEmbedLinks = StoredEmbedLinks;
   $scope.UserObject = UserObject;
   $scope.input_suggestions = [];
@@ -48,6 +48,7 @@ angular.module('starter.controllers', [])
       })
     }
   }
+  
   $scope.getTopTracks = function(recs)
   {
     var recArtists = recs;
@@ -96,40 +97,95 @@ angular.module('starter.controllers', [])
       });
     }
   }
+  
   $scope.combineAndCompare = function()
   {
-    var allFollowerLists = FollowingObjects.get();
+    var allArtistsList = FollowingObjects.get();
     var masterList = [];
-    //console.log("ORIG: ");
-    //console.log(allFollowerLists);
+
+    for(var i = 0; i < allArtistsList.length; i++)
+    {
+      var currentArtist = allArtistsList[i];
+      allArtistsList[i].FREQ = 1;
+      allArtistsList[i].SCORE = 0;
+      var result = findById(masterList, currentArtist.id);
+      if(result != null)
+      {
+        result.FREQ++;
+        result.SCORE = result.FREQ + (result.FREQ / result.followings_count);
+      }
+      else
+      {
+        masterList.push(allArtistsList[i]);
+      }
+    }
+    /*
     for(var i = 0; i < max_artists_computed; i ++)
     {
-      for(var n = 0; n < allFollowerLists[i].collection.length; n++)
+      for(var n = 0; n < allArtistsList[i].collection.length; n++)
       {
-        var currentArtist = allFollowerLists[i].collection[n];
-        allFollowerLists[i].collection[n].FREQ = 1;
-        allFollowerLists[i].collection[n].SCORE = 0;
+        var currentArtist = allArtistsList[i].collection[n];
+        allArtistsList[i].collection[n].FREQ = 1;
+        allArtistsList[i].collection[n].SCORE = 0;
         var result = findById(masterList, currentArtist.id);
         if(result != null)
         {
-          //console.log("common artist being followed:");
-          //console.log(result);
+          console.log("common artist being followed:");
+          console.log(result);
           result.FREQ ++;
           result.SCORE = result.FREQ + (result.FREQ / result.followings_count);
         }
         else
         {
-          masterList.push(allFollowerLists[i].collection[n]);         
+          masterList.push(allArtistsList[i].collection[n]);         
         }         
       }
     }
+    */
+    
     masterList.sort(function(a,b) {return (a.FREQ < b.FREQ) ? 1 : ((b.FREQ < a.FREQ) ? -1 : 0);} ); 
     //RecommendedArtistObjects.set(masterList);
     //console.log("HERE IT IS");
     //console.log(masterList);
+    console.log("ALL ARTIST MASTERLIST: ");
+    console.log(masterList);
     $scope.getTopTracks(masterList);
   }
-  $scope.getFollowerLists = function()
+  $scope.getListArtists = function()
+  {
+    var allFavoritesList = FavoritesLists.get();
+    console.log("users favorited artists favorited tracks: ");
+    console.log(allFavoritesList);
+    var p = 0;
+    var i = 0;
+    var n = 0;
+    var max_count = 0;
+    var artistsListToPass = [];
+    for(i = 0; i < allFavoritesList.length; i++)
+    {
+      for(n = 0; n < allFavoritesList[i].length; n++)
+      {
+        max_count++;
+        var stringToPass = "/users/" + allFavoritesList[i][n].user_id;
+        var myDataPromise = Retrieve.getData(stringToPass);
+        myDataPromise.then(function(responseArtists)
+        {  
+          //console.log("retrieved: ");
+          //console.log(responseArtists);
+          p++;
+          artistsListToPass.push(responseArtists);
+          if(p == max_count)
+          {
+            console.log("hit max count");
+            FollowingObjects.set(artistsListToPass);
+            $scope.combineAndCompare();
+          }
+        });
+      }    
+    }
+  }
+
+  $scope.getFavoritesLists = function()
   {
     var artistsSaved = UserArtists.get();
     console.log(artistsSaved);
@@ -142,26 +198,23 @@ angular.module('starter.controllers', [])
       max_artists_computed = artistsSaved.length;
     UserArtists.set(artistsSaved);
     artistsSaved = UserArtists.get();
-    var followerLists = [];
+    var favoritesLists = [];
     var p = 0;
     var i = 0;
     for(i = 0; i < max_artists_computed; i++)
     {
-      var stringToPass = "/users/" + artistsSaved[i].id + "/followings";
-      //var stringToPass = "/users/" + artistsSaved[i].id + "/favorites";
-      var myDataPromise = Retrieve.getData(stringToPass);
-      myDataPromise.then(function(responseFollowings)
+      var stringToPass = "/users/" + artistsSaved[i].id + "/favorites";
+      var myDataPromise = Retrieve.getData(stringToPass, artistsSaved.username);
+      myDataPromise.then(function(responseFavorites)
       {  
         //console.log(responseFollowings);
-        //var nextStringToPass = "/tracks/" + responseFollowings.user_id + ""
         p++;
-        followerLists.push(responseFollowings);
+        favoritesLists.push(responseFavorites);
         //console.log(p);
         if(p == max_artists_computed)
         {
-          //console.log("done");
-          FollowingObjects.set(followerLists);
-          $scope.combineAndCompare();
+          FavoritesLists.set(favoritesLists);
+          $scope.getListArtists();
         }
       });
     }
@@ -176,7 +229,7 @@ angular.module('starter.controllers', [])
     for(i = 0; i < len; i++)
     {
       var stringToPass = "/users/" + likedTracks[i].user_id;
-      var myDataPromise = Retrieve.getData(stringToPass);
+      var myDataPromise = Retrieve.getData(stringToPass, likedTracks[i].user);
       myDataPromise.then(function(artist_obj)
       {       
         var newArtist = artist_obj;
@@ -214,7 +267,7 @@ angular.module('starter.controllers', [])
           {
             likedArtists.sort(function(a,b) {return (a.COMPOSITE_VALUE < b.COMPOSITE_VALUE) ? 1 : ((b.COMPOSITE_VALUE < a.COMPOSITE_VALUE) ? -1 : 0);} ); 
             UserArtists.set(likedArtists);
-            $scope.getFollowerLists();
+            $scope.getFavoritesLists();
           }
       });
     }  

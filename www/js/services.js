@@ -46,9 +46,10 @@ angular.module('starter.services', [])
 })
 
 .factory('Retrieve', function($http) {
-    var getData = function(str) {
+    var getData = function(str, sender) {
         return SC.get(str, {limit:200}).then(function(data_) 
         {
+            data_.SENDER = sender;
             return data_;
         });
     };
@@ -112,6 +113,23 @@ angular.module('starter.services', [])
     get: function()
     {
       return following;
+    }
+  };
+})
+
+
+.factory("FavoritesLists", function() {
+
+  var favorites = null;
+
+  return {
+
+    set: function(obj_) {
+      favorites = obj_;
+    },
+    get: function()
+    {
+      return favorites;
     }
   };
 })
