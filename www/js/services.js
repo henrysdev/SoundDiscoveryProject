@@ -17,9 +17,12 @@ angular.module('starter.services', [])
     },
     get: function(id_)
     {
+      /*
+      DEBUGGING FOR RETREIEVING STREAM
       console.log("looking for: ");
       console.log(id_);
       console.log(embedLinks);
+      */
       for(var i = 0; i < embedLinks.length; i++)
       {
         if(embedLinks[i].trackID == id_)

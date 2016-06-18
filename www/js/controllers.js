@@ -8,7 +8,7 @@ angular.module('starter.controllers', [])
     redirect_uri: 'https://soundcloud.com/user-8492062'
   });
   var popularity_factor = 0;//0.420
-  var max_artists_computed = 10;
+  var max_artists_computed = 5;
   var max_recs_computed = 20;
   var max_tracks_per_rec = 1;
   $scope.StoredEmbedLinks = StoredEmbedLinks;
