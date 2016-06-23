@@ -1,16 +1,17 @@
 angular.module('starter.controllers', [])
 
 
-.controller('ChatsCtrl', function($scope, Chats, UserObject, UserFavs, UserArtists, FollowingObjects, FavoritesLists, RecommendedArtistObjects, Retrieve, Embed, StoredEmbedLinks) 
+.controller('ChatsCtrl', function($scope, Chats, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
     redirect_uri: 'https://soundcloud.com/user-8492062'
   });
-  var popularity_factor = 0;//0.420
+  var popularity_factor = 0;//0.455
   var max_artists_computed = 5;
   var max_recs_computed = 20;
   var max_tracks_per_rec = 1;
+  //$scope.ProcessCollectionsObject = ProcessCollectionsObject;
   $scope.StoredEmbedLinks = StoredEmbedLinks;
   $scope.UserObject = UserObject;
   $scope.input_suggestions = [];
@@ -43,12 +44,11 @@ angular.module('starter.controllers', [])
         $scope.recommendedTracks = list_;
         $scope.show_tracks = true;
         });
-        console.log("MADE IT");
       }
       })
     }
   }
-  
+
   $scope.getTopTracks = function(recs)
   {
     var recArtists = recs;
@@ -60,7 +60,7 @@ angular.module('starter.controllers', [])
     for(i = 0; i < max_recs_computed; i++)
     {
       var stringToPass = "/users/" + recArtists[i].permalink + "/tracks";
-      console.log(stringToPass);
+      //console.log(stringToPass);
       var myDataPromise = Retrieve.getData(stringToPass);
       myDataPromise.then(function(responseTracks)
       {  
@@ -87,9 +87,16 @@ angular.module('starter.controllers', [])
         p++;
         if(p == max_recs_computed)
         {
-          console.log("HERES ALL THE RECOMMENDED TRACKS: ");
+          //console.log("HERES ALL THE RECOMMENDED TRACKS: ");
           masterList.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
-          console.log(masterList);
+          //console.log(masterList);
+          var linkString = "";
+          for(var t = 0; t < masterList.length; t++)
+          {
+            linkString += masterList[t].permalink_url;
+            linkString += "\n";
+          }
+          //console.log(linkString);
           $scope.embed(masterList);
         }
         $scope.recommendedTracks = masterList;
@@ -100,7 +107,7 @@ angular.module('starter.controllers', [])
   
   $scope.combineAndCompare = function()
   {
-    var allArtistsList = FollowingObjects.get();
+    var allArtistsList = ProcessCollectionsObject.get("sec_gen_liked_artists");
     var masterList = [];
 
     for(var i = 0; i < allArtistsList.length; i++)
@@ -119,43 +126,18 @@ angular.module('starter.controllers', [])
         masterList.push(allArtistsList[i]);
       }
     }
-    /*
-    for(var i = 0; i < max_artists_computed; i ++)
-    {
-      for(var n = 0; n < allArtistsList[i].collection.length; n++)
-      {
-        var currentArtist = allArtistsList[i].collection[n];
-        allArtistsList[i].collection[n].FREQ = 1;
-        allArtistsList[i].collection[n].SCORE = 0;
-        var result = findById(masterList, currentArtist.id);
-        if(result != null)
-        {
-          console.log("common artist being followed:");
-          console.log(result);
-          result.FREQ ++;
-          result.SCORE = result.FREQ + (result.FREQ / result.followings_count);
-        }
-        else
-        {
-          masterList.push(allArtistsList[i].collection[n]);         
-        }         
-      }
-    }
-    */
-    
     masterList.sort(function(a,b) {return (a.FREQ < b.FREQ) ? 1 : ((b.FREQ < a.FREQ) ? -1 : 0);} ); 
-    //RecommendedArtistObjects.set(masterList);
     //console.log("HERE IT IS");
     //console.log(masterList);
-    console.log("ALL ARTIST MASTERLIST: ");
-    console.log(masterList);
+    //console.log("ALL ARTIST MASTERLIST: ");
+    //console.log(masterList);
     $scope.getTopTracks(masterList);
   }
   $scope.getListArtists = function()
   {
-    var allFavoritesList = FavoritesLists.get();
-    console.log("users favorited artists favorited tracks: ");
-    console.log(allFavoritesList);
+    var allFavoritesList = ProcessCollectionsObject.get("liked_artists_fav_lists");
+    //console.log("users favorited artists favorited tracks: ");
+    //console.log(allFavoritesList);
     var p = 0;
     var i = 0;
     var n = 0;
@@ -176,8 +158,7 @@ angular.module('starter.controllers', [])
           artistsListToPass.push(responseArtists);
           if(p == max_count)
           {
-            console.log("hit max count");
-            FollowingObjects.set(artistsListToPass);
+            ProcessCollectionsObject.set("sec_gen_liked_artists", artistsListToPass);
             $scope.combineAndCompare();
           }
         });
@@ -187,7 +168,8 @@ angular.module('starter.controllers', [])
 
   $scope.getFavoritesLists = function()
   {
-    var artistsSaved = UserArtists.get();
+    //var artistsSaved = UserArtists.get();
+    var artistsSaved = ProcessCollectionsObject.get("liked_artists");
     console.log(artistsSaved);
     if(artistsSaved.length > max_artists_computed)
     {
@@ -196,8 +178,9 @@ angular.module('starter.controllers', [])
     }
     else
       max_artists_computed = artistsSaved.length;
-    UserArtists.set(artistsSaved);
-    artistsSaved = UserArtists.get();
+    ProcessCollectionsObject.set("liked_artists", artistsSaved);
+    artistsSaved = ProcessCollectionsObject.get("liked_artists");
+
     var favoritesLists = [];
     var p = 0;
     var i = 0;
@@ -213,17 +196,19 @@ angular.module('starter.controllers', [])
         //console.log(p);
         if(p == max_artists_computed)
         {
-          FavoritesLists.set(favoritesLists);
+          ProcessCollectionsObject.set("liked_artists_fav_lists", favoritesLists);
           $scope.getListArtists();
         }
       });
     }
   }
-  $scope.artistList = function(len)
+  $scope.artistList = function()
   {
     var likedArtists = [];
     var lookup = {};
-    var likedTracks = UserFavs.get();
+    var likedTracks = UserObject.get("favorites");
+    var len = likedTracks.length;
+    console.log(likedTracks);
     var p = 0;
     var i = 0;
     for(i = 0; i < len; i++)
@@ -231,7 +216,8 @@ angular.module('starter.controllers', [])
       var stringToPass = "/users/" + likedTracks[i].user_id;
       var myDataPromise = Retrieve.getData(stringToPass, likedTracks[i].user);
       myDataPromise.then(function(artist_obj)
-      {       
+      {     
+        
         var newArtist = artist_obj;
           //console.log(artist_obj);
           p++;
@@ -248,8 +234,7 @@ angular.module('starter.controllers', [])
             if(result != null)
             {
               result.FREQ_FACTOR ++;
-              result.COMPOSITE_VALUE = (result.FREQ_FACTOR * popularity_factor) + result.NEW_FACTOR;
-              
+              result.COMPOSITE_VALUE = (result.FREQ_FACTOR * popularity_factor) + result.NEW_FACTOR;     
             }
      
             else
@@ -260,13 +245,14 @@ angular.module('starter.controllers', [])
               
             }
           }
-          UserArtists.set(likedArtists);
-          
-          
+          ProcessCollectionsObject.set("liked_artists", likedArtists);
           if(p == len)
-          {
+          { 
             likedArtists.sort(function(a,b) {return (a.COMPOSITE_VALUE < b.COMPOSITE_VALUE) ? 1 : ((b.COMPOSITE_VALUE < a.COMPOSITE_VALUE) ? -1 : 0);} ); 
-            UserArtists.set(likedArtists);
+            //!!!!!
+            //UserArtists.set(likedArtists);
+            //!!!!!
+            ProcessCollectionsObject.set("liked_artists", likedArtists);
             $scope.getFavoritesLists();
           }
       });
@@ -290,14 +276,28 @@ function findById(source, id_) {
   $scope.retrieveLikes = function()
   {
     var allFavs = null;
-    var stringToPass = "/users/" + UserObject.get().id + "/favorites";
+    var stringToPass = "/users/" + UserObject.get("user_obj").id + "/favorites";
+    //console.log("CRUDE FAV COUNT: ");
+    //console.log(UserObject.get("user_obj").public_favorites_count);
+
     SC.get(stringToPass, {limit: 150}).then(function(favs) 
     {
-        //console.log(favs);
-        UserFavs.set(favs);
-        $scope.artistList(favs.length);
+        //console.log("USEABLE FAVS COUNT: ");
+        //console.log(favs.length);
+        //UserObject.set_fav_count(favs.length);
+        UserObject.set("favorites", favs);
+        //UserFavs.set(favs);
+        $scope.artistList();
         //console.log(allFavs);
       });
+  }
+
+  $scope.categorizeUser = function()
+  {
+    if(UserObject.get_fav_count() > 0)
+    {
+      console.log("this user has favorites");
+    }
   }
 
   $scope.GetUser = function (search_input) 
@@ -310,28 +310,30 @@ function findById(source, id_) {
 */
 this.show_suggestions = false;
 var stringToPass = "/resolve.json?url=http://soundcloud.com/";
-search_input = $scope.UserObject.get().permalink;
+search_input = $scope.UserObject.get("user_obj").permalink;
 stringToPass += search_input;
 stringToPass += "&client_id=a06eaada6b3052bb0a3dff20329fdbf9";
-
+/*
 SC.get("/users/" + search_input + "/tracks", {limit: 100}).then(function(tracks) 
 {
   //console.log(tracks);
 });
+*/
 SC.get(stringToPass).then(function(artistObj)
 {
-  //console.log(artistObj);
-  UserObject.set(artistObj);
+  UserObject.set("user_obj", artistObj);
   avatarPath = artistObj.avatar_url;
   avatarPath = avatarPath.replace("-large.jpg","-t500x500.jpg");
   var doc = document.getElementById("avatar_img");
   var attr = doc.attributes;
   doc.attributes[2].nodeValue = avatarPath;
-        document.getElementById("artistLabel").innerHTML = UserObject.get().username;//ArtistObjects.getFirst().username;
+        document.getElementById("artistLabel").innerHTML = UserObject.get("user_obj").username;//ArtistObjects.getFirst().username;
         document.getElementById("searchField").value = "";
         $scope.autoCompleteUsername("a",'1');
+        $scope.retrieveLikes();
+$scope.categorizeUser();
       });
-$scope.retrieveLikes();
+
 }
 
 $scope.autoCompleteUsername = function(input)
@@ -367,7 +369,7 @@ $scope.autoCompleteUsername = function(input)
     this.show_suggestions = false;
       //console.log("selected user:");
       //console.log(selectedUser);
-      UserObject.set(selectedUser);
+      UserObject.set("user_obj",selectedUser);
       this.show_suggestions = false;
       document.getElementById("searchField").value = selectedUser.username;
       document.getElementById("autocomplete_list").attributes[1].nodeValue = false;
@@ -375,6 +377,25 @@ $scope.autoCompleteUsername = function(input)
       $scope.input_suggestions = [];
     }
   })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

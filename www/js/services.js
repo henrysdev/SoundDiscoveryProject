@@ -13,21 +13,15 @@ angular.module('starter.services', [])
     set: function(new_obj)
     {
       embedLinks.push(new_obj);
-      console.log(embedLinks);
+      //console.log(embedLinks);
     },
     get: function(id_)
     {
-      /*
-      DEBUGGING FOR RETREIEVING STREAM
-      console.log("looking for: ");
-      console.log(id_);
-      console.log(embedLinks);
-      */
       for(var i = 0; i < embedLinks.length; i++)
       {
         if(embedLinks[i].trackID == id_)
         {
-          console.log(embedLinks[i]);
+          //console.log(embedLinks[i]);
           return embedLinks[i].streamLink;
           break;
         }
@@ -104,90 +98,121 @@ angular.module('starter.services', [])
 
 
 
-.factory("FollowingObjects", function() {
+.factory("ProcessCollectionsObject", function()  {
 
-  var following = null;
-
-  return {
-
-    set: function(obj_) {
-      following = obj_;
-    },
-    get: function()
-    {
-      return following;
-    }
-  };
-})
-
-
-.factory("FavoritesLists", function() {
-
-  var favorites = null;
+  var liked_artists = null;
+  var sec_gen_liked_artists = null;
+  var liked_artists_fav_lists = null;
 
   return {
-
-    set: function(obj_) {
-      favorites = obj_;
-    },
-    get: function()
+    set: function(attr_name, val)
     {
-      return favorites;
+      switch(attr_name)
+      {
+        case "liked_artists":
+          liked_artists = val;
+          break;
+        case "sec_gen_liked_artists":
+          sec_gen_liked_artists = val;
+          break;
+        case "liked_artists_fav_lists":
+          liked_artists_fav_lists = val;
+          break;
+      }
+    },
+    get: function(attr_name, id_)
+    {
+      var thing_to_return = null;
+      switch(attr_name)
+      {
+        case "liked_artists":
+          thing_to_return = liked_artists;
+          break;
+        case "sec_gen_liked_artists":
+          thing_to_return = sec_gen_liked_artists;
+          break;
+        case "liked_artists_fav_lists":
+          thing_to_return = liked_artists_fav_lists;
+          break;
+      }
+      return thing_to_return;
+    },
+    clear: function()
+    {
+      liked_artists = null;
+      sec_gen_liked_artists = null;
+      liked_artists_fav_lists = null;
+      embed_links = [];
     }
-  };
+  }
 })
+
 
 .factory("UserObject", function() {
 
-  var user = null;
+  var user_obj = null;
+  var fav_count = 0;
+  var favorites = null;
+  var following = null;
+  //var user_type = null;
 
   return {
+    set: function(attr_name, val)
+    {
+      switch(attr_name)
+      {
+        case "user_obj":
+          user_obj = val;
+          break;
+        case "favorites":
+          favorites = val;
+          break;
+        case "following":
+          following = val;
+          break;
+        case "fav_count":
+          fav_count = val;
+          break;
+      }
+    },
+    get: function(attr_name)
+    {
+      var thing_to_return = null;
+      switch(attr_name)
+      {
+        case "user_obj":
+          thing_to_return = user_obj;
+          break;
+        case "favorites":
+          console.log("okkkk");
+          thing_to_return = favorites;
+          break;
+        case "following":
+          thing_to_return = following;
+          break;
+        case "fav_count":
+          thing_to_return = fav_count;
+          break;
+      }
+      return thing_to_return;
+    },
+    clear: function()
+    {
+      user_obj = null;
+      fav_count = null;
+      favorites = null;
+      following = null;
+    }
+    /*
     set: function(obj_) {
       user = obj_;
     },
     get: function()
     {
       return user;
-    }
-  };
-})
-
-
-.factory("UserFavs", function() {
-
-  var favs = null;
-  var ind_ = 0;
-  return {
-    set: function(obj_) {
-      favs = obj_;
     },
-    get: function()
-    {
-      return favs;
-    },
-    setInd: function(ind)
-    {
-      ind_ = ind;
-    },
-    getInd: function()
-    {
-      return ind_
-    }
-  };
-})
-
-
-.factory("UserArtists", function() {
-
-  artists = null;
-  return {
-    set: function(obj_) {
-      artists = obj_;
-    },
-    get: function()
-    {
-      return artists;
-    },
+    
+    */
   };
 })
 
