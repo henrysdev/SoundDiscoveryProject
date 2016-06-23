@@ -1,4 +1,4 @@
-<ion-view view-title="Chats">
+<ion-view view-title="Recs">
   <ion-content class="padding">
 <h2>Tracks For You</h2>
 
@@ -31,7 +31,7 @@
 </div>
 
  <!--<img id="avatar_img" class="full-image" src="">-->
-<div class="row">
+<div class="row" ng-show="show_recs">
   <div class="col col-25">
     <div>
       
@@ -50,6 +50,7 @@
           </a>
           <!--"" -->
         </li>
+        <ion-spinner icon="spiral" ng-show="!show_tracks"></ion-spinner>
       </ul>
     </div>
   </div>
