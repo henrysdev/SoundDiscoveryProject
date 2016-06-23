@@ -46,7 +46,7 @@
       <ul class="list" id="artist_list">
         <li class="item" ng-repeat="i_rec in recommendedTracks" ng-show="show_tracks" id="repeatWidgets">
           <a>
-            <iframe frameborder='no' height='166' scrolling='no' src='{{StoredEmbedLinks.get(i_rec.id)| trusted}}' width='100%'></iframe>
+            <iframe frameborder='no' height='166' scrolling='no' src='{{StoredEmbedLinks.get(i_rec.id)| trusted}}' id="iframe_$index" width='100%'></iframe>
           </a>
           <!--"" -->
         </li>

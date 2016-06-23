@@ -26,6 +26,10 @@ angular.module('starter.services', [])
           break;
         }
       }
+    },
+    clear: function()
+    {
+      embedLinks.clear();
     }
   }
 })
@@ -55,47 +59,6 @@ angular.module('starter.services', [])
       getData: getData 
     };
 })
-
-
-
-.factory("RecommendedArtistObjects", function()
-{
-  var recommendedArtists = null;
-  return{
-    set: function(ob_)
-    {
-      recommendedArtists = obj_;
-    },
-    get: function()
-    {
-      return recommendedArtists;
-    }
-  };
-})
-
-.factory("ArtistObjects", function() {
-
-  var firstArtist = null;
-  var secondArtist = null;
-
-  return {
-    setFirst: function(obj_) {
-      firstArtist = obj_;
-    },
-    getFirst: function()
-    {
-      return firstArtist;
-    },
-    setSecond: function(obj_) {
-      secondArtist = obj_;
-    },
-    getSecond: function()
-    {
-      return secondArtist;
-    }
-  };
-})
-
 
 
 .factory("ProcessCollectionsObject", function()  {
@@ -203,16 +166,6 @@ angular.module('starter.services', [])
       favorites = null;
       following = null;
     }
-    /*
-    set: function(obj_) {
-      user = obj_;
-    },
-    get: function()
-    {
-      return user;
-    },
-    
-    */
   };
 })
 
