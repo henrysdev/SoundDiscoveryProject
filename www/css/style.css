@@ -1,5 +1,51 @@
 /* Empty. Add your own CSS if you like */
-body: {
-	background-color: black;
 
+.background, .background .pane, .background .item, .background .item-complex .item-content {
+    background-color: yellow;
+}
+
+.spinner svg
+{
+	width: 100px;
+	height: 100px;
+	display : block;
+	margin: auto;
+	text-align: center;
+	stroke: #444;
+  	fill: #444;
+}
+h2
+{
+	text-align: center;
+}
+.nav-bar{
+	background-color: : #282828;
+	color: white;
+}
+.ion-nav-bar{
+	background-color: : #282828;
+	color: white;
+}
+.list{
+	background-color: : #282828;
+	color: white;
+}
+.row {
+	background-color: #282828;
+	color: white;
+}
+
+.item{
+	background-color: #282828;
+	color: white;
+}
+
+h1 {
+    color: orange;
+    text-align: center;
+}
+
+p {
+    font-family: "Times New Roman";
+    font-size: 20px;
 }

@@ -21,15 +21,15 @@ angular.module('starter.services', [])
       {
         if(embedLinks[i].trackID == id_)
         {
-          //console.log(embedLinks[i]);
+          //console.log(embedLinks[i].stream);
           return embedLinks[i].streamLink;
           break;
         }
       }
     },
-    clear: function()
+    clear_: function()
     {
-      embedLinks.clear();
+      embedLinks = [];
     }
   }
 })
@@ -66,6 +66,7 @@ angular.module('starter.services', [])
   var liked_artists = null;
   var sec_gen_liked_artists = null;
   var liked_artists_fav_lists = null;
+  var rec_track_list = null;
 
   return {
     set: function(attr_name, val)
@@ -80,6 +81,9 @@ angular.module('starter.services', [])
           break;
         case "liked_artists_fav_lists":
           liked_artists_fav_lists = val;
+          break;
+        case "rec_track_list":
+          rec_track_list = val;
           break;
       }
     },
@@ -97,15 +101,17 @@ angular.module('starter.services', [])
         case "liked_artists_fav_lists":
           thing_to_return = liked_artists_fav_lists;
           break;
+        case "rec_track_list":
+          thing_to_return = rec_track_list;
       }
       return thing_to_return;
     },
-    clear: function()
+    clear_: function()
     {
       liked_artists = null;
       sec_gen_liked_artists = null;
       liked_artists_fav_lists = null;
-      embed_links = [];
+      rec_track_list = null;
     }
   }
 })
@@ -158,7 +164,7 @@ angular.module('starter.services', [])
       }
       return thing_to_return;
     },
-    clear: function()
+    clear_: function()
     {
       user_obj = null;
       fav_count = null;

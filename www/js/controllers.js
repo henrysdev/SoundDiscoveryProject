@@ -5,7 +5,7 @@ angular.module('starter.controllers', [])
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
-    redirect_uri: 'https://soundcloud.com/user-8492062'
+    redirect_uri: 'http://localhost:8100/#/tab/recs' //'https://soundcloud.com/user-8492062'
   });
   var popularity_factor = 0;//0.455
   var max_artists_computed = 5;
@@ -20,12 +20,15 @@ angular.module('starter.controllers', [])
   $scope.show_recs = false;
   $scope.show_suggestions = true;
   var avatarPath = "";
-
+  var widgets = [];
+  
   $scope.weedOutTracks = function(track)
   {
     //if(track.favoritings_count == 0)
      // return false;
     if(track.duration > 960000)
+      return false;
+    if(track.streamable == false)
       return false;
     var user_favorites = UserObject.get("favorites");
     for(var i = 0; i < user_favorites.length; i++)
@@ -39,12 +42,30 @@ angular.module('starter.controllers', [])
     return true;
   }
 
+  $scope.newUser = function()
+  {
+    ProcessCollectionsObject.clear_();
+    UserObject.clear_();
+    StoredEmbedLinks.clear_();
+    $scope.input_suggestions = [];
+    $scope.recommendedTracks = [];
+    $scope.searchText = "";
+    $scope.show_tracks = false;
+    $scope.show_recs = false;
+    $scope.show_suggestions = true;
+  }
+
   $scope.embed = function(list_) 
   {
     var givenList = list_;
     var f = 0;
     for(var b = 0; b < givenList.length; b++)
     {
+      /*
+      SoundCloud tracks can be disabled for streaming via the API while the widget is still allowed.
+
+If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID you can check the streaming attribute, which for both of the tracks you sent is false.
+      */
       var track_url = givenList[b].permalink_url;
       var myDataPromise = Embed.getData(track_url);
       myDataPromise.then(function(oEmbed){
@@ -62,6 +83,7 @@ angular.module('starter.controllers', [])
         $scope.$apply(function () {
         $scope.recommendedTracks = list_;
         $scope.show_tracks = true;
+        //$scope.waitToGetWidgets();
         });
       }
       })
@@ -98,8 +120,8 @@ angular.module('starter.controllers', [])
         {
           miniTracklist.splice(max_tracks_local, (miniTracklist.length - max_tracks_local));
         }
-        else
-          max_tracks_local = miniTracklist.length;
+        //else
+         // max_tracks_local = miniTracklist.length;
         //masterList.push(miniTracklist);
         for(var l = 0; l < miniTracklist.length; l++)
           masterList.push(miniTracklist[l]);
@@ -116,6 +138,10 @@ angular.module('starter.controllers', [])
             linkString += "\n";
           }
           //console.log(linkString);
+          ProcessCollectionsObject.set("rec_track_list", masterList);
+          console.log("MASTERLIST:");
+          console.log(masterList);
+          //$scope.createPlaylist();
           $scope.embed(masterList);
         }
         $scope.recommendedTracks = masterList;
@@ -386,6 +412,7 @@ $scope.autoCompleteUsername = function(input)
 
   $scope.selectUser = function(selectedUser)
   {
+    $scope.newUser();
     this.show_suggestions = false;
       //console.log("selected user:");
       //console.log(selectedUser);

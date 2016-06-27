@@ -1,5 +1,6 @@
-<ion-view view-title="Recs">
+<ion-view view-title="CoundSloud">
   <ion-content class="padding">
+  <body>
 <h2>Tracks For You</h2>
 
 <div class="list">
@@ -46,16 +47,15 @@
       <ul class="list" id="artist_list">
         <li class="item" ng-repeat="i_rec in recommendedTracks" ng-show="show_tracks" id="repeatWidgets">
           <a>
-            <iframe frameborder='no' height='166' scrolling='no' src='{{StoredEmbedLinks.get(i_rec.id)| trusted}}' id="iframe_$index" width='100%'></iframe>
+            <iframe frameborder='no' height='166' scrolling='no' src='{{StoredEmbedLinks.get(i_rec.id)| trusted}}' width='100%' id="$index"></iframe>
           </a>
-          <!--"" -->
         </li>
         <ion-spinner icon="spiral" ng-show="!show_tracks"></ion-spinner>
       </ul>
     </div>
   </div>
 </div>
-
+</body>
 <p></p>
 <!--
 <div class="list">
