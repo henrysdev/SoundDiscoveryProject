@@ -9,7 +9,7 @@ angular.module('starter.controllers', [])
   });
   var popularity_factor = 0;//0.455
   var max_artists_computed = 5;
-  var max_recs_computed = 20;
+  var max_recs_computed = 10;
   var max_tracks_per_rec = 1;
   $scope.StoredEmbedLinks = StoredEmbedLinks;
   $scope.UserObject = UserObject;
@@ -19,15 +19,22 @@ angular.module('starter.controllers', [])
   $scope.show_tracks = false;
   $scope.show_recs = false;
   $scope.show_suggestions = true;
+  $scope.fav_icons = [];
+  $scope.selected_favorites = [];
   var avatarPath = "";
   var widgets = [];
-  
+  $scope.show_fav_selection = false;
+  $scope.show_profile = false;
+  $scope.done_picking_favs = true;
+
+
   $scope.weedOutTracks = function(track)
   {
     //if(track.favoritings_count == 0)
      // return false;
     if(track.duration > 960000)
       return false;
+
     if(track.streamable == false)
       return false;
     var user_favorites = UserObject.get("favorites");
@@ -40,6 +47,48 @@ angular.module('starter.controllers', [])
       }
     }
     return true;
+  }
+
+  $scope.startCalculation = function()
+  {
+    UserObject.set("favs_to_use", $scope.selected_favorites);
+    //max_artists_computed = $scope.selected_favorites.length;
+    $scope.done_picking_favs = false;
+    $scope.show_fav_selection = false;
+    $scope.show_recs = true;
+    $scope.artistList();
+  }
+
+  $scope.calcWindowHeight = function()
+  {
+    console.log($scope.fav_icons.length);
+    var y_px = ($scope.fav_icons.length * 6);
+    var to_return = y_px.toString();
+    to_return += "px";
+    console.log(to_return);
+    return to_return;
+  }
+
+  $scope.getIconArt = function(url)
+  {
+    if(url == null)
+      return "http://www.polyvore.com/cgi/img-thing?.out=jpg&size=l&tid=25059535";
+    else
+      return url;
+  }
+
+  $scope.updateChecked = function(track)
+  {
+    console.log(track.icon.title);
+    console.log(track.checked);
+    if(track.checked == true)
+      $scope.selected_favorites.push(track.icon);
+    else if(track.checked == false)
+    {
+      var index = $scope.selected_favorites.indexOf(track.icon);
+      $scope.selected_favorites.splice(index,1);
+    }
+    console.log($scope.selected_favorites);
   }
 
   $scope.newUser = function()
@@ -83,6 +132,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
         $scope.$apply(function () {
         $scope.recommendedTracks = list_;
         $scope.show_tracks = true;
+        $scope.show_recs = true;
         //$scope.waitToGetWidgets();
         });
       }
@@ -251,7 +301,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
   {
     var likedArtists = [];
     var lookup = {};
-    var likedTracks = UserObject.get("favorites");
+    var likedTracks = UserObject.get("favorites");//UserObject.get("favs_to_use");
     var len = likedTracks.length;
     console.log(likedTracks);
     var p = 0;
@@ -330,10 +380,18 @@ function findById(source, id_) {
         //console.log("USEABLE FAVS COUNT: ");
         //console.log(favs.length);
         //UserObject.set_fav_count(favs.length);
-        UserObject.set("favorites", favs);
-        //UserFavs.set(favs);
+        UserObject.set("favorites", favs);  
+        //$scope.$apply(function () {
+        for(var i = 0; i < favs.length; i++)
+        {
+          var new_icon = {checked : false, icon : favs[i]};
+          $scope.fav_icons.push(new_icon);
+        }
+        $scope.$apply(function () {
+          $scope.fav_icons;
+        });
         $scope.artistList();
-        //console.log(allFavs);
+
       });
   }
 
@@ -353,7 +411,8 @@ function findById(source, id_) {
         console.log(tracks);
     });
 */
-this.show_suggestions = false;
+
+//this.show_suggestions = false;
 var stringToPass = "/resolve.json?url=http://soundcloud.com/";
 search_input = $scope.UserObject.get("user_obj").permalink;
 stringToPass += search_input;
@@ -364,7 +423,9 @@ SC.get("/users/" + search_input + "/tracks", {limit: 100}).then(function(tracks)
   //console.log(tracks);
 });
 */
-$scope.show_recs = true;
+//$scope.show_recs = true;
+$scope.show_profile = true;
+$scope.show_fav_selection = true;
 SC.get(stringToPass).then(function(artistObj)
 {
   UserObject.set("user_obj", artistObj);
@@ -377,7 +438,6 @@ SC.get(stringToPass).then(function(artistObj)
         document.getElementById("searchField").value = "";
         $scope.autoCompleteUsername("a",'1');
         $scope.retrieveLikes();
-$scope.categorizeUser();
       });
 
 }

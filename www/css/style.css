@@ -14,6 +14,12 @@
 	stroke: #444;
   	fill: #444;
 }
+
+.fav_window {
+  height: 400px;
+  background-color: #282828;
+}
+
 h2
 {
 	text-align: center;
@@ -43,6 +49,11 @@ h2
 h1 {
     color: orange;
     text-align: center;
+}
+
+h3 {
+	color: white;
+	text-align: center;
 }
 
 p {

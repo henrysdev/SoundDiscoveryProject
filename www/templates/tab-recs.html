@@ -29,10 +29,10 @@
       </div>
         </li>
       </ul>
-</div>
+</div class="list">
 
- <!--<img id="avatar_img" class="full-image" src="">-->
-<div class="row" ng-show="show_recs">
+
+<div class="row" ng-show="show_profile">
   <div class="col col-25">
     <div>
       
@@ -42,36 +42,52 @@
     </div>
     <label id="artistLabel"></label>
   </div>
-  <div class="col">
+
+<!--
+  <div class="col" ng-show="show_fav_selection" ng-if="done_picking_favs">
+    <h3>User Favorites (Included in Calculation)</h3>
+
+   <div style="height:386px;overflow:auto;">
+  <div class="row row-wrap">
+  <div class="col-25" ng-repeat="track in fav_icons" item="track" >
+    
+      <div class="item">
+        <div class="row">
+          <div class="col">
+        <img width="50" heigh="50" src="{{getIconArt(track.icon.artwork_url)}}">
+      </div>
+        <label class="checkbox checkbox-balanced">
+          <input type="checkbox" ng-model="fav_icons[$index].checked" ng-change="updateChecked(track)">
+        </label>
+        
+        </div>
+        <div><label>{{track.icon.title}}</label></div>
+        <div>{{track.user.username}}</div>
+      </div>
+    
+  </div>
+</div>
+<div class="button" ng-click="startCalculation()">Calculate Recommendations</div>
+</div>
+</div>
+-->
+
+  <div class="col" ng-show="show_recs">
     <div class="item item-input-inset" id="recList">
       <ul class="list" id="artist_list">
-        <li class="item" ng-repeat="i_rec in recommendedTracks" ng-show="show_tracks" id="repeatWidgets">
+        <li class="item" ng-repeat="i_rec in recommendedTracks"  id="repeatWidgets">
           <a>
-            <iframe frameborder='no' height='166' scrolling='no' src='{{StoredEmbedLinks.get(i_rec.id)| trusted}}' width='100%' id="$index"></iframe>
+            <iframe frameborder='no' height='166' scrolling='no' src='{{StoredEmbedLinks.get(i_rec.id)| trusted}}' width='100%'></iframe>
           </a>
         </li>
-        <ion-spinner icon="spiral" ng-show="!show_tracks"></ion-spinner>
+        <ion-spinner icon="spiral" ng-show="!show_recs"></ion-spinner>
       </ul>
     </div>
   </div>
 </div>
 </body>
 <p></p>
-<!--
-<div class="list">
 
-  <div class="item item-input-inset">
-    <label class="item-input-wrapper">
-      <input id="searchField" type="text" placeholder="Soundcloud Username" ng-model="searchText">
-    </label>
-    <button class="button button-small" ng-click="GetUser(searchText)">
-      Submit
-    </button>
-
-  </div>
-
-</div>
--->
 </ion-content>
 </ion-view>
 
