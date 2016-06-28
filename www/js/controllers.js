@@ -26,6 +26,9 @@ angular.module('starter.controllers', [])
   $scope.show_fav_selection = false;
   $scope.show_profile = false;
   $scope.done_picking_favs = true;
+  $scope.loading = false;
+  $scope.loading_text = "";
+  $scope.current_selected_stream = null;
 
 
   $scope.weedOutTracks = function(track)
@@ -49,10 +52,21 @@ angular.module('starter.controllers', [])
     return true;
   }
 
+  $scope.playSong = function(track)
+  {
+    var stream_link = StoredEmbedLinks.get(track.id);
+    console.log("~")
+    console.log(track);
+    console.log(stream_link);
+    console.log("~")
+    $scope.current_selected_stream = stream_link;
+    document.getElementById("iframe_widget").src = $scope.current_selected_stream;
+  }
+
   $scope.startCalculation = function()
   {
     UserObject.set("favs_to_use", $scope.selected_favorites);
-    //max_artists_computed = $scope.selected_favorites.length;
+    max_artists_computed = $scope.selected_favorites.length;
     $scope.done_picking_favs = false;
     $scope.show_fav_selection = false;
     $scope.show_recs = true;
@@ -118,6 +132,8 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
       var track_url = givenList[b].permalink_url;
       var myDataPromise = Embed.getData(track_url);
       myDataPromise.then(function(oEmbed){
+      console.log(b);
+      console.log(f);
       var id_ = givenList[f].id;
       f++;
       
@@ -125,7 +141,13 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
       var htmlSplice = html_orig.split(" ");
       var refinedString = htmlSplice[5];
       refinedString = refinedString.substring(5,refinedString.length-11);
+      console.log(refinedString);
+      refinedString = "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F";
+      refinedString += id_;
+      refinedString += "&show_artwork=true&auto_play=true";
+      console.log(refinedString);
       var obj_to_store = {streamLink: refinedString, trackID:id_};
+      console.log(obj_to_store);
       StoredEmbedLinks.set(obj_to_store);
       if(f == givenList.length)
       {
@@ -133,6 +155,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
         $scope.recommendedTracks = list_;
         $scope.show_tracks = true;
         $scope.show_recs = true;
+        $scope.loading = false;
         //$scope.waitToGetWidgets();
         });
       }
@@ -142,6 +165,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
 
   $scope.getTopTracks = function(recs)
   {
+    this.loading_text = "retrieving best tracks";
     var recArtists = recs;
     var masterList = [];
     var p = 0;
@@ -202,6 +226,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
   
   $scope.combineAndCompare = function()
   {
+    this.loading_text = "comparing recommendation lists";
     var allArtistsList = ProcessCollectionsObject.get("sec_gen_liked_artists");
     var masterList = [];
 
@@ -230,6 +255,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
   }
   $scope.getListArtists = function()
   {
+    this.loading_text = "processing 2nd generation favorites lists";
     var allFavoritesList = ProcessCollectionsObject.get("liked_artists_fav_lists");
     //console.log("users favorited artists favorited tracks: ");
     //console.log(allFavoritesList);
@@ -263,6 +289,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
 
   $scope.getFavoritesLists = function()
   {
+    this.loading_text = "fetching artists fav lists";
     //var artistsSaved = UserArtists.get();
     var artistsSaved = ProcessCollectionsObject.get("liked_artists");
     console.log(artistsSaved);
@@ -299,9 +326,11 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
   }
   $scope.artistList = function()
   {
+    $scope.loading = true;
+    this.loading_text = "processing artists";
     var likedArtists = [];
     var lookup = {};
-    var likedTracks = UserObject.get("favorites");//UserObject.get("favs_to_use");
+    var likedTracks = UserObject.get("favs_to_use");
     var len = likedTracks.length;
     console.log(likedTracks);
     var p = 0;
@@ -370,6 +399,7 @@ function findById(source, id_) {
 
   $scope.retrieveLikes = function()
   {
+    this.loading_text = "retrieving favorites";
     var allFavs = null;
     var stringToPass = "/users/" + UserObject.get("user_obj").id + "/favorites";
     //console.log("CRUDE FAV COUNT: ");
@@ -377,6 +407,7 @@ function findById(source, id_) {
 
     SC.get(stringToPass, {limit: 150}).then(function(favs) 
     {
+      $scope.loading = false;
         //console.log("USEABLE FAVS COUNT: ");
         //console.log(favs.length);
         //UserObject.set_fav_count(favs.length);
@@ -390,7 +421,7 @@ function findById(source, id_) {
         $scope.$apply(function () {
           $scope.fav_icons;
         });
-        $scope.artistList();
+        //$scope.artistList();
 
       });
   }
@@ -404,7 +435,8 @@ function findById(source, id_) {
   }
 
   $scope.GetUser = function (search_input) 
-  {    
+  {   
+  $scope.loading = true; 
     /*
     SC.get("/users/" + search_input + "/tracks", {limit: 100}).then(function(tracks) 
     {

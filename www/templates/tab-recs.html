@@ -43,7 +43,7 @@
     <label id="artistLabel"></label>
   </div>
 
-<!--
+
   <div class="col" ng-show="show_fav_selection" ng-if="done_picking_favs">
     <h3>User Favorites (Included in Calculation)</h3>
 
@@ -70,8 +70,43 @@
 <div class="button" ng-click="startCalculation()">Calculate Recommendations</div>
 </div>
 </div>
--->
 
+
+
+
+<div class="col" ng-show="show_recs">
+  <a>
+    <iframe frameborder='no' height='166' scrolling='no' src='current_selected_stream | trusted}}' width='100%' id="iframe_widget"></iframe>
+  </a>
+  <div class="item">
+    <div ng-show="loading">
+  <ion-spinner icon="spiral">
+  </ion-spinner>
+  <label>{{loading_text}}</label>
+</div>
+  <div style="height:386px;overflow:auto;">
+  <li class="item" ng-repeat="i_rec in recommendedTracks">
+    <button class="button button-full" ng-click="playSong(i_rec)">
+      <div class="row">
+        <div class="col-20">
+      <img src="{{getIconArt(i_rec.artwork_url)}}" class="full-image" >
+
+    </div>
+    <div class="col">
+      <label>{{i_rec.title}}</label>
+      <div>
+      <label>{{i_rec.user.username}}</label>
+    </div>
+    </div>
+  </div>
+    </button>
+  </li>
+  
+</div>
+</div>
+</div>
+
+  <!--
   <div class="col" ng-show="show_recs">
     <div class="item item-input-inset" id="recList">
       <ul class="list" id="artist_list">
@@ -80,10 +115,13 @@
             <iframe frameborder='no' height='166' scrolling='no' src='{{StoredEmbedLinks.get(i_rec.id)| trusted}}' width='100%'></iframe>
           </a>
         </li>
-        <ion-spinner icon="spiral" ng-show="!show_recs"></ion-spinner>
+        <ion-spinner icon="spiral" ng-show="!show_tracks"></ion-spinner>
       </ul>
     </div>
   </div>
+  -->
+
+
 </div>
 </body>
 <p></p>

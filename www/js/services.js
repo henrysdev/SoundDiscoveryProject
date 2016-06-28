@@ -21,7 +21,7 @@ angular.module('starter.services', [])
       {
         if(embedLinks[i].trackID == id_)
         {
-          console.log(embedLinks[i].streamLink);
+          //console.log(embedLinks[i].streamLink);
           return embedLinks[i].streamLink;
           break;
         }
@@ -38,7 +38,7 @@ angular.module('starter.services', [])
 
     var getData = function(track_url) 
     {
-      return SC.oEmbed(track_url, { auto_play: false }).then(function(oEmbed) 
+      return SC.oEmbed(track_url, { auto_play: true }).then(function(oEmbed) 
       {
         return oEmbed;
       });
