@@ -1,7 +1,6 @@
 <ion-view view-title="CoundSloud">
   <ion-content class="padding">
   <body>
-<h2>Tracks For You</h2>
 
 <div class="list">
   <label>What's your username?</label>
@@ -75,7 +74,7 @@
 
 
 <div class="col" ng-show="show_recs">
-  <a>
+  <a ng-show="!loading">
     <iframe frameborder='no' height='166' scrolling='no' src='current_selected_stream | trusted}}' width='100%' id="iframe_widget"></iframe>
   </a>
   <div class="item">

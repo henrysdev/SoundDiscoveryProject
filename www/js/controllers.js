@@ -9,7 +9,7 @@ angular.module('starter.controllers', [])
   });
   var popularity_factor = 0;//0.455
   var max_artists_computed = 5;
-  var max_recs_computed = 10;
+  var max_recs_computed = 20;
   var max_tracks_per_rec = 1;
   $scope.StoredEmbedLinks = StoredEmbedLinks;
   $scope.UserObject = UserObject;
@@ -55,10 +55,6 @@ angular.module('starter.controllers', [])
   $scope.playSong = function(track)
   {
     var stream_link = StoredEmbedLinks.get(track.id);
-    console.log("~")
-    console.log(track);
-    console.log(stream_link);
-    console.log("~")
     $scope.current_selected_stream = stream_link;
     document.getElementById("iframe_widget").src = $scope.current_selected_stream;
   }
@@ -93,8 +89,6 @@ angular.module('starter.controllers', [])
 
   $scope.updateChecked = function(track)
   {
-    console.log(track.icon.title);
-    console.log(track.checked);
     if(track.checked == true)
       $scope.selected_favorites.push(track.icon);
     else if(track.checked == false)
@@ -102,7 +96,6 @@ angular.module('starter.controllers', [])
       var index = $scope.selected_favorites.indexOf(track.icon);
       $scope.selected_favorites.splice(index,1);
     }
-    console.log($scope.selected_favorites);
   }
 
   $scope.newUser = function()
@@ -132,8 +125,6 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
       var track_url = givenList[b].permalink_url;
       var myDataPromise = Embed.getData(track_url);
       myDataPromise.then(function(oEmbed){
-      console.log(b);
-      console.log(f);
       var id_ = givenList[f].id;
       f++;
       
@@ -141,13 +132,10 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
       var htmlSplice = html_orig.split(" ");
       var refinedString = htmlSplice[5];
       refinedString = refinedString.substring(5,refinedString.length-11);
-      console.log(refinedString);
       refinedString = "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F";
       refinedString += id_;
       refinedString += "&show_artwork=true&auto_play=true";
-      console.log(refinedString);
       var obj_to_store = {streamLink: refinedString, trackID:id_};
-      console.log(obj_to_store);
       StoredEmbedLinks.set(obj_to_store);
       if(f == givenList.length)
       {
@@ -165,6 +153,11 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
 
   $scope.getTopTracks = function(recs)
   {
+
+    //DEBUG
+    var start = new Date().getTime();
+    //DEBUG
+
     this.loading_text = "retrieving best tracks";
     var recArtists = recs;
     var masterList = [];
@@ -202,20 +195,24 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
         p++;
         if(p == max_recs_computed)
         {
-          //console.log("HERES ALL THE RECOMMENDED TRACKS: ");
           masterList.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
-          //console.log(masterList);
           var linkString = "";
           for(var t = 0; t < masterList.length; t++)
           {
             linkString += masterList[t].permalink_url;
             linkString += "\n";
           }
-          //console.log(linkString);
+
           ProcessCollectionsObject.set("rec_track_list", masterList);
-          console.log("MASTERLIST:");
-          console.log(masterList);
-          //$scope.createPlaylist();
+          //console.log("MASTERLIST:");
+          //console.log(masterList);
+
+          //DEBUG
+          var end = new Date().getTime();
+          var time = end - start;
+          console.log('execution time for ' + $scope.loading_text + ': ' + time);
+          //DEBUG
+
           $scope.embed(masterList);
         }
         $scope.recommendedTracks = masterList;
@@ -226,6 +223,10 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
   
   $scope.combineAndCompare = function()
   {
+    //DEBUG
+    var start = new Date().getTime();
+    //DEBUG
+
     this.loading_text = "comparing recommendation lists";
     var allArtistsList = ProcessCollectionsObject.get("sec_gen_liked_artists");
     var masterList = [];
@@ -247,14 +248,21 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
       }
     }
     masterList.sort(function(a,b) {return (a.FREQ < b.FREQ) ? 1 : ((b.FREQ < a.FREQ) ? -1 : 0);} ); 
-    //console.log("HERE IT IS");
-    //console.log(masterList);
-    //console.log("ALL ARTIST MASTERLIST: ");
-    //console.log(masterList);
+
+    //DEBUG
+    var end = new Date().getTime();
+    var time = end - start;
+    console.log('execution time for ' + $scope.loading_text + ': ' + time);
+    //DEBUG
+
     $scope.getTopTracks(masterList);
   }
   $scope.getListArtists = function()
   {
+    //DEBUG
+    var start = new Date().getTime();
+    //DEBUG
+
     this.loading_text = "processing 2nd generation favorites lists";
     var allFavoritesList = ProcessCollectionsObject.get("liked_artists_fav_lists");
     //console.log("users favorited artists favorited tracks: ");
@@ -280,6 +288,13 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
           if(p == max_count)
           {
             ProcessCollectionsObject.set("sec_gen_liked_artists", artistsListToPass);
+            
+            //DEBUG
+            var end = new Date().getTime();
+            var time = end - start;
+            console.log('execution time for ' + $scope.loading_text + ': ' + time);
+            //DEBUG
+
             $scope.combineAndCompare();
           }
         });
@@ -289,10 +304,13 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
 
   $scope.getFavoritesLists = function()
   {
+    //DEBUG
+    var start = new Date().getTime();
+    //DEBUG
+
     this.loading_text = "fetching artists fav lists";
     //var artistsSaved = UserArtists.get();
     var artistsSaved = ProcessCollectionsObject.get("liked_artists");
-    console.log(artistsSaved);
     if(artistsSaved.length > max_artists_computed)
     {
       artistsSaved.splice(max_artists_computed, (artistsSaved.length - max_artists_computed));
@@ -319,6 +337,13 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
         if(p == max_artists_computed)
         {
           ProcessCollectionsObject.set("liked_artists_fav_lists", favoritesLists);
+
+          //DEBUG
+          var end = new Date().getTime();
+          var time = end - start;
+          console.log('execution time for ' + $scope.loading_text + ': ' + time);
+          //DEBUG
+
           $scope.getListArtists();
         }
       });
@@ -326,13 +351,16 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
   }
   $scope.artistList = function()
   {
+    //DEBUG
+    var start = new Date().getTime();
+    //DEBUG
+
     $scope.loading = true;
     this.loading_text = "processing artists";
     var likedArtists = [];
     var lookup = {};
     var likedTracks = UserObject.get("favs_to_use");
     var len = likedTracks.length;
-    console.log(likedTracks);
     var p = 0;
     var i = 0;
     for(i = 0; i < len; i++)
@@ -377,6 +405,13 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
             //UserArtists.set(likedArtists);
             //!!!!!
             ProcessCollectionsObject.set("liked_artists", likedArtists);
+
+            //DEBUG
+            var end = new Date().getTime();
+            var time = end - start;
+            console.log('execution time for ' + $scope.loading_text + ': ' + time);
+            //DEBUG
+
             $scope.getFavoritesLists();
           }
       });
@@ -399,6 +434,9 @@ function findById(source, id_) {
 
   $scope.retrieveLikes = function()
   {
+    //DEBUG
+    var start = new Date().getTime();
+    //DEBUG
     this.loading_text = "retrieving favorites";
     var allFavs = null;
     var stringToPass = "/users/" + UserObject.get("user_obj").id + "/favorites";
@@ -422,6 +460,12 @@ function findById(source, id_) {
           $scope.fav_icons;
         });
         //$scope.artistList();
+
+        //DEBUG
+        var end = new Date().getTime();
+        var time = end - start;
+        console.log('execution time for ' + $scope.loading_text + ': ' + time);
+        //DEBUG
 
       });
   }
