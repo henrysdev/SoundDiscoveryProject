@@ -66,6 +66,7 @@ angular.module('starter.services', [])
   var liked_artists = null;
   var sec_gen_liked_artists = null;
   var liked_artists_fav_lists = null;
+  var rec_artists_list = null;
   var rec_track_list = null;
   
 
@@ -82,6 +83,9 @@ angular.module('starter.services', [])
           break;
         case "liked_artists_fav_lists":
           liked_artists_fav_lists = val;
+          break;
+        case "rec_artists_list":
+          rec_artists_list = val;
           break;
         case "rec_track_list":
           rec_track_list = val;
@@ -102,6 +106,9 @@ angular.module('starter.services', [])
         case "liked_artists_fav_lists":
           thing_to_return = liked_artists_fav_lists;
           break;
+        case "rec_artists_list":
+          thing_to_return = rec_artists_list;
+          break;
         case "rec_track_list":
           thing_to_return = rec_track_list;
           break;
@@ -113,6 +120,7 @@ angular.module('starter.services', [])
       liked_artists = null;
       sec_gen_liked_artists = null;
       liked_artists_fav_lists = null;
+      rec_artists_list = null;
       rec_track_list = null;
     }
   }
@@ -126,7 +134,6 @@ angular.module('starter.services', [])
   var favorites = null;
   var following = null;
   var favs_to_use = null;
-  //var user_type = null;
 
   return {
     set: function(attr_name, val)
