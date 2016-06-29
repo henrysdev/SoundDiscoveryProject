@@ -9,7 +9,7 @@ angular.module('starter.controllers', [])
   });
   var popularity_factor = 0;//0.455
   var max_artists_computed = 5;
-  var max_recs_computed = 20;
+  var max_recs_computed = 30;
   var max_tracks_per_rec = 1;
   $scope.StoredEmbedLinks = StoredEmbedLinks;
   $scope.UserObject = UserObject;
@@ -54,6 +54,9 @@ angular.module('starter.controllers', [])
 
   $scope.playSong = function(track)
   {
+    var stream_link = StoredEmbedLinks.get(track.id);
+    $scope.current_selected_stream = stream_link;
+    document.getElementById("iframe_widget").src = $scope.current_selected_stream;
     var stream_link = StoredEmbedLinks.get(track.id);
     $scope.current_selected_stream = stream_link;
     document.getElementById("iframe_widget").src = $scope.current_selected_stream;
@@ -113,8 +116,15 @@ angular.module('starter.controllers', [])
 
   $scope.embed = function(list_) 
   {
+    this.loading_text = "embedding links";
+    console.log(this.loading_text);
+    //DEBUG
+    var start = new Date().getTime();
+    //DEBUG
+
+
     var givenList = list_;
-    var f = 0;
+    //var f = 0;
     for(var b = 0; b < givenList.length; b++)
     {
       /*
@@ -123,32 +133,37 @@ angular.module('starter.controllers', [])
 If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID you can check the streaming attribute, which for both of the tracks you sent is false.
       */
       var track_url = givenList[b].permalink_url;
-      var myDataPromise = Embed.getData(track_url);
-      myDataPromise.then(function(oEmbed){
-      var id_ = givenList[f].id;
-      f++;
+      //var myDataPromise = Embed.getData(track_url);
+      //myDataPromise.then(function(oEmbed){
+      var id_ = givenList[b].id;
       
-      var html_orig = oEmbed.html;
-      var htmlSplice = html_orig.split(" ");
-      var refinedString = htmlSplice[5];
-      refinedString = refinedString.substring(5,refinedString.length-11);
+      //var html_orig = oEmbed.html;
+      //var htmlSplice = html_orig.split(" ");
+      //var refinedString = htmlSplice[5];
+      //refinedString = refinedString.substring(5,refinedString.length-11);
       refinedString = "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F";
       refinedString += id_;
       refinedString += "&show_artwork=true&auto_play=true";
       var obj_to_store = {streamLink: refinedString, trackID:id_};
       StoredEmbedLinks.set(obj_to_store);
-      if(f == givenList.length)
-      {
-        $scope.$apply(function () {
+      //if(f == givenList.length)
+      //{
+       
+      //}
+      //})
+    }
+     $scope.$apply(function () {
         $scope.recommendedTracks = list_;
         $scope.show_tracks = true;
         $scope.show_recs = true;
         $scope.loading = false;
+        //DEBUG
+          var end = new Date().getTime();
+          var time = end - start;
+          console.log('execution time for ' + $scope.loading_text + ': ' + time);
+          //DEBUG
         //$scope.waitToGetWidgets();
         });
-      }
-      })
-    }
   }
 
   $scope.getTopTracks = function(recs)
