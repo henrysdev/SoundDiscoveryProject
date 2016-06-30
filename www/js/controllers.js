@@ -7,10 +7,7 @@ angular.module('starter.controllers', [])
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
     redirect_uri: 'http://localhost:8100/#/tab/recs' //'https://soundcloud.com/user-8492062'
   });
-  var popularity_factor = 0;//0.455
-  var max_artists_computed = 5;
-  var max_recs_computed = 30;
-  var max_tracks_per_rec = 1;
+
   $scope.StoredEmbedLinks = StoredEmbedLinks;
   $scope.UserObject = UserObject;
   $scope.input_suggestions = [];
@@ -29,15 +26,26 @@ angular.module('starter.controllers', [])
   $scope.loading = false;
   $scope.loading_text = "";
   $scope.current_selected_stream = null;
+  $scope.default_checked = true;
+  $scope.toggleSelect = false;
+
+  //scaling limits for get calls
+  var liked_artists_max_favlist_length = 200;
+  var max_artists_computed = 5;
+  var max_recs_computed = 30;
+  var max_tracks_per_rec = 1;
+  var popularity_factor = 0;//0.455
+  //
 
 
   $scope.weedOutTracks = function(track)
   {
     //if(track.favoritings_count == 0)
      // return false;
-    if(track.duration > 960000)
+    if(track.duration > 960000 || track.duration < 60000)
       return false;
-
+    if(track.playback_count < 100)
+      return false;
     if(track.streamable == false)
       return false;
     var user_favorites = UserObject.get("favorites");
@@ -70,6 +78,26 @@ angular.module('starter.controllers', [])
   }
 
   return array;
+  }
+
+  $scope.selectAll = function(cond, fav_icons)
+  {
+    if(cond == true)
+    {
+      $scope.selected_favorites = [];
+      for(var i = 0; i < fav_icons.length; i++)
+      {
+        $scope.selected_favorites.push(fav_icons[i].icon)
+      }
+      $scope.toggleSelect = false;
+      $scope.default_checked = true;
+    }
+    else if(cond == false)
+    {
+      $scope.selected_favorites = [];
+      $scope.default_checked = false;
+      $scope.toggleSelect = true;
+    }
   }
 
   $scope.playSong = function(track)
@@ -120,15 +148,41 @@ angular.module('starter.controllers', [])
 
   $scope.newUser = function()
   {
+
     ProcessCollectionsObject.clear_();
     UserObject.clear_();
     StoredEmbedLinks.clear_();
+    /*
     $scope.input_suggestions = [];
     $scope.recommendedTracks = [];
     $scope.searchText = "";
     $scope.show_tracks = false;
     $scope.show_recs = false;
     $scope.show_suggestions = true;
+    */
+    $scope.searchText = "";
+    $scope.show_tracks = false;
+    $scope.show_recs = false;
+    $scope.show_suggestions = true;
+    $scope.fav_icons = [];
+    $scope.selected_favorites = [];
+    var avatarPath = "";
+    var widgets = [];
+    $scope.show_fav_selection = false;
+    $scope.show_profile = false;
+    $scope.done_picking_favs = true;
+    $scope.loading = false;
+    $scope.loading_text = "";
+    $scope.current_selected_stream = null;
+    $scope.default_checked = true;
+    $scope.toggleSelect = false;
+
+    //scaling limits for get calls
+    var liked_artists_max_favlist_length = 200;
+    var max_artists_computed = 5;
+    var max_recs_computed = 30;
+    var max_tracks_per_rec = 1;
+    var popularity_factor = 0;//0.455
   }
 
   $scope.embed = function(list_) 
@@ -141,7 +195,6 @@ angular.module('starter.controllers', [])
 
 
     var givenList = list_;
-    //var f = 0;
     for(var b = 0; b < givenList.length; b++)
     {
       /*
@@ -150,24 +203,12 @@ angular.module('starter.controllers', [])
 If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID you can check the streaming attribute, which for both of the tracks you sent is false.
       */
       var track_url = givenList[b].permalink_url;
-      //var myDataPromise = Embed.getData(track_url);
-      //myDataPromise.then(function(oEmbed){
       var id_ = givenList[b].id;
-      
-      //var html_orig = oEmbed.html;
-      //var htmlSplice = html_orig.split(" ");
-      //var refinedString = htmlSplice[5];
-      //refinedString = refinedString.substring(5,refinedString.length-11);
       refinedString = "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F";
       refinedString += id_;
       refinedString += "&show_artwork=true&auto_play=true";
       var obj_to_store = {streamLink: refinedString, trackID:id_};
       StoredEmbedLinks.set(obj_to_store);
-      //if(f == givenList.length)
-      //{
-       
-      //}
-      //})
     }
      $scope.$apply(function () {
         $scope.recommendedTracks = list_;
@@ -179,7 +220,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
           var time = end - start;
           console.log('execution time for ' + $scope.loading_text + ': ' + time);
           //DEBUG_TIMING
-        //$scope.waitToGetWidgets();
+
         });
   }
 
@@ -192,31 +233,29 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
 
     this.loading_text = "retrieving best tracks";
     var recArtists = ProcessCollectionsObject.get("rec_artists_list");
-    console.log("rec artists: ");
-    console.log(recArtists);
     var masterList = [];
     var p = 0;
     var i = 0;
-    var max_tracks_local = max_tracks_per_rec;
     var extra_track_count = 0;
+    var max_tracks_local = max_tracks_per_rec;
     $scope.recommendedTracks = [];
+    console.log("num of rec artists: " + recArtists.length);
     for(i = 0; i < max_recs_computed; i++)
     {
       if(recArtists[i].OVERLAP == "false" && max_artists_computed > 1)
       {
         extra_track_count ++;
+        p++;
         continue;
       }
-      else
-      {
-        console.log(recArtists[i].FREQ);
-      }
-      //max_tracks_local += extra_track_count;
       var stringToPass = "/users/" + recArtists[i].permalink + "/tracks";
       //console.log(stringToPass);
+
       var myDataPromise = Retrieve.getData(stringToPass);
       myDataPromise.then(function(responseTracks)
       {  
+        if(extra_track_count > 0)
+          max_tracks_local ++;
         var miniTracklist = [];
         for(var n = 0; n < responseTracks.length; n++)
         {
@@ -230,21 +269,32 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
         miniTracklist.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
         if(miniTracklist.length > max_tracks_local)
         {
-          miniTracklist.splice(miniTracklist.length/2, (miniTracklist.length - miniTracklist.length/2));
-          shuffle(miniTracklist);
+          console.log(miniTracklist[miniTracklist.length-1].COMP_SCORE);
+          //miniTracklist.splice(miniTracklist.length/2, (miniTracklist.length - miniTracklist.length/2));
+          var half_length = Math.ceil(miniTracklist.length / 2);    
+          var leftSide = miniTracklist.splice(0,half_length);
+          miniTracklist = leftSide;
+          miniTrackList = shuffle(leftSide);
+          
+          
           miniTracklist.splice(max_tracks_local, (miniTracklist.length - max_tracks_local));
-          console.log(miniTracklist);
-          //extra_track_count = 0;
+          extra_track_count --;
           max_tracks_local = max_tracks_per_rec;
         }
-        //else
-         // max_tracks_local = miniTracklist.length;
-        //masterList.push(miniTracklist);
+        else
+        {
+          console.log("broke");
+          // max_tracks_local = miniTracklist.length;
+        }
+
         for(var l = 0; l < miniTracklist.length; l++)
           masterList.push(miniTracklist[l]);
         p++;
+        console.log(p);
+        console.log(max_recs_computed);
         if(p == max_recs_computed)
         {
+          console.log("made it");
           masterList.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
           var linkString = "";
           for(var t = 0; t < masterList.length; t++)
@@ -379,7 +429,9 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
     for(i = 0; i < max_artists_computed; i++)
     {
       var stringToPass = "/users/" + artistsSaved[i].id + "/favorites";
-      var myDataPromise = Retrieve.getData(stringToPass, artistsSaved.username);
+      console.log("MAX FAVLIST LEN: " + liked_artists_max_favlist_length);
+
+      var myDataPromise = Retrieve.getData(stringToPass, artistsSaved.username, liked_artists_max_favlist_length);
       myDataPromise.then(function(responseFavorites)
       {  
         //console.log(responseFollowings);
@@ -404,6 +456,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
   }
   $scope.artistList = function()
   {
+
     //DEBUG_TIMING
     var start = new Date().getTime();
     //DEBUG_TIMING
@@ -416,6 +469,11 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
     var len = likedTracks.length;
     var p = 0;
     var i = 0;
+
+    liked_artists_max_favlist_length = Math.ceil(200 / likedTracks.length);
+    if(liked_artists_max_favlist_length < 10)
+      liked_artists_max_favlist_length = Math.floor(Math.random() * (20 - 8 + 1)) + 8;
+    console.log("CALCULATING SUGGESTIONS FOR : " + likedTracks.length);
     for(i = 0; i < len; i++)
     {
       var stringToPass = "/users/" + likedTracks[i].user_id;

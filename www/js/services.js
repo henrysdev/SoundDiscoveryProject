@@ -47,8 +47,8 @@ angular.module('starter.services', [])
 })
 
 .factory('Retrieve', function($http) {
-    var getData = function(str, sender) {
-        return SC.get(str, {limit:200}).then(function(data_) 
+    var getData = function(str, sender, lim) {
+        return SC.get(str, {limit: lim }).then(function(data_) 
         {
             data_.SENDER = sender;
             return data_;

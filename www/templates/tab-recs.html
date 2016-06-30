@@ -56,7 +56,7 @@
         <img width="50" heigh="50" src="{{getIconArt(track.icon.artwork_url)}}">
       </div>
         <label class="checkbox checkbox-balanced">
-          <input type="checkbox" ng-model="fav_icons[$index].checked" ng-change="updateChecked(track)">
+          <input type="checkbox" ng-model="fav_icons[$index].checked" ng-init="selectAll(true,fav_icons)" ng-checked="default_checked" ng-change="updateChecked(track)">
         </label>
         
         </div>
@@ -66,8 +66,10 @@
     
   </div>
 </div>
-<div class="button" ng-click="startCalculation()">Calculate Recommendations</div>
 </div>
+<p></p>
+<div class="button" ng-click="startCalculation()">Calculate Recommendations</div>
+<div class="button" ng-click="selectAll(toggleSelect,fav_icons)">(De)select All</div>
 </div>
 
 
