@@ -58,9 +58,9 @@ angular.module('GeniusTracklist', ['ionic', 'GeniusTracklist.controllers', 'Geni
       templateUrl: 'templates/tab-recs.html'
     })
 
-  .state('user', {
-      url: '/user',
-      controller: 'UserCtrl',
+  .state('search', {
+      url: '/home',
+      controller: 'SearchCtrl',
       templateUrl: 'templates/tab-account.html'
     })
   /*
@@ -86,6 +86,6 @@ angular.module('GeniusTracklist', ['ionic', 'GeniusTracklist.controllers', 'Geni
   });
 */
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/recs');
+  $urlRouterProvider.otherwise('/home');
 
 });

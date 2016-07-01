@@ -1,98 +1,59 @@
 <ion-view view-title="Account">
   <ion-content>
+  <p></p>
+  <h4>Genius Tracklist<h4>
+<div class="list">
   
-<div class="row" ng-show="show_profile">
-  <div class="col col-25">
-    <div>
-      
-      <div class="item item-input-inset">   
-        <img id="avatar_img" class="full-image" src="">
-      </div>
-    </div>
-    <label id="artistLabel"></label>
-  </div>
+  <div class="item item-input-inset">
 
+    <label class="item-input-wrapper">
 
-  <div class="col" ng-show="show_fav_selection" ng-if="done_picking_favs">
-    <h3>User Favorites (Included in Calculation)</h3>
-
-   <div style="height:386px;overflow:auto;">
-  <div class="row row-wrap">
-  <div class="col-25" ng-repeat="track in fav_icons" item="track" >
-    
-      <div class="item">
-        <div class="row">
-          <div class="col">
-        <img width="50" heigh="50" src="{{getIconArt(track.icon.artwork_url)}}">
-      </div>
-        <label class="checkbox checkbox-balanced">
-          <input type="checkbox" ng-model="fav_icons[$index].checked" ng-init="selectAll(true,fav_icons)" ng-checked="default_checked" ng-change="updateChecked(track)">
-        </label>
-        
-        </div>
-        <div><label>{{track.icon.title}}</label></div>
-        <div>{{track.user.username}}</div>
-      </div>
-    
-  </div>
-</div>
-</div>
-<p></p>
-<div class="button" ng-click="startCalculation()">Calculate Recommendations</div>
-<div class="button" ng-click="selectAll(toggleSelect,fav_icons)">(De)select All</div>
-</div>
-
-
-
-
-<div class="col" ng-show="show_recs">
-  <a ng-show="!loading">
-    <iframe frameborder='no' height='166' scrolling='no' src='current_selected_stream | trusted}}' width='100%' id="iframe_widget"></iframe>
-  </a>
-  <div class="item">
-    <div ng-show="loading">
-  <ion-spinner icon="spiral">
-  </ion-spinner>
-  <label>{{loading_text}}</label>
-</div>
-  <div style="height:326px;overflow:auto;">
-  <li class="item" ng-repeat="i_rec in recommendedTracks">
-    <button class="button button-full" ng-click="playSong(i_rec)">
-      <div class="row">
-        <div class="col-20">
-      <img src="{{getIconArt(i_rec.artwork_url)}}" class="full-image" >
-
-    </div>
-    <div class="col">
-      <label>{{i_rec.title}}</label>
-      <div>
-      <label>{{i_rec.user.username}}</label>
-    </div>
-    </div>
-  </div>
+      <input id="searchField" type="text" placeholder="Soundcloud Username" ng-model="searchText" ng-change="autoCompleteUsername(searchText)">
+    </label>
+    <button class="button button-small" ng-click="GetUser(searchText)">
+      Submit
     </button>
-  </li>
-  
-</div>
-</div>
-</div>
-
-  <!--
-  <div class="col" ng-show="show_recs">
-    <div class="item item-input-inset" id="recList">
-      <ul class="list" id="artist_list">
-        <li class="item" ng-repeat="i_rec in recommendedTracks"  id="repeatWidgets">
-          <a>
-            <iframe frameborder='no' height='166' scrolling='no' src='{{StoredEmbedLinks.get(i_rec.id)| trusted}}' width='100%'></iframe>
-          </a>
-        </li>
-        <ion-spinner icon="spiral" ng-show="!show_tracks"></ion-spinner>
-      </ul>
-    </div>
   </div>
-  -->
+  <div style="height:386px;overflow:auto;" ng-show="show_suggestions">
+  <ul class="list" ng-show="show_suggestions" id="autocomplete_list">
+        <li ng-repeat="i_suggestion in input_suggestions | limitTo:10" ng-click="selectUser(i_suggestion)" id="$index">
+        	
+          <div class="row" id="userSuggestion">
+            <div class="col col-10">
+              <img class="full-image" src="{{i_suggestion.avatar_url}}">
+            </div>
+            <div class="col">
 
+          <label>{{i_suggestion.username}}</label>
+          <label>{{i_suggestion.country}}, {{i_suggestion.city}}</label>
 
-</div>
+      </div>
+  </div>
+        </li class="item">
+          <div class="row" ng-show="user_loading_wheel">
+            <div class="col col-10">
+              <ion-spinner icon="spiral">
+          </ion-spinner>
+            </div>
+            <div class="col">
+        </div>
+      </div>
+          
+      </ul>
+  </div>
+
+</div class="list">
+<p id="info0">Lorem ipsum dolor sit amet, fuisset delicatissimi eu vis, ei natum melius sapientem has, eu sea erat insolens explicari. Nec in ullamcorper comprehensam, no blandit reprimique sea. Sed sale zril populo ex. Vim an justo utroque iudicabit, commune explicari prodesset nam ne. Vide veritus ex est. Mundi facilisi qualisque his ne, diceret corpora salutandi sea an.
+
+Fugit conclusionemque ex eam, dicta impedit vocibus mel in. Pri doctus vidisse facilis an, nec in mundi scripta menandri, mei tation definiebas te. Pri altera utamur ei. Tacimates partiendo in sit, eu dicit discere delicata has.
+
+Constituam eloquentiam contentiones nec ut. Cum et habeo admodum, his novum facilis mnesarchum ad, eu qui urbanitas consetetur efficiendi. Et eos agam elaboraret adversarium. Iriure propriae ut per.
+<p>
+<p id="info1">Lorem ipsum dolor sit amet, fuisset delicatissimi eu vis, ei natum melius sapientem has, eu sea erat insolens explicari. Nec in ullamcorper comprehensam, no blandit reprimique sea. Sed sale zril populo ex. Vim an justo utroque iudicabit, commune explicari prodesset nam ne. Vide veritus ex est. Mundi facilisi qualisque his ne, diceret corpora salutandi sea an.
+
+Fugit conclusionemque ex eam, dicta impedit vocibus mel in. Pri doctus vidisse facilis an, nec in mundi scripta menandri, mei tation definiebas te. Pri altera utamur ei. Tacimates partiendo in sit, eu dicit discere delicata has.
+
+Constituam eloquentiam contentiones nec ut. Cum et habeo admodum, his novum facilis mnesarchum ad, eu qui urbanitas consetetur efficiendi. Et eos agam elaboraret adversarium. Iriure propriae ut per.
+<p>
   </ion-content>
 </ion-view>

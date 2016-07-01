@@ -1,34 +1,30 @@
 angular.module('GeniusTracklist.controllers', [])
 
 
-.controller('RecCtrl', function($scope, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject) 
+.controller('RecCtrl', function($scope, $state, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
-    redirect_uri: 'http://localhost:8100/#/tab/recs' //'https://soundcloud.com/user-8492062'
+    redirect_uri: 'http://localhost:8100/#/recs' //'https://soundcloud.com/user-8492062'
   });
-
   $scope.StoredEmbedLinks = StoredEmbedLinks;
   $scope.UserObject = UserObject;
-  $scope.input_suggestions = [];
   $scope.recommendedTracks = [];
   $scope.searchText = "";
   $scope.show_tracks = false;
   $scope.show_recs = false;
-  $scope.show_suggestions = true;
   $scope.fav_icons = [];
   $scope.selected_favorites = [];
   var avatarPath = "";
   var widgets = [];
-  $scope.show_fav_selection = false;
-  $scope.show_profile = false;
+  $scope.show_fav_selection = true;
+  $scope.show_profile = true;
   $scope.done_picking_favs = true;
-  $scope.loading = false;
+  $scope.loading = true;
   $scope.loading_text = "";
   $scope.current_selected_stream = null;
   $scope.default_checked = true;
   $scope.toggleSelect = false;
-  $scope.user_loading_wheel = false;
 
   //scaling limits for get calls
   var liked_artists_max_favlist_length = 200;
@@ -38,13 +34,6 @@ angular.module('GeniusTracklist.controllers', [])
   var popularity_factor = 0;//0.455
   //
 
-  //Init
-  var input = document.getElementById('searchField');
-  input.focus();
-  input.select();
-
-  
-  //
 
 
   $scope.weedOutTracks = function(track)
@@ -69,27 +58,6 @@ angular.module('GeniusTracklist.controllers', [])
     return true;
   }
 
-  $scope.controlPlayer = function()
-  {
-    var widgetIframe = document.getElementById('iframe_widget'),
-        widget       = SC.Widget(widgetIframe);
-
-    widget.bind(SC.Widget.Events.READY, function() {
-      widget.bind(SC.Widget.Events.PLAY, function() {
-        // get information about currently playing sound
-        widget.getCurrentSound(function(currentSound) {
-          console.log('sound ' + currentSound.get('') + 'began to play');
-        });
-      });
-      // get current level of volume
-      widget.getVolume(function(volume) {
-        console.log('current volume value is ' + volume);
-      });
-      // set new volume level
-      widget.setVolume(50);
-      // get the value of the current position
-    })
-  }
   //Knuth Shuffle (not mine)
   function shuffle(array) {
   var currentIndex = array.length, temporaryValue, randomIndex;
@@ -130,6 +98,11 @@ angular.module('GeniusTracklist.controllers', [])
     }
   }
 
+  $scope.newSearch = function()
+  {
+    console.log("clicked");
+  }
+
   $scope.playSong = function(track)
   {
     var stream_link = StoredEmbedLinks.get(track.id);
@@ -145,16 +118,6 @@ angular.module('GeniusTracklist.controllers', [])
     $scope.show_fav_selection = false;
     $scope.show_recs = true;
     $scope.artistList();
-  }
-
-  $scope.calcWindowHeight = function()
-  {
-    console.log($scope.fav_icons.length);
-    var y_px = ($scope.fav_icons.length * 6);
-    var to_return = y_px.toString();
-    to_return += "px";
-    console.log(to_return);
-    return to_return;
   }
 
   $scope.getIconArt = function(url)
@@ -200,11 +163,11 @@ angular.module('GeniusTracklist.controllers', [])
     $scope.toggleSelect = false;
 
     //scaling limits for get calls
-    var liked_artists_max_favlist_length = 200;
-    var max_artists_computed = 5;
-    var max_recs_computed = 30;
-    var max_tracks_per_rec = 1;
-    var popularity_factor = 0;//0.455
+    liked_artists_max_favlist_length = 200;
+    max_artists_computed = 5;
+    max_recs_computed = 30;
+    max_tracks_per_rec = 1;
+    popularity_factor = 0;//0.455
   }
 
   $scope.embed = function(list_) 
@@ -232,6 +195,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
       var obj_to_store = {streamLink: refinedString, trackID:id_};
       StoredEmbedLinks.set(obj_to_store);
     }
+    $scope.playSong(list_[0]);
      $scope.$apply(function () {
         $scope.recommendedTracks = list_;
         $scope.show_tracks = true;
@@ -244,6 +208,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
           //DEBUG_TIMING
 
         });
+
   }
 
   $scope.getTopTracks = function()
@@ -592,51 +557,74 @@ function findById(source, id_) {
       });
   }
 
-  $scope.categorizeUser = function()
-  {
-    if(UserObject.get_fav_count() > 0)
-    {
-      console.log("this user has favorites");
-    }
-  }
-
-  $scope.GetUser = function (search_input) 
-  {   
-  $scope.loading = true; 
-    /*
-    SC.get("/users/" + search_input + "/tracks", {limit: 100}).then(function(tracks) 
-    {
-        console.log(tracks);
-    });
-*/
-
-//this.show_suggestions = false;
-var stringToPass = "/resolve.json?url=http://soundcloud.com/";
-search_input = $scope.UserObject.get("user_obj").permalink;
-stringToPass += search_input;
-stringToPass += "&client_id=a06eaada6b3052bb0a3dff20329fdbf9";
-/*
-SC.get("/users/" + search_input + "/tracks", {limit: 100}).then(function(tracks) 
-{
-  //console.log(tracks);
-});
-*/
-//$scope.show_recs = true;
-$scope.show_profile = true;
-$scope.show_fav_selection = true;
-SC.get(stringToPass).then(function(artistObj)
-{
-  UserObject.set("user_obj", artistObj);
-  avatarPath = artistObj.avatar_url;
-  avatarPath = avatarPath.replace("-large.jpg","-t500x500.jpg");
-  var doc = document.getElementById("avatar_img");
-  var attr = doc.attributes;
-  doc.attributes[2].nodeValue = avatarPath;
+  $scope.$on('$ionicView.enter', function(ev) {
+    var artistObj = UserObject.get("user_obj");
+    avatarPath = artistObj.avatar_url;
+        avatarPath = avatarPath.replace("-large.jpg","-t500x500.jpg");
+        var doc = document.getElementById("avatar_img");
+        var attr = doc.attributes;
+        doc.attributes[2].nodeValue = avatarPath;
         document.getElementById("artistLabel").innerHTML = UserObject.get("user_obj").username;//ArtistObjects.getFirst().username;
+      $scope.retrieveLikes();
+  })
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.controller('SearchCtrl', function($scope, $state, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject) 
+{
+  SC.initialize({
+    client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
+    redirect_uri: 'http://localhost:8100/#/home' //'https://soundcloud.com/user-8492062'
+  });
+  $scope.UserObject = UserObject;
+  $scope.input_suggestions = [];
+  $scope.searchText = "";
+  $scope.show_suggestions = true;
+  $scope.user_loading_wheel = false;
+    var input = document.getElementById('searchField');
+  input.focus();
+  input.select();
+
+    $scope.GetUser = function (search_input) 
+    {  
+      var stringToPass = "/resolve.json?url=http://soundcloud.com/";
+      search_input = $scope.UserObject.get("user_obj").permalink;
+      stringToPass += search_input;
+      stringToPass += "&client_id=a06eaada6b3052bb0a3dff20329fdbf9";
+      $scope.show_profile = true;
+      $scope.show_fav_selection = true;
+      SC.get(stringToPass).then(function(artistObj)
+      {
+        UserObject.set("user_obj", artistObj);
+        /*
+        avatarPath = artistObj.avatar_url;
+        avatarPath = avatarPath.replace("-large.jpg","-t500x500.jpg");
+        var doc = document.getElementById("avatar_img");
+        var attr = doc.attributes;
+        doc.attributes[2].nodeValue = avatarPath;
+        document.getElementById("artistLabel").innerHTML = UserObject.get("user_obj").username;//ArtistObjects.getFirst().username;
+        */
         document.getElementById("searchField").value = "";
         $scope.autoCompleteUsername("a",'1');
-        $scope.retrieveLikes();
-      });
+        
+        $state.go('recs');
+    });
 
 }
 
@@ -662,8 +650,6 @@ $scope.autoCompleteUsername = function(input)
           $scope.user_loading_wheel = true;
         else
           $scope.user_loading_wheel = false;
-        console.log("users for input: " + input);
-        console.log(users);
         //setTimeout(function () {
           $scope.$apply(function () {
             $scope.message = "Timeout called!";
@@ -674,44 +660,40 @@ $scope.autoCompleteUsername = function(input)
   }
   else
   {
+    $scope.input_suggestions = [];
     $scope.show_suggestions = false;
+    /*
+    $scope.$apply(function () {
+            $scope.message = "Timeout called!";
+          });
+*/
   }
 }
 
-  $scope.selectUser = function(selectedUser)
-  {
-    $scope.newUser();
+$scope.selectUser = function(selectedUser)
+{
+  $scope.newUser();
+  this.show_suggestions = false;
+    //console.log("selected user:");
+    //console.log(selectedUser);
+    UserObject.set("user_obj",selectedUser);
     this.show_suggestions = false;
-      //console.log("selected user:");
-      //console.log(selectedUser);
-      UserObject.set("user_obj",selectedUser);
-      this.show_suggestions = false;
-      document.getElementById("searchField").value = selectedUser.username;
-      document.getElementById("autocomplete_list").attributes[1].nodeValue = false;
-      $scope.show_suggestions = false;
-      $scope.input_suggestions = [];
-    }
-  })
+    document.getElementById("searchField").value = selectedUser.username;
+    document.getElementById("autocomplete_list").attributes[1].nodeValue = false;
+    $scope.show_suggestions = false;
+    $scope.input_suggestions = [];
+}
+
+$scope.newUser = function()
+  {
+    UserObject.clear_();
+    $scope.searchText = "";
+    $scope.show_suggestions = true;
+    $scope.loading_text = "";
+
+  }
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
 });

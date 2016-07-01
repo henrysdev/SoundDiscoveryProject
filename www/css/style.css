@@ -1,9 +1,27 @@
 /* Empty. Add your own CSS if you like */
+@import url(https://fonts.googleapis.com/css?family=Racing+Sans+One);
 
+h4{
+	color: white;
+    font-size: 500%;
+    text-align: center;
+    font-family: 'Racing Sans One';
+}
 
+.button#editSearchButton.button{
+	position: absolute;
+    right: 0px;
+}
+.scroll-bar {
+  position: absolute;
+}
 
 .item-content {
   background-color: black;
+}
+
+.scroll-content.ionic-scroll{
+	background-color: #282828;
 }
 
 .padding.scroll-content.ionic-scroll{
@@ -17,6 +35,7 @@
         top: 300%;
         width: 100%;
         transform: translate(0%,500%);
+        z-index = 0;
         /*
         -webkit-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
@@ -48,9 +67,33 @@
   background-color: #282828;
 }
 
+#info0{
+	position: absolute;
+    left: 0px;
+    top: 50%;
+    z-index: -1;
+}
+#info1{
+	position: absolute;
+    left: 0px;
+    top: 90%;
+    z-index: -1;
+}
+
+
+#userSuggestion
+{
+	/*
+	opacity: 0.3;
+    filter: alpha(opacity=30);
+    */
+	background-color: #707070 ;
+}
+
 h2
 {
 	text-align: center;
+	font-family: 'Racing Sans One';
 }
 .nav-bar{
 	background-color: : #282828;
@@ -78,11 +121,13 @@ h1 {
     color: white;
     font-size: 250%;
     text-align: center;
+    font-family: 'Racing Sans One';
 }
 
 h3 {
 	color: white;
 	text-align: center;
+	font-family: 'Racing Sans One';
 }
 
 p {
