@@ -1,4 +1,4 @@
-angular.module('starter.services', [])
+angular.module('GeniusTracklist.services', [])
 
 .filter('trusted', ['$sce', function ($sce) {
     return function(url) {

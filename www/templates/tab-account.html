@@ -1,9 +1,98 @@
 <ion-view view-title="Account">
   <ion-content>
-    <ion-list>
-    <ion-toggle  ng-model="settings.enableFriends">
-        Enable Friends
-    </ion-toggle>
-    </ion-list>
+  
+<div class="row" ng-show="show_profile">
+  <div class="col col-25">
+    <div>
+      
+      <div class="item item-input-inset">   
+        <img id="avatar_img" class="full-image" src="">
+      </div>
+    </div>
+    <label id="artistLabel"></label>
+  </div>
+
+
+  <div class="col" ng-show="show_fav_selection" ng-if="done_picking_favs">
+    <h3>User Favorites (Included in Calculation)</h3>
+
+   <div style="height:386px;overflow:auto;">
+  <div class="row row-wrap">
+  <div class="col-25" ng-repeat="track in fav_icons" item="track" >
+    
+      <div class="item">
+        <div class="row">
+          <div class="col">
+        <img width="50" heigh="50" src="{{getIconArt(track.icon.artwork_url)}}">
+      </div>
+        <label class="checkbox checkbox-balanced">
+          <input type="checkbox" ng-model="fav_icons[$index].checked" ng-init="selectAll(true,fav_icons)" ng-checked="default_checked" ng-change="updateChecked(track)">
+        </label>
+        
+        </div>
+        <div><label>{{track.icon.title}}</label></div>
+        <div>{{track.user.username}}</div>
+      </div>
+    
+  </div>
+</div>
+</div>
+<p></p>
+<div class="button" ng-click="startCalculation()">Calculate Recommendations</div>
+<div class="button" ng-click="selectAll(toggleSelect,fav_icons)">(De)select All</div>
+</div>
+
+
+
+
+<div class="col" ng-show="show_recs">
+  <a ng-show="!loading">
+    <iframe frameborder='no' height='166' scrolling='no' src='current_selected_stream | trusted}}' width='100%' id="iframe_widget"></iframe>
+  </a>
+  <div class="item">
+    <div ng-show="loading">
+  <ion-spinner icon="spiral">
+  </ion-spinner>
+  <label>{{loading_text}}</label>
+</div>
+  <div style="height:326px;overflow:auto;">
+  <li class="item" ng-repeat="i_rec in recommendedTracks">
+    <button class="button button-full" ng-click="playSong(i_rec)">
+      <div class="row">
+        <div class="col-20">
+      <img src="{{getIconArt(i_rec.artwork_url)}}" class="full-image" >
+
+    </div>
+    <div class="col">
+      <label>{{i_rec.title}}</label>
+      <div>
+      <label>{{i_rec.user.username}}</label>
+    </div>
+    </div>
+  </div>
+    </button>
+  </li>
+  
+</div>
+</div>
+</div>
+
+  <!--
+  <div class="col" ng-show="show_recs">
+    <div class="item item-input-inset" id="recList">
+      <ul class="list" id="artist_list">
+        <li class="item" ng-repeat="i_rec in recommendedTracks"  id="repeatWidgets">
+          <a>
+            <iframe frameborder='no' height='166' scrolling='no' src='{{StoredEmbedLinks.get(i_rec.id)| trusted}}' width='100%'></iframe>
+          </a>
+        </li>
+        <ion-spinner icon="spiral" ng-show="!show_tracks"></ion-spinner>
+      </ul>
+    </div>
+  </div>
+  -->
+
+
+</div>
   </ion-content>
 </ion-view>

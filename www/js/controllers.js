@@ -1,4 +1,4 @@
-angular.module('starter.controllers', [])
+angular.module('GeniusTracklist.controllers', [])
 
 
 .controller('RecCtrl', function($scope, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject) 
@@ -28,6 +28,7 @@ angular.module('starter.controllers', [])
   $scope.current_selected_stream = null;
   $scope.default_checked = true;
   $scope.toggleSelect = false;
+  $scope.user_loading_wheel = false;
 
   //scaling limits for get calls
   var liked_artists_max_favlist_length = 200;
@@ -35,6 +36,14 @@ angular.module('starter.controllers', [])
   var max_recs_computed = 30;
   var max_tracks_per_rec = 1;
   var popularity_factor = 0;//0.455
+  //
+
+  //Init
+  var input = document.getElementById('searchField');
+  input.focus();
+  input.select();
+
+  
   //
 
 
@@ -60,6 +69,27 @@ angular.module('starter.controllers', [])
     return true;
   }
 
+  $scope.controlPlayer = function()
+  {
+    var widgetIframe = document.getElementById('iframe_widget'),
+        widget       = SC.Widget(widgetIframe);
+
+    widget.bind(SC.Widget.Events.READY, function() {
+      widget.bind(SC.Widget.Events.PLAY, function() {
+        // get information about currently playing sound
+        widget.getCurrentSound(function(currentSound) {
+          console.log('sound ' + currentSound.get('') + 'began to play');
+        });
+      });
+      // get current level of volume
+      widget.getVolume(function(volume) {
+        console.log('current volume value is ' + volume);
+      });
+      // set new volume level
+      widget.setVolume(50);
+      // get the value of the current position
+    })
+  }
   //Knuth Shuffle (not mine)
   function shuffle(array) {
   var currentIndex = array.length, temporaryValue, randomIndex;
@@ -152,14 +182,6 @@ angular.module('starter.controllers', [])
     ProcessCollectionsObject.clear_();
     UserObject.clear_();
     StoredEmbedLinks.clear_();
-    /*
-    $scope.input_suggestions = [];
-    $scope.recommendedTracks = [];
-    $scope.searchText = "";
-    $scope.show_tracks = false;
-    $scope.show_recs = false;
-    $scope.show_suggestions = true;
-    */
     $scope.searchText = "";
     $scope.show_tracks = false;
     $scope.show_recs = false;
@@ -269,7 +291,6 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
         miniTracklist.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
         if(miniTracklist.length > max_tracks_local)
         {
-          console.log(miniTracklist[miniTracklist.length-1].COMP_SCORE);
           //miniTracklist.splice(miniTracklist.length/2, (miniTracklist.length - miniTracklist.length/2));
           var half_length = Math.ceil(miniTracklist.length / 2);    
           var leftSide = miniTracklist.splice(0,half_length);
@@ -281,20 +302,11 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
           extra_track_count --;
           max_tracks_local = max_tracks_per_rec;
         }
-        else
-        {
-          console.log("broke");
-          // max_tracks_local = miniTracklist.length;
-        }
-
         for(var l = 0; l < miniTracklist.length; l++)
           masterList.push(miniTracklist[l]);
         p++;
-        console.log(p);
-        console.log(max_recs_computed);
         if(p == max_recs_computed)
         {
-          console.log("made it");
           masterList.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
           var linkString = "";
           for(var t = 0; t < masterList.length; t++)
@@ -430,7 +442,6 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
     {
       var stringToPass = "/users/" + artistsSaved[i].id + "/favorites";
       console.log("MAX FAVLIST LEN: " + liked_artists_max_favlist_length);
-
       var myDataPromise = Retrieve.getData(stringToPass, artistsSaved.username, liked_artists_max_favlist_length);
       myDataPromise.then(function(responseFavorites)
       {  
@@ -633,9 +644,12 @@ $scope.autoCompleteUsername = function(input)
 {
     //console.log("auto complete was called");
     //console.log(input);
-    if(input && input.length >= 3) 
+    if(input)
     {
-      this.show_suggestions = true;
+      if(input.length >= 3)
+      {
+        $scope.user_loading_wheel = true;
+        this.show_suggestions = true;
 
       //document.getElementById('autocomplete_list').style.visibility = "visible";
 
@@ -644,6 +658,12 @@ $scope.autoCompleteUsername = function(input)
       {
         //console.log(users);
         $scope.input_suggestions = users;
+        if($scope.input_suggestions.length == 0)
+          $scope.user_loading_wheel = true;
+        else
+          $scope.user_loading_wheel = false;
+        console.log("users for input: " + input);
+        console.log(users);
         //setTimeout(function () {
           $scope.$apply(function () {
             $scope.message = "Timeout called!";
@@ -651,11 +671,12 @@ $scope.autoCompleteUsername = function(input)
     //},);
     });
     }
-    else
-    {
-      $scope.show_suggestions = false;
-    }
   }
+  else
+  {
+    $scope.show_suggestions = false;
+  }
+}
 
   $scope.selectUser = function(selectedUser)
   {

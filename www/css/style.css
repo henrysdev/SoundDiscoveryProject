@@ -1,7 +1,35 @@
 /* Empty. Add your own CSS if you like */
 
-.background, .background .pane, .background .item, .background .item-complex .item-content {
-    background-color: yellow;
+
+
+.item-content {
+  background-color: black;
+}
+
+.padding.scroll-content.ionic-scroll{
+	background-color: #282828;
+}
+
+/*.item.item-input-inset*/
+#enterUsername
+{
+	position: fixed;
+        top: 300%;
+        width: 100%;
+        transform: translate(0%,500%);
+        /*
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        */
+	/*
+	-webkit-animation: mymove 1s infinite;
+    animation: mymove 1s infinite;
+	*/
+}
+
+@-webkit-keyframes mymove {
+    from {left: -1000px;}
+    to {left: 0px;}
 }
 
 .spinner svg
@@ -47,7 +75,8 @@ h2
 }
 
 h1 {
-    color: orange;
+    color: white;
+    font-size: 250%;
     text-align: center;
 }
 

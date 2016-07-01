@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
+angular.module('GeniusTracklist', ['ionic', 'GeniusTracklist.controllers', 'GeniusTracklist.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -32,11 +32,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   $stateProvider
 
   // setup an abstract state for the tabs directive
+  /*
     .state('tab', {
     url: '/tab',
     abstract: true,
     templateUrl: 'templates/tabs.html'
   })
+
 
   // Each tab has its own nav history stack:
 /*
@@ -50,14 +52,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     }
   })
 */
-  .state('tab.recs', {
+  .state('recs', {
       url: '/recs',
-      views: {
-        'tab-recs': {
-          templateUrl: 'templates/tab-recs.html',
-          controller: 'RecCtrl'
-        }
-      }
+      controller: 'RecCtrl',
+      templateUrl: 'templates/tab-recs.html'
+    })
+
+  .state('user', {
+      url: '/user',
+      controller: 'UserCtrl',
+      templateUrl: 'templates/tab-account.html'
     })
   /*
     .state('tab.chat-detail', {
@@ -70,6 +74,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       }
     })
 */
+/*
   .state('tab.account', {
     url: '/account',
     views: {
@@ -79,8 +84,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       }
     }
   });
-
+*/
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/recs');
+  $urlRouterProvider.otherwise('/recs');
 
 });
