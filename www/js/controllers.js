@@ -42,18 +42,27 @@ angular.module('GeniusTracklist.controllers', [])
     iframeElement.contentWindow.focus();
 
     iframeElement.addEventListener("load", function() {
-      console.log("track is loading");
+      //console.log("widget it loading");
     });
 
 
     widget.bind(SC.Widget.Events.READY, function() {
       console.log("ready");
+      $scope.$apply(function () {
+        $scope.show_tracks = true;
+        $scope.show_recs = true;
+        $scope.loading = false;
+      console.log("track is loading");
+      });
     widget.bind(SC.Widget.Events.FINISH, function() {
       console.log("finished Playing");
-        if($scope.currentTrackIndex < $scope.recommendedTracks.length)
+        if($scope.currentTrackIndex < ($scope.recommendedTracks.length-1))
           $scope.currentTrackIndex++;
         else
           $scope.currentTrackIndex = 0;
+        //var stream_link = "https://w.soundcloud.com/player/?visual=false&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F13692671&show_artwork=true&auto_play=true"; //StoredEmbedLinks.get(track.id);
+        //$scope.current_selected_stream = stream_link;
+        //iframeElement.src = $scope.selected_stream;
         widget.load($scope.recommendedTracks[$scope.currentTrackIndex].permalink_url, {
           show_artwork: true,
           auto_play: true,
@@ -227,9 +236,6 @@ angular.module('GeniusTracklist.controllers', [])
     $scope.playSong(list_[0]);
      $scope.$apply(function () {
         $scope.recommendedTracks = list_;
-        $scope.show_tracks = true;
-        $scope.show_recs = true;
-        $scope.loading = false;
         //DEBUG_TIMING
           var end = new Date().getTime();
           var time = end - start;

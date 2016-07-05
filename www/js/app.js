@@ -53,7 +53,7 @@ angular.module('GeniusTracklist', ['ionic', 'GeniusTracklist.controllers', 'Geni
   })
 */
   .state('recs', {
-      cache: false,
+      cache: true,
       url: '/recs',
       controller: 'RecCtrl',
       templateUrl: 'templates/tab-recs.html'
