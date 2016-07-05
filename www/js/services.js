@@ -6,8 +6,45 @@ angular.module('GeniusTracklist.services', [])
     };
 }])
 
+
+.factory('GlobalFunctions', function() {
+  return{
+  //Knuth Shuffle (not mine)
+  shuffle: function(array) 
+  {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) 
+    {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+    return array;
+  },
+
+
+  findById: function(source, id_) {
+  for (var i = 0; i < source.length; i++) {
+    if (source[i].id === id_) 
+    {
+      return source[i];
+    }
+  }
+  return null;
+  //throw "Couldn't find object with id: " + id;
+}
+
+  }
+})
+
 .factory('StoredEmbedLinks', function() {
   var embedLinks = [];
+  var currentIndex = 0;
 
   return{
     set: function(new_obj)
@@ -21,16 +58,27 @@ angular.module('GeniusTracklist.services', [])
       {
         if(embedLinks[i].trackID == id_)
         {
+          currentIndex = i;
           //console.log(embedLinks[i].streamLink);
           return embedLinks[i].streamLink;
           break;
         }
       }
     },
+    getNext: function()
+    {
+      currentIndex++;
+      if(embedLinks.length > currentIndex)
+      {
+        return embedLinks[currentIndex].streamLink;
+      }
+    },
+
     clear_: function()
     {
       embedLinks = [];
     }
+    
   }
 })
 

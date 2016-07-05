@@ -1,13 +1,12 @@
 angular.module('GeniusTracklist.controllers', [])
 
 
-.controller('RecCtrl', function($scope, $state, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject) 
+.controller('RecCtrl', function($scope, $state, $stateParams, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject, GlobalFunctions) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
     redirect_uri: 'http://localhost:8100/#/recs' //'https://soundcloud.com/user-8492062'
   });
-  $scope.StoredEmbedLinks = StoredEmbedLinks;
   $scope.UserObject = UserObject;
   $scope.recommendedTracks = [];
   $scope.searchText = "";
@@ -25,6 +24,7 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.current_selected_stream = null;
   $scope.default_checked = true;
   $scope.toggleSelect = false;
+  $scope.currentTrackIndex = 0;
 
   //scaling limits for get calls
   var liked_artists_max_favlist_length = 200;
@@ -34,7 +34,38 @@ angular.module('GeniusTracklist.controllers', [])
   var popularity_factor = 0;//0.455
   //
 
+  $scope.controlWidget = function()
+  {
+    
+    var iframeElement   = document.getElementById('iframe_widget');
+    var widget         = SC.Widget(iframeElement);
+    iframeElement.contentWindow.focus();
 
+    iframeElement.addEventListener("load", function() {
+      console.log("track is loading");
+    });
+
+
+    widget.bind(SC.Widget.Events.READY, function() {
+      console.log("ready");
+    widget.bind(SC.Widget.Events.FINISH, function() {
+      console.log("finished Playing");
+        if($scope.currentTrackIndex < $scope.recommendedTracks.length)
+          $scope.currentTrackIndex++;
+        else
+          $scope.currentTrackIndex = 0;
+        widget.load($scope.recommendedTracks[$scope.currentTrackIndex].permalink_url, {
+          show_artwork: true,
+          auto_play: true,
+          show_comments: false,
+          buying: false,
+          show_playcount: false
+        });
+
+
+      });
+  });
+  }
 
   $scope.weedOutTracks = function(track)
   {
@@ -58,25 +89,7 @@ angular.module('GeniusTracklist.controllers', [])
     return true;
   }
 
-  //Knuth Shuffle (not mine)
-  function shuffle(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex;
-
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-
-  return array;
-  }
+  
 
   $scope.selectAll = function(cond, fav_icons)
   {
@@ -105,9 +118,28 @@ angular.module('GeniusTracklist.controllers', [])
 
   $scope.playSong = function(track)
   {
-    var stream_link = StoredEmbedLinks.get(track.id);
+    for(var i = 0; i < $scope.recommendedTracks.length; i++)
+    {
+      if(track.id == $scope.recommendedTracks[i].id)
+      {
+        $scope.currentTrackIndex = i;
+      }
+    }
+
+    var stream_link = "https://w.soundcloud.com/player/?visual=false&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F13692671&show_artwork=true&auto_play=true"; //StoredEmbedLinks.get(track.id);
     $scope.current_selected_stream = stream_link;
+    $scope.show_recs = true;
     document.getElementById("iframe_widget").src = $scope.current_selected_stream;
+    var iframeElement   = document.getElementById('iframe_widget');
+    var widget         = SC.Widget(iframeElement);
+    widget.load($scope.recommendedTracks[$scope.currentTrackIndex].permalink_url, {
+          show_artwork: true,
+          auto_play: true,
+          show_comments: false,
+          buying: false,
+          show_playcount: false
+        });
+    //$scope.controlWidget();
   }
 
   $scope.startCalculation = function()
@@ -144,7 +176,7 @@ angular.module('GeniusTracklist.controllers', [])
 
     ProcessCollectionsObject.clear_();
     UserObject.clear_();
-    StoredEmbedLinks.clear_();
+   //StoredEmbedLinks.clear_();
     $scope.searchText = "";
     $scope.show_tracks = false;
     $scope.show_recs = false;
@@ -180,21 +212,18 @@ angular.module('GeniusTracklist.controllers', [])
 
 
     var givenList = list_;
+    /*
     for(var b = 0; b < givenList.length; b++)
     {
-      /*
-      SoundCloud tracks can be disabled for streaming via the API while the widget is still allowed.
-
-If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID you can check the streaming attribute, which for both of the tracks you sent is false.
-      */
       var track_url = givenList[b].permalink_url;
       var id_ = givenList[b].id;
-      refinedString = "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F";
+      refinedString = "https://w.soundcloud.com/player/?visual=false&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F";
       refinedString += id_;
       refinedString += "&show_artwork=true&auto_play=true";
       var obj_to_store = {streamLink: refinedString, trackID:id_};
       StoredEmbedLinks.set(obj_to_store);
     }
+    */
     $scope.playSong(list_[0]);
      $scope.$apply(function () {
         $scope.recommendedTracks = list_;
@@ -204,9 +233,9 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
         //DEBUG_TIMING
           var end = new Date().getTime();
           var time = end - start;
+          $scope.controlWidget();
           console.log('execution time for ' + $scope.loading_text + ': ' + time);
           //DEBUG_TIMING
-
         });
 
   }
@@ -260,7 +289,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
           var half_length = Math.ceil(miniTracklist.length / 2);    
           var leftSide = miniTracklist.splice(0,half_length);
           miniTracklist = leftSide;
-          miniTrackList = shuffle(leftSide);
+          miniTrackList = GlobalFunctions.shuffle(leftSide);
           
           
           miniTracklist.splice(max_tracks_local, (miniTracklist.length - max_tracks_local));
@@ -292,6 +321,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
 
           $scope.embed(masterList);
         }
+        $scope.show_recs = true;
         $scope.recommendedTracks = masterList;
         
       });
@@ -314,7 +344,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
       var currentArtist = allArtistsList[i];
       currentArtist.FREQ = 1;
       currentArtist.SCORE = 0;
-      var result = findById(masterArtistList, currentArtist.id);
+      var result = GlobalFunctions.findById(masterArtistList, currentArtist.id);
      // console.log("path: " + currentArtist.PATH);
       if(result != null)
       {
@@ -469,7 +499,7 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
           }
           else
           {
-            var result = findById( likedArtists, newArtist.id);
+            var result = GlobalFunctions.findById( likedArtists, newArtist.id);
             if(result != null)
             {
               result.FREQ_FACTOR ++;
@@ -504,19 +534,6 @@ If you GET http://api.soundcloud.com/tracks/18163056?client_id=YOUR_CLIENT_ID yo
       });
     }  
   }
-
-
-function findById(source, id_) {
-  for (var i = 0; i < source.length; i++) {
-    if (source[i].id === id_) 
-    {
-      return source[i];
-    }
-  }
-  return null;
-  //throw "Couldn't find object with id: " + id;
-}
-
 
 
   $scope.retrieveLikes = function()
@@ -586,7 +603,7 @@ function findById(source, id_) {
 
 
 
-.controller('SearchCtrl', function($scope, $state, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject) 
+.controller('SearchCtrl', function($scope, $state, UserObject, Retrieve, Embed, /* StoredEmbedLinks,*/ ProcessCollectionsObject) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
