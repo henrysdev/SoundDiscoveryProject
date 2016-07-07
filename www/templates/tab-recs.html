@@ -2,20 +2,24 @@
   <ion-content class="padding">
   <div class = "row">
   <div class="col">
+    <!--
     <button class="button" href="#/home"> <-Change User</button>
+  -->
   </div>
   <div class="col">
   <h1>Genius Tracklist<h1>
   </div>
   <div class="col">
+    <!--
     <button class="button" ng-click="controlWidget()" id="editSearchButton">Edit Search</button>
+    -->
   </div>
   
   </div>
   <body>
 
-<div class="row" ng-show="show_profile">
-  <div class="col col-25">
+<div class="row" ng-show="show_general_ui">
+  <div class="col col-25" ng-show="show_profile">
     <div>
       
       <div class="item item-input-inset">   
@@ -56,19 +60,23 @@
 <div class="button" ng-click="selectAll(toggleSelect,fav_icons)">(De)select All</div>
 </div>
 
-
-
-
-<div class="col" ng-show="show_recs">
-  <a ng-show="!loading">
-    <iframe frameborder='no' height='166' scrolling='no' src='current_selected_stream | trusted}}' width='100%' id="iframe_widget"></iframe>
+<div class="col">
+  <a ng-show="show_player">
+    <iframe frameborder='no' height='166' scrolling='no' src='' width='100%' id="iframe_widget" color='#5933cc'></iframe>
   </a>
-  <div class="item">
-    <div ng-show="loading">
+  <!--
+  <a ng-show="!show_player">
+    <ion-spinner icon="spiral">
+  </ion-spinner>
+  </a>
+-->
+  <div ng-show="loading">
   <ion-spinner icon="spiral">
   </ion-spinner>
-  <label>{{loading_text}}</label>
+  <label id="loading_text">{{loading_text}}</label>
 </div>
+  <div class="item" ng-show="show_recs">
+    
   <div style="height:400px;overflow:auto;">
   <li class="item" ng-repeat="i_rec in recommendedTracks">
     <button class="button button-full" ng-click="playSong(i_rec)">
@@ -91,6 +99,10 @@
 </div>
 </div>
 
+<div class="col" ng-show="loading">
+  
+</div>
+
   <!--
   <div class="col" ng-show="show_recs">
     <div class="item item-input-inset" id="recList">
@@ -108,6 +120,9 @@
 
 
 </div>
+<button ng-show="!show_general_ui" ng-click="goHome()" id="easyFixButon">
+  Return to Homepage
+  </button>
 </body>
 <p></p>
 

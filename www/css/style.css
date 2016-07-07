@@ -8,6 +8,13 @@ h4{
     font-family: 'Racing Sans One';
 }
 
+#easyFixButton{
+	color: white;
+    font-size: 500%;
+    text-align: center;
+    font-family: 'Racing Sans One';
+}
+
 .button#editSearchButton.button{
 	position: absolute;
     right: 0px;

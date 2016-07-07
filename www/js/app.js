@@ -59,10 +59,10 @@ angular.module('GeniusTracklist', ['ionic', 'GeniusTracklist.controllers', 'Geni
       templateUrl: 'templates/tab-recs.html'
     })
 
-  .state('search', {
+  .state('home', {
       cache: false,
       url: '/home',
-      controller: 'SearchCtrl',
+      controller: 'HomeCtrl',
       templateUrl: 'templates/tab-account.html'
     })
   /*

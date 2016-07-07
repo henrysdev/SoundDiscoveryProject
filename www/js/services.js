@@ -30,7 +30,7 @@ angular.module('GeniusTracklist.services', [])
 
   findById: function(source, id_) {
   for (var i = 0; i < source.length; i++) {
-    if (source[i].id === id_) 
+    if (source[i].id === id_ || source[i].user_id === id_) 
     {
       return source[i];
     }

@@ -5,13 +5,15 @@ angular.module('GeniusTracklist.controllers', [])
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
-    redirect_uri: 'http://localhost:8100/#/recs' //'https://soundcloud.com/user-8492062'
+    redirect_uri: 'http://localhost:8100/#/recs'
   });
   $scope.UserObject = UserObject;
   $scope.recommendedTracks = [];
   $scope.searchText = "";
+  $scope.show_general_ui = false;
   $scope.show_tracks = false;
   $scope.show_recs = false;
+  $scope.show_player = false;
   $scope.fav_icons = [];
   $scope.selected_favorites = [];
   var avatarPath = "";
@@ -36,7 +38,7 @@ angular.module('GeniusTracklist.controllers', [])
 
   $scope.controlWidget = function()
   {
-    
+    $scope.UI_states("results");
     var iframeElement   = document.getElementById('iframe_widget');
     var widget         = SC.Widget(iframeElement);
     iframeElement.contentWindow.focus();
@@ -45,14 +47,11 @@ angular.module('GeniusTracklist.controllers', [])
       //console.log("widget it loading");
     });
 
-
     widget.bind(SC.Widget.Events.READY, function() {
       console.log("ready");
-      $scope.$apply(function () {
-        $scope.show_tracks = true;
-        $scope.show_recs = true;
-        $scope.loading = false;
-      console.log("track is loading");
+      $scope.show_player = true;
+      widget.bind(SC.Widget.Events.PLAY, function(){
+        $scope.show_player = true;
       });
     widget.bind(SC.Widget.Events.FINISH, function() {
       console.log("finished Playing");
@@ -60,9 +59,6 @@ angular.module('GeniusTracklist.controllers', [])
           $scope.currentTrackIndex++;
         else
           $scope.currentTrackIndex = 0;
-        //var stream_link = "https://w.soundcloud.com/player/?visual=false&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F13692671&show_artwork=true&auto_play=true"; //StoredEmbedLinks.get(track.id);
-        //$scope.current_selected_stream = stream_link;
-        //iframeElement.src = $scope.selected_stream;
         widget.load($scope.recommendedTracks[$scope.currentTrackIndex].permalink_url, {
           show_artwork: true,
           auto_play: true,
@@ -76,6 +72,57 @@ angular.module('GeniusTracklist.controllers', [])
   });
   }
 
+  $scope.goHome = function()
+  {
+    $state.go('home', {}, {reload: true});
+  }
+
+  $scope.UI_states = function(state)
+  {
+    switch(state)
+    {
+      case "generating":
+        //console.log("GENERATING");
+        $scope.loading = true;
+        $scope.show_recs = false;
+        $scope.show_tracks = false;
+        $scope.show_fav_selection = false;
+        $scope.show_profile = true;
+        $scope.show_general_ui = true;
+        $scope.show_player = false;
+        break;
+      case "search_criteria":
+        //console.log("SEARCH_CRITERIA");
+        $scope.loading = false;
+        $scope.show_recs = false;
+        $scope.show_tracks = false;
+        $scope.show_fav_selection = true;
+        $scope.show_profile = true;
+        $scope.show_general_ui = true;
+        $scope.show_player = false;
+        break;
+      case "results":
+        //console.log("RESULTS");
+        $scope.loading = false;
+        $scope.show_recs = true;
+        $scope.show_tracks = true;
+        $scope.show_fav_selection = false;
+        $scope.show_profile = true;
+        $scope.show_general_ui = true;
+        $scope.show_player = false;
+        break;
+      default:
+        $scope.loading = false;
+        $scope.show_recs = false;
+        $scope.show_tracks = false;
+        $scope.show_fav_selection = false;
+        $scope.show_profile = true;
+        $scope.show_general_ui = true;
+        $scope.show_player = false;
+        break;
+    }
+  }
+
   $scope.weedOutTracks = function(track)
   {
     //if(track.favoritings_count == 0)
@@ -83,6 +130,8 @@ angular.module('GeniusTracklist.controllers', [])
     if(track.duration > 960000 || track.duration < 60000)
       return false;
     if(track.playback_count < 100)
+      return false;
+    if(track.favoritings_count < 10)
       return false;
     if(track.streamable == false)
       return false;
@@ -137,7 +186,6 @@ angular.module('GeniusTracklist.controllers', [])
 
     var stream_link = "https://w.soundcloud.com/player/?visual=false&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F13692671&show_artwork=true&auto_play=true"; //StoredEmbedLinks.get(track.id);
     $scope.current_selected_stream = stream_link;
-    $scope.show_recs = true;
     document.getElementById("iframe_widget").src = $scope.current_selected_stream;
     var iframeElement   = document.getElementById('iframe_widget');
     var widget         = SC.Widget(iframeElement);
@@ -156,8 +204,6 @@ angular.module('GeniusTracklist.controllers', [])
     UserObject.set("favs_to_use", $scope.selected_favorites);
     max_artists_computed = $scope.selected_favorites.length;
     $scope.done_picking_favs = false;
-    $scope.show_fav_selection = false;
-    $scope.show_recs = true;
     $scope.artistList();
   }
 
@@ -213,7 +259,8 @@ angular.module('GeniusTracklist.controllers', [])
 
   $scope.embed = function(list_) 
   {
-    this.loading_text = "embedding links";
+    $scope.loading_text = "embedding links";
+    document.getElementById("loading_text").innerHTML = $scope.loading_text;
 
     //DEBUG_TIMING
     var start = new Date().getTime();
@@ -233,6 +280,7 @@ angular.module('GeniusTracklist.controllers', [])
       StoredEmbedLinks.set(obj_to_store);
     }
     */
+    $scope.UI_states("results");
     $scope.playSong(list_[0]);
      $scope.$apply(function () {
         $scope.recommendedTracks = list_;
@@ -253,7 +301,9 @@ angular.module('GeniusTracklist.controllers', [])
     var start = new Date().getTime();
     //DEBUG_TIMING
 
-    this.loading_text = "retrieving best tracks";
+    $scope.loading_text = "retrieving best tracks";
+    document.getElementById("loading_text").innerHTML = $scope.loading_text;
+
     var recArtists = ProcessCollectionsObject.get("rec_artists_list");
     var masterList = [];
     var p = 0;
@@ -327,7 +377,6 @@ angular.module('GeniusTracklist.controllers', [])
 
           $scope.embed(masterList);
         }
-        $scope.show_recs = true;
         $scope.recommendedTracks = masterList;
         
       });
@@ -340,7 +389,8 @@ angular.module('GeniusTracklist.controllers', [])
     var start = new Date().getTime();
     //DEBUG_TIMING
 
-    this.loading_text = "comparing recommendation lists";
+    $scope.loading_text = "comparing recommendation lists";
+    document.getElementById("loading_text").innerHTML = $scope.loading_text;
 
     var allArtistsList = ProcessCollectionsObject.get("sec_gen_liked_artists");
     var masterArtistList = [];
@@ -382,7 +432,11 @@ angular.module('GeniusTracklist.controllers', [])
     var start = new Date().getTime();
     //DEBUG_TIMING
 
-    this.loading_text = "processing 2nd generation favorites lists";
+    var liked_artists = ProcessCollectionsObject.get("liked_artists");
+
+    $scope.loading_text = "processing 2nd generation favorites lists";
+    document.getElementById("loading_text").innerHTML = $scope.loading_text;
+
     var allFavoritesList = ProcessCollectionsObject.get("liked_artists_fav_lists");
     var p = 0;
     var i = 0;
@@ -393,26 +447,30 @@ angular.module('GeniusTracklist.controllers', [])
     {
       for(n = 0; n < allFavoritesList[i].length; n++)
       {
-        max_count++;
-        var stringToPass = "/users/" + allFavoritesList[i][n].user_id;
-        var myDataPromise = Retrieve.getData(stringToPass);
-        myDataPromise.then(function(responseArtists)
-        {  
-          p++;
-          artistsListToPass.push(responseArtists);
-          if(p == max_count)
-          {
-            ProcessCollectionsObject.set("sec_gen_liked_artists", artistsListToPass);
-            
-            //DEBUG_TIMING
-            var end = new Date().getTime();
-            var time = end - start;
-            console.log('execution time for ' + $scope.loading_text + ': ' + time);
-            //DEBUG_TIMING
+        if(!GlobalFunctions.findById(liked_artists,allFavoritesList[i][n].user_id))
+        {
+          max_count++;
+          var stringToPass = "/users/" + allFavoritesList[i][n].user_id;
+          var myDataPromise = Retrieve.getData(stringToPass);
+          myDataPromise.then(function(responseArtists)
+          {  
+            p++;
+            artistsListToPass.push(responseArtists);
+            if(p == max_count)
+            {
+              console.log("isnt broken yet");
+              ProcessCollectionsObject.set("sec_gen_liked_artists", artistsListToPass);
+              
+              //DEBUG_TIMING
+              var end = new Date().getTime();
+              var time = end - start;
+              console.log('execution time for ' + $scope.loading_text + ': ' + time);
+              //DEBUG_TIMING
 
-            $scope.combineAndCompare();
-          }
-        });
+              $scope.combineAndCompare();
+            }
+          });
+        }
       }    
     }
   }
@@ -423,7 +481,8 @@ angular.module('GeniusTracklist.controllers', [])
     var start = new Date().getTime();
     //DEBUG_TIMING
 
-    this.loading_text = "fetching artists fav lists";
+    $scope.loading_text = "fetching artists fav lists";
+    document.getElementById("loading_text").innerHTML = $scope.loading_text;
     //var artistsSaved = UserArtists.get();
     var artistsSaved = ProcessCollectionsObject.get("liked_artists");
     if(artistsSaved.length > max_artists_computed)
@@ -472,9 +531,8 @@ angular.module('GeniusTracklist.controllers', [])
     //DEBUG_TIMING
     var start = new Date().getTime();
     //DEBUG_TIMING
-
-    $scope.loading = true;
-    this.loading_text = "processing artists";
+    $scope.loading_text = "processing artists";
+    document.getElementById("loading_text").innerHTML = $scope.loading_text;
     var likedArtists = [];
     var lookup = {};
     var likedTracks = UserObject.get("favs_to_use");
@@ -492,7 +550,6 @@ angular.module('GeniusTracklist.controllers', [])
       var myDataPromise = Retrieve.getData(stringToPass, likedTracks[i].user);
       myDataPromise.then(function(artist_obj)
       {     
-        
         var newArtist = artist_obj;
           //console.log(artist_obj);
           p++;
@@ -547,7 +604,8 @@ angular.module('GeniusTracklist.controllers', [])
     //DEBUG_TIMING
     var start = new Date().getTime();
     //DEBUG_TIMING
-    this.loading_text = "retrieving favorites";
+    $scope.loading_text = "retrieving favorites";
+    document.getElementById("loading_text").innerHTML = $scope.loading_text;
     var allFavs = null;
     var stringToPass = "/users/" + UserObject.get("user_obj").id + "/favorites";
     //console.log("CRUDE FAV COUNT: ");
@@ -555,7 +613,6 @@ angular.module('GeniusTracklist.controllers', [])
 
     SC.get(stringToPass, {limit: 150}).then(function(favs) 
     {
-      $scope.loading = false;
         //console.log("USEABLE FAVS COUNT: ");
         //console.log(favs.length);
         //UserObject.set_fav_count(favs.length);
@@ -575,6 +632,8 @@ angular.module('GeniusTracklist.controllers', [])
         var end = new Date().getTime();
         var time = end - start;
         console.log('execution time for ' + $scope.loading_text + ': ' + time);
+
+        $scope.startCalculation();
         //DEBUG_TIMING
 
       });
@@ -588,6 +647,7 @@ angular.module('GeniusTracklist.controllers', [])
         var attr = doc.attributes;
         doc.attributes[2].nodeValue = avatarPath;
         document.getElementById("artistLabel").innerHTML = UserObject.get("user_obj").username;//ArtistObjects.getFirst().username;
+      $scope.UI_states("generating");
       $scope.retrieveLikes();
   })
 
@@ -609,7 +669,7 @@ angular.module('GeniusTracklist.controllers', [])
 
 
 
-.controller('SearchCtrl', function($scope, $state, UserObject, Retrieve, Embed, /* StoredEmbedLinks,*/ ProcessCollectionsObject) 
+.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed, /* StoredEmbedLinks,*/ ProcessCollectionsObject) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
@@ -620,9 +680,16 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.searchText = "";
   $scope.show_suggestions = true;
   $scope.user_loading_wheel = false;
-    var input = document.getElementById('searchField');
-  input.focus();
-  input.select();
+  var input = document.getElementById('searchField');
+
+  $scope.$on('$ionicView.enter', function(ev) {
+    input.focus();
+    input.select();
+  })
+    
+
+
+
 
     $scope.GetUser = function (search_input) 
     {  
@@ -715,6 +782,22 @@ $scope.newUser = function()
     $scope.loading_text = "";
 
   }
+
+  $scope.extraDetails = function(suggestion)
+  {
+    var strToReturn = "";
+
+    if(suggestion.city != null && suggestion.country != null)
+    {
+      strToReturn += suggestion.city;
+      strToReturn += ", ";
+      strToReturn += suggestion.country;
+    }
+    else
+      strToReturn = "";
+    return strToReturn;
+  }
+
 
 
 
