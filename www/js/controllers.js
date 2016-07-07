@@ -28,6 +28,7 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.default_checked = true;
   $scope.toggleSelect = false;
   $scope.currentTrackIndex = 0;
+  $scope.initialCalc = true;
 
   //scaling limits for get calls
   var liked_artists_max_favlist_length = 200;
@@ -78,7 +79,17 @@ angular.module('GeniusTracklist.controllers', [])
 
 
       });
+    setTimeout(function () {
+      $scope.playSong($scope.recommendedTracks[0]);
+    }, 1000);
+    
+  }
 
+  $scope.editCriteria = function()
+  {
+    $scope.initialCalc = false;
+    $scope.retrieveLikes();
+    $scope.UI_states("search_criteria");
   }
 
   $scope.goHome = function()
@@ -211,7 +222,8 @@ angular.module('GeniusTracklist.controllers', [])
   {
     UserObject.set("favs_to_use", $scope.selected_favorites);
     max_artists_computed = $scope.selected_favorites.length;
-    $scope.done_picking_favs = false;
+    //$scope.done_picking_favs = false;
+    $scope.UI_states("generating");
     $scope.artistList();
   }
 
@@ -289,6 +301,7 @@ angular.module('GeniusTracklist.controllers', [])
     }
     */
     $scope.UI_states("results");
+    $scope.playSong(list_[0]);
      $scope.$apply(function () {
         $scope.recommendedTracks = list_;
         //DEBUG_TIMING
@@ -640,7 +653,8 @@ angular.module('GeniusTracklist.controllers', [])
         var time = end - start;
         console.log('execution time for ' + $scope.loading_text + ': ' + time);
 
-        $scope.startCalculation();
+        if($scope.initialCalc == true)
+          $scope.startCalculation();
         //DEBUG_TIMING
 
       });

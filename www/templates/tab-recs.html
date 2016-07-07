@@ -5,23 +5,22 @@
 <ion-view view-title="CoundSloud">
 
   <ion-content class="padding">
+    <body>
   <div class = "row">
   <div class="col">
-    <!--
-    <button class="button" href="#/home"> <-Change User</button>
-  -->
+    
+    <button class="button" ng-click="goHome()"> <-Change User</button>
+  
   </div>
   <div class="col">
   <h1>Genius Tracklist<h1>
   </div>
   <div class="col">
-    <!--
-    <button class="button" ng-click="controlWidget()" id="editSearchButton">Edit Search</button>
-    -->
+    <button class="button" id="editSearchButton" ng-show="show_recs" ng-click="editCriteria()">Edit Search</button>
   </div>
   
   </div>
-  <body>
+
 
 <div class="row" ng-show="show_general_ui">
   <div class="col col-25" ng-show="show_profile">
@@ -36,7 +35,7 @@
   </div>
 
 
-  <div class="col" ng-show="show_fav_selection" ng-if="done_picking_favs">
+  <div class="col" ng-show="show_fav_selection">
     <h3>User Favorites (Included in Calculation)</h3>
 
    <div style="height:386px;overflow:auto;">
@@ -65,7 +64,7 @@
 <div class="button" ng-click="selectAll(toggleSelect,fav_icons)">(De)select All</div>
 </div>
 
-<div class="col">
+<div class="col" ng-show="!show_fav_selection">
   <a ng-show="show_player">
     <iframe ng-show="player_loaded" frameborder='no' height='166' scrolling='no' src='' width='100%' id="iframe_widget" color='#5933cc'></iframe>
     <ion-spinner icon="lines" ng-show="!player_loaded">
