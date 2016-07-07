@@ -14,6 +14,7 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.show_tracks = false;
   $scope.show_recs = false;
   $scope.show_player = false;
+  $scope.player_loaded = false;
   $scope.fav_icons = [];
   $scope.selected_favorites = [];
   var avatarPath = "";
@@ -45,13 +46,21 @@ angular.module('GeniusTracklist.controllers', [])
 
     iframeElement.addEventListener("load", function() {
       //console.log("widget it loading");
+      $scope.player_loaded = true;
     });
 
     widget.bind(SC.Widget.Events.READY, function() {
       console.log("ready");
-      $scope.show_player = true;
+      $scope.$apply(function () {
+      $scope.player_loaded = true;
+    });
+        });
       widget.bind(SC.Widget.Events.PLAY, function(){
+        $scope.$apply(function () {
+                  $scope.player_loaded = true;
         $scope.show_player = true;
+    });
+
       });
     widget.bind(SC.Widget.Events.FINISH, function() {
       console.log("finished Playing");
@@ -69,7 +78,7 @@ angular.module('GeniusTracklist.controllers', [])
 
 
       });
-  });
+
   }
 
   $scope.goHome = function()
@@ -109,7 +118,7 @@ angular.module('GeniusTracklist.controllers', [])
         $scope.show_fav_selection = false;
         $scope.show_profile = true;
         $scope.show_general_ui = true;
-        $scope.show_player = false;
+        $scope.show_player = true;
         break;
       default:
         $scope.loading = false;
@@ -196,7 +205,6 @@ angular.module('GeniusTracklist.controllers', [])
           buying: false,
           show_playcount: false
         });
-    //$scope.controlWidget();
   }
 
   $scope.startCalculation = function()
@@ -281,12 +289,12 @@ angular.module('GeniusTracklist.controllers', [])
     }
     */
     $scope.UI_states("results");
-    $scope.playSong(list_[0]);
      $scope.$apply(function () {
         $scope.recommendedTracks = list_;
         //DEBUG_TIMING
           var end = new Date().getTime();
           var time = end - start;
+          $scope.playSong(list_[0]);
           $scope.controlWidget();
           console.log('execution time for ' + $scope.loading_text + ': ' + time);
           //DEBUG_TIMING
@@ -458,7 +466,6 @@ angular.module('GeniusTracklist.controllers', [])
             artistsListToPass.push(responseArtists);
             if(p == max_count)
             {
-              console.log("isnt broken yet");
               ProcessCollectionsObject.set("sec_gen_liked_artists", artistsListToPass);
               
               //DEBUG_TIMING
