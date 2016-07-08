@@ -42,6 +42,20 @@ angular.module('GeniusTracklist.services', [])
   }
 })
 
+.factory('FullReset', function() {
+  var full_reset = false;
+  return{
+    set: function(bool)
+    {
+      full_reset = bool;
+    },
+    get: function()
+    {
+      return full_reset;
+    }
+  }
+})
+
 .factory('StoredEmbedLinks', function() {
   var embedLinks = [];
   var currentIndex = 0;

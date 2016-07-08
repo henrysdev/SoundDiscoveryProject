@@ -1,7 +1,7 @@
 angular.module('GeniusTracklist.controllers', [])
 
 
-.controller('RecCtrl', function($scope, $state, $stateParams, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject, GlobalFunctions) 
+.controller('RecCtrl', function($scope, $state, $stateParams, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject, GlobalFunctions, FullReset) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
@@ -64,19 +64,33 @@ angular.module('GeniusTracklist.controllers', [])
 
       });
     widget.bind(SC.Widget.Events.FINISH, function() {
+      
+       $scope.$apply(function () {
+         $scope.player_loaded = false;
+        $scope.show_player = true;
+    });
+
       console.log("finished Playing");
         if($scope.currentTrackIndex < ($scope.recommendedTracks.length-1))
           $scope.currentTrackIndex++;
         else
           $scope.currentTrackIndex = 0;
-        widget.load($scope.recommendedTracks[$scope.currentTrackIndex].permalink_url, {
+
+
+  
+  setTimeout(function () {
+    $scope.playSong($scope.recommendedTracks[$scope.currentTrackIndex]);
+    /*
+    widget.load($scope.recommendedTracks[$scope.currentTrackIndex].permalink_url, {
           show_artwork: true,
           auto_play: true,
           show_comments: false,
           buying: false,
           show_playcount: false
         });
-
+    //var begin = new Date().getTime();
+    */
+  }, 1000);
 
       });
     setTimeout(function () {
@@ -85,16 +99,48 @@ angular.module('GeniusTracklist.controllers', [])
     
   }
 
+
+  $scope.playSong = function(track)
+  {
+    console.log("play song called: ");
+    console.log(track);
+    for(var i = 0; i < $scope.recommendedTracks.length; i++)
+    {
+      if(track.id == $scope.recommendedTracks[i].id)
+      {
+        $scope.currentTrackIndex = i;
+      }
+    }
+    var iframeElement   = document.getElementById('iframe_widget');
+    var widget         = SC.Widget(iframeElement);
+    widget.load($scope.recommendedTracks[$scope.currentTrackIndex].permalink_url, {
+          show_artwork: true,
+          auto_play: true,
+          show_comments: false,
+          buying: false,
+          show_playcount: false
+        });
+  }
+
   $scope.editCriteria = function()
   {
     $scope.initialCalc = false;
+    ProcessCollectionsObject.clear_();
+    $scope.recommendedTracks = [];
+    var iframeElement   = document.getElementById('iframe_widget');
+    var widget         = SC.Widget(iframeElement);
+    widget.pause();
+    widget.src = "";
+    UserObject.set("favorites", null);
     $scope.retrieveLikes();
     $scope.UI_states("search_criteria");
   }
 
   $scope.goHome = function()
   {
-    $state.go('home', {}, {reload: true});
+    FullReset.set(true);
+    //$state.go('home', {}, {reload: true});
+    $state.go('home');
   }
 
   $scope.UI_states = function(state)
@@ -189,35 +235,6 @@ angular.module('GeniusTracklist.controllers', [])
     }
   }
 
-  $scope.newSearch = function()
-  {
-    console.log("clicked");
-  }
-
-  $scope.playSong = function(track)
-  {
-    for(var i = 0; i < $scope.recommendedTracks.length; i++)
-    {
-      if(track.id == $scope.recommendedTracks[i].id)
-      {
-        $scope.currentTrackIndex = i;
-      }
-    }
-
-    var stream_link = "https://w.soundcloud.com/player/?visual=false&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F13692671&show_artwork=true&auto_play=true"; //StoredEmbedLinks.get(track.id);
-    $scope.current_selected_stream = stream_link;
-    document.getElementById("iframe_widget").src = $scope.current_selected_stream;
-    var iframeElement   = document.getElementById('iframe_widget');
-    var widget         = SC.Widget(iframeElement);
-    widget.load($scope.recommendedTracks[$scope.currentTrackIndex].permalink_url, {
-          show_artwork: true,
-          auto_play: true,
-          show_comments: false,
-          buying: false,
-          show_playcount: false
-        });
-  }
-
   $scope.startCalculation = function()
   {
     UserObject.set("favs_to_use", $scope.selected_favorites);
@@ -301,6 +318,9 @@ angular.module('GeniusTracklist.controllers', [])
     }
     */
     $scope.UI_states("results");
+    var stream_link = "https://w.soundcloud.com/player/?visual=false&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F13692671&show_artwork=true&auto_play=true";
+    $scope.current_selected_stream = stream_link;
+    document.getElementById("iframe_widget").src = $scope.current_selected_stream;
     $scope.playSong(list_[0]);
      $scope.$apply(function () {
         $scope.recommendedTracks = list_;
@@ -335,6 +355,7 @@ angular.module('GeniusTracklist.controllers', [])
     console.log("num of rec artists: " + recArtists.length);
     for(i = 0; i < max_recs_computed; i++)
     {
+      console.log(i);
       if(recArtists[i].OVERLAP == "false" && max_artists_computed > 1)
       {
         extra_track_count ++;
@@ -347,6 +368,7 @@ angular.module('GeniusTracklist.controllers', [])
       var myDataPromise = Retrieve.getData(stringToPass);
       myDataPromise.then(function(responseTracks)
       {  
+        console.log(p);
         if(extra_track_count > 0)
           max_tracks_local ++;
         var miniTracklist = [];
@@ -378,6 +400,7 @@ angular.module('GeniusTracklist.controllers', [])
         p++;
         if(p == max_recs_computed)
         {
+          console.log("jere");
           masterList.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
           var linkString = "";
           for(var t = 0; t < masterList.length; t++)
@@ -690,7 +713,7 @@ angular.module('GeniusTracklist.controllers', [])
 
 
 
-.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed, /* StoredEmbedLinks,*/ ProcessCollectionsObject) 
+.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed, /* StoredEmbedLinks,*/ ProcessCollectionsObject, FullReset) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
@@ -704,8 +727,13 @@ angular.module('GeniusTracklist.controllers', [])
   var input = document.getElementById('searchField');
 
   $scope.$on('$ionicView.enter', function(ev) {
-    input.focus();
-    input.select();
+    if(FullReset.get() == true)
+      window.location.reload(true)
+    else
+    {
+      input.focus();
+      input.select();
+    }
   })
     
 
@@ -723,14 +751,6 @@ angular.module('GeniusTracklist.controllers', [])
       SC.get(stringToPass).then(function(artistObj)
       {
         UserObject.set("user_obj", artistObj);
-        /*
-        avatarPath = artistObj.avatar_url;
-        avatarPath = avatarPath.replace("-large.jpg","-t500x500.jpg");
-        var doc = document.getElementById("avatar_img");
-        var attr = doc.attributes;
-        doc.attributes[2].nodeValue = avatarPath;
-        document.getElementById("artistLabel").innerHTML = UserObject.get("user_obj").username;//ArtistObjects.getFirst().username;
-        */
         document.getElementById("searchField").value = "";
         $scope.autoCompleteUsername("a",'1');
         
@@ -761,11 +781,9 @@ $scope.autoCompleteUsername = function(input)
           $scope.user_loading_wheel = true;
         else
           $scope.user_loading_wheel = false;
-        //setTimeout(function () {
           $scope.$apply(function () {
             $scope.message = "Timeout called!";
           });
-    //},);
     });
     }
   }
@@ -773,11 +791,6 @@ $scope.autoCompleteUsername = function(input)
   {
     $scope.input_suggestions = [];
     $scope.show_suggestions = false;
-    /*
-    $scope.$apply(function () {
-            $scope.message = "Timeout called!";
-          });
-*/
   }
 }
 
