@@ -30,6 +30,10 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.currentTrackIndex = 0;
   $scope.initialCalc = true;
 
+  //player-widget material
+  $scope.playingTrack = null;
+  //
+
   //scaling limits for get calls
   var liked_artists_max_favlist_length = 200;
   var max_artists_computed = 5;
@@ -38,72 +42,38 @@ angular.module('GeniusTracklist.controllers', [])
   var popularity_factor = 0;//0.455
   //
 
+  $scope.canPlay = function()
+  {
+    console.log("CALLEDDDASFDASDF");
+    $scope.player_loaded = true;
+    $scope.show_player = true;
+  }
+
   $scope.controlWidget = function()
   {
-    $scope.UI_states("results");
-    var iframeElement   = document.getElementById('iframe_widget');
-    var widget         = SC.Widget(iframeElement);
-    iframeElement.contentWindow.focus();
-
-    iframeElement.addEventListener("load", function() {
-      //console.log("widget it loading");
-      $scope.player_loaded = true;
-    });
-
-    widget.bind(SC.Widget.Events.READY, function() {
-      console.log("ready");
-      $scope.$apply(function () {
-      $scope.player_loaded = true;
-    });
-        });
-      widget.bind(SC.Widget.Events.PLAY, function(){
-        $scope.$apply(function () {
-                  $scope.player_loaded = true;
-        $scope.show_player = true;
-    });
-
-      });
-    widget.bind(SC.Widget.Events.FINISH, function() {
-      
-       $scope.$apply(function () {
-         $scope.player_loaded = false;
-        $scope.show_player = true;
-    });
-
+    var myAudio = document.getElementById("simple_player");
+    myAudio.addEventListener("ended", function(){
+     myAudio.currentTime = 0;
       console.log("finished Playing");
+      
         if($scope.currentTrackIndex < ($scope.recommendedTracks.length-1))
           $scope.currentTrackIndex++;
         else
           $scope.currentTrackIndex = 0;
+        $scope.playSong($scope.recommendedTracks[$scope.currentTrackIndex]);
+        $scope.$apply(function () {
+         $scope.player_loaded = false;
+        $scope.show_player = true;
+    });
+    });
 
 
-  
-  setTimeout(function () {
-    $scope.playSong($scope.recommendedTracks[$scope.currentTrackIndex]);
-    /*
-    widget.load($scope.recommendedTracks[$scope.currentTrackIndex].permalink_url, {
-          show_artwork: true,
-          auto_play: true,
-          show_comments: false,
-          buying: false,
-          show_playcount: false
-        });
-    //var begin = new Date().getTime();
-    */
-  }, 1000);
-
-      });
-    setTimeout(function () {
-      $scope.playSong($scope.recommendedTracks[0]);
-    }, 1000);
-    
-  }
 
 
+}
   $scope.playSong = function(track)
   {
-    console.log("play song called: ");
-    console.log(track);
+    $scope.playingTrack = track;
     for(var i = 0; i < $scope.recommendedTracks.length; i++)
     {
       if(track.id == $scope.recommendedTracks[i].id)
@@ -111,15 +81,14 @@ angular.module('GeniusTracklist.controllers', [])
         $scope.currentTrackIndex = i;
       }
     }
-    var iframeElement   = document.getElementById('iframe_widget');
-    var widget         = SC.Widget(iframeElement);
-    widget.load($scope.recommendedTracks[$scope.currentTrackIndex].permalink_url, {
-          show_artwork: true,
-          auto_play: true,
-          show_comments: false,
-          buying: false,
-          show_playcount: false
-        });
+    console.log("TRACK v");
+    console.log(track);
+    //src="http://api.soundcloud.com/tracks/148976759/stream?client_id=a06eaada6b3052bb0a3dff20329fdbf9"
+    var trackStream = "http://api.soundcloud.com/tracks/";
+    trackStream += track.id;
+    trackStream += "/stream?client_id=a06eaada6b3052bb0a3dff20329fdbf9";
+    var simplePlayer = document.getElementById("simple_player");
+    simplePlayer.src = trackStream;
   }
 
   $scope.editCriteria = function()
@@ -127,10 +96,6 @@ angular.module('GeniusTracklist.controllers', [])
     $scope.initialCalc = false;
     ProcessCollectionsObject.clear_();
     $scope.recommendedTracks = [];
-    var iframeElement   = document.getElementById('iframe_widget');
-    var widget         = SC.Widget(iframeElement);
-    widget.pause();
-    widget.src = "";
     UserObject.set("favorites", null);
     $scope.retrieveLikes();
     $scope.UI_states("search_criteria");
@@ -320,15 +285,15 @@ angular.module('GeniusTracklist.controllers', [])
     $scope.UI_states("results");
     var stream_link = "https://w.soundcloud.com/player/?visual=false&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F13692671&show_artwork=true&auto_play=true";
     $scope.current_selected_stream = stream_link;
-    document.getElementById("iframe_widget").src = $scope.current_selected_stream;
+    //document.getElementById("iframe_widget").src = $scope.current_selected_stream;
     $scope.playSong(list_[0]);
      $scope.$apply(function () {
         $scope.recommendedTracks = list_;
+        $scope.playSong(list_[0]);
+          $scope.controlWidget();
         //DEBUG_TIMING
           var end = new Date().getTime();
           var time = end - start;
-          $scope.playSong(list_[0]);
-          $scope.controlWidget();
           console.log('execution time for ' + $scope.loading_text + ': ' + time);
           //DEBUG_TIMING
         });

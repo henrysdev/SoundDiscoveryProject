@@ -64,16 +64,39 @@
 </div>
 
 <div class="col" ng-show="!show_fav_selection">
-  <a ng-show="show_player">
+  <a ng-show="show_player" class="item">
+    <div class="row">
+      <div class="col-25">
+      <img src="{{playingTrack.artwork_url}}" >
+      </div>
+      <div class="col">
+        <div>
+  {{playingTrack.title}}
+  </div>
+  <div>
+    {{playingTrack.user.permalink}}
+  </div>
+  <p></p>
+        <div>
+    <!--
     <iframe ng-show="player_loaded" frameborder='no' height='166' scrolling='no' src='' width='100%' id="iframe_widget" color='#5933cc'></iframe>
+    -->
+
+    <audio autoplay controls ng-canplay="canPlay()" id="simple_player" height='166' width='100%'>
+    <source src="" >
+  Your browser does not support the audio element.
+  </audio>
+</div>
+
+</div>
+
+    <!--
     <ion-spinner icon="lines" ng-show="!player_loaded">
     </ion-spinner>
+  -->
+</div>
   </a>
-  <!--
-  <a ng-show="!show_player">
-    
-  </a>
--->
+
   <div ng-show="loading">
   <ion-spinner icon="spiral">
   </ion-spinner>
@@ -124,6 +147,9 @@
 <button class="button button-full button-positive" ng-click="goHome()">
   Return to Homepage
 </button>
+
+
+
 </div>
 </body>
 <p></p>
