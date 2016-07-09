@@ -34,9 +34,14 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.playingTrack = null;
   //
 
+  //
+  $scope.searchTimeStart = null;
+  $scope.searchTimeEnd = null;
+  //
+
   //scaling limits for get calls
   var liked_artists_max_favlist_length = 200;
-  var max_artists_computed = 5;
+  var max_artists_computed = 10;
   var max_recs_computed = 30;
   var max_tracks_per_rec = 1;
   var popularity_factor = 0;//0.455
@@ -95,6 +100,7 @@ angular.module('GeniusTracklist.controllers', [])
   {
     $scope.initialCalc = false;
     ProcessCollectionsObject.clear_();
+    $scope.fav_icons = [];
     $scope.recommendedTracks = [];
     UserObject.set("favorites", null);
     $scope.retrieveLikes();
@@ -207,6 +213,7 @@ angular.module('GeniusTracklist.controllers', [])
     //$scope.done_picking_favs = false;
     $scope.UI_states("generating");
     $scope.artistList();
+    $scope.searchTimeStart = new Date().getTime();
   }
 
   $scope.getIconArt = function(url)
@@ -295,6 +302,12 @@ angular.module('GeniusTracklist.controllers', [])
           var end = new Date().getTime();
           var time = end - start;
           console.log('execution time for ' + $scope.loading_text + ': ' + time);
+
+
+          $scope.searchTimeEnd = new Date().getTime();
+          var diff = $scope.searchTimeEnd - $scope.searchTimeStart;
+          console.log('TOTAL SEARCH TIME: ' + diff);
+
           //DEBUG_TIMING
         });
 
@@ -690,6 +703,7 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.show_suggestions = true;
   $scope.user_loading_wheel = false;
   var input = document.getElementById('searchField');
+  var curr_input = "";
 
   $scope.$on('$ionicView.enter', function(ev) {
     if(FullReset.get() == true)
@@ -726,8 +740,6 @@ angular.module('GeniusTracklist.controllers', [])
 
 $scope.autoCompleteUsername = function(input)
 {
-    //console.log("auto complete was called");
-    //console.log(input);
     if(input)
     {
       if(input.length >= 3)
@@ -741,11 +753,13 @@ $scope.autoCompleteUsername = function(input)
       SC.get('/users', {q: input, limit: 200, track_count: {from: 2}}).then(function(users) 
       {
         //console.log(users);
+
         $scope.input_suggestions = users;
         if($scope.input_suggestions.length == 0)
           $scope.user_loading_wheel = true;
         else
           $scope.user_loading_wheel = false;
+
           $scope.$apply(function () {
             $scope.message = "Timeout called!";
           });
@@ -754,6 +768,7 @@ $scope.autoCompleteUsername = function(input)
   }
   else
   {
+    $scope.user_loading_wheel = false;
     $scope.input_suggestions = [];
     $scope.show_suggestions = false;
   }

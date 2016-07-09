@@ -13,7 +13,7 @@
 
     <label class="item-input-wrapper">
 
-      <input id="searchField" type="text" placeholder="Soundcloud Username" ng-model="searchText" ng-change="autoCompleteUsername(searchText)">
+      <input id="searchField" type="text" placeholder="Soundcloud Username" ng-model="searchText" ng-change="autoCompleteUsername(searchText)" ng-model-options="{debounce:250}">" 
     </label>
     <button class="button button-small" ng-click="GetUser(searchText)">
       Submit
@@ -35,13 +35,16 @@
       </div>
   </div>
         </li class="item">
+        
           <div class="row" ng-show="user_loading_wheel">
+          	try re-typing if no results are found
             <div class="col col-10">
               <ion-spinner icon="spiral">
           </ion-spinner>
             </div>
             <div class="col">
         </div>
+    
       </div>
           
       </ul>
@@ -50,10 +53,11 @@
 
 </div class="list">
 <a href="http://www.henrysdev.net/" id="portfolioLink"> Developed by Henry Warren </a>
+
 <div id="disclaimerText">
 	<h4>
 <p> *WEBSITE UNDER DEVELOPMENT (please be patient with the features)* </p>
-<p> For use with SoundCloud </p>
+<p> For use with <a href="https://soundcloud.com/stream"> SoundCloud</a> </p>
 
 <p > Contact me at henrysdev@gmail.com </p>
 <p >
