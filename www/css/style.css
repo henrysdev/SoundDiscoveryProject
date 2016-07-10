@@ -8,12 +8,36 @@ h4{
     font-family: 'Racing Sans One';
 }
 
+#audioContainer
+{
+	position: relative;
+    top: -2px;
+}
+
+#songSlider
+{
+	width:75%;
+}
+
+#trackProgress
+{
+	position: absolute;
+	top: 112px;
+	opacity: 0.5;
+   pointer-events:none;
+}
+
+
+#playerObj
+{
+	background-color: #181818;
+}
 #disclaimerText
 {
 	position: absolute;
     left: 0px;
     top: 50%;
-    z-index: 0;
+    z-index: -1;
 }
 
 #easyFixButton
@@ -34,6 +58,9 @@ h4{
   position: absolute;
 }
 
+#userSuggestion.row{
+	z-index = 2;
+}
 .item-content {
   background-color: black;
 }
@@ -53,7 +80,7 @@ h4{
         top: 300%;
         width: 100%;
         transform: translate(0%,500%);
-        z-index = 1;
+        z-index = 2;
         /*
         -webkit-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
@@ -89,13 +116,13 @@ h4{
 	position: absolute;
     left: 0px;
     top: 50%;
-    z-index: -1;
+    z-index: 0;
 }
 #info1{
 	position: absolute;
     left: 0px;
     top: 90%;
-    z-index: -1;
+    z-index: 0;
 }
 
 

@@ -7,6 +7,7 @@ angular.module('GeniusTracklist.controllers', [])
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
     redirect_uri: 'http://localhost:8100/#/recs'
   });
+
   $scope.UserObject = UserObject;
   $scope.recommendedTracks = [];
   $scope.searchText = "";
@@ -47,6 +48,128 @@ angular.module('GeniusTracklist.controllers', [])
   var popularity_factor = 0;//0.455
   //
 
+
+$scope.activeSong;
+//Plays the song. Just pass the id of the audio element.
+$scope.play = function(id){
+    //Sets the active song to the song being played.  All other functions depend on this.
+    $scope.activeSong = document.getElementById(id);
+    //Plays the song defined in the audio tag.
+    $scope.activeSong.play();
+
+    //Calculates the starting percentage of the song.
+    /*
+    var percentageOfVolume = $scope.activeSong.volume / 1;
+    var percentageOfVolumeMeter = document.getElementById('volumeMeter').offsetWidth * percentageOfVolume;
+    
+    //Fills out the volume status bar.
+    document.getElementById('volumeStatus').style.width = Math.round(percentageOfVolumeSlider) + "px";
+  */
+}
+//Pauses the active song.
+$scope.pause = function(){
+    $scope.activeSong.pause();
+}
+//Does a switch of the play/pause with one button.
+$scope.playPause = function(id){
+    //Sets the active song since one of the functions could be play.
+    $scope.activeSong = document.getElementById(id);
+    //Checks to see if the song is paused, if it is, play it from where it left off otherwise pause it.
+    if ($scope.activeSong.paused){
+         $scope.activeSong.play();
+    }else{
+         $scope.activeSong.pause();
+    }
+}
+
+
+//Updates the current time function so it reflects where the user is in the song.
+//This function is called whenever the time is updated.  This keeps the visual in sync with the actual time.
+$scope.updateTime = function(){
+    var currentSeconds = (Math.floor($scope.activeSong.currentTime % 60) < 10 ? '0' : '') + Math.floor($scope.activeSong.currentTime % 60);
+    var currentMinutes = Math.floor($scope.activeSong.currentTime / 60);
+    //Sets the current song location compared to the song duration.
+    document.getElementById('songTime').innerHTML = currentMinutes + ":" + currentSeconds + ' / ' + Math.floor($scope.activeSong.duration / 60) + ":" + (Math.floor($scope.activeSong.duration % 60) < 10 ? '0' : '') + Math.floor($scope.activeSong.duration % 60);
+
+
+    //Fills out the slider with the appropriate position.
+    var percentageOfSong = ($scope.activeSong.currentTime/$scope.activeSong.duration);
+    var percentageOfSlider = document.getElementById('songSlider').offsetWidth * percentageOfSong;
+    
+    //Updates the track progress div.
+    console.log("song slider obj");
+    console.log(document.getElementById('songSlider'));
+    document.getElementById('trackProgress').style.width = Math.round(percentageOfSlider) + "px";
+    document.getElementById('trackProgress').style.height = document.getElementById('songSlider').height + "px";
+}
+
+$scope.volumeUpdate = function(number){
+    //Updates the volume of the track to a certain number.
+    $scope.activeSong.volume = number / 100;
+}
+//Changes the volume up or down a specific number
+$scope.changeVolume = function(number, direction){
+    //Checks to see if the volume is at zero, if so it doesn't go any further.
+    if($scope.activeSong.volume >= 0 && direction == "down"){
+        $scope.activeSong.volume = $scope.activeSong.volume - (number / 100);
+    }
+    //Checks to see if the volume is at one, if so it doesn't go any higher.
+    if($scope.activeSong.volume <= 1 && direction == "up"){
+        $scope.activeSong.volume = $scope.activeSong.volume + (number / 100);
+    }
+    
+    //Finds the percentage of the volume and sets the volume meter accordingly.
+    var percentageOfVolume = $scope.activeSong.volume / 1;
+    var percentageOfVolumeSlider = document.getElementById('volumeMeter').offsetWidth * percentageOfVolume;
+
+    document.getElementById('volumeStatus').style.width = Math.round(percentageOfVolumeSlider) + "px";
+}
+//Sets the location of the song based off of the percentage of the slider clicked.
+$scope.setLocation = function(percentage){
+    $scope.activeSong.currentTime = $scope.activeSong.duration * percentage;
+}
+/*
+Gets the percentage of the click on the slider to set the song position accordingly.
+Source for Object event and offset: http://website-engineering.blogspot.com/2011/04/get-x-y-coordinates-relative-to-div-on.html
+*/
+$scope.setSongPosition = function(e){
+    //Gets the offset from the left so it gets the exact location.
+    var obj = document.getElementById("songSlider");
+    var songSliderWidth = obj.offsetWidth;
+    var evtobj=window.event? event : e;
+    clickLocation =  evtobj.layerX - obj.offsetLeft;
+    
+    var percentage = (clickLocation/songSliderWidth);
+    console.log("percentage: " + percentage);
+    //Sets the song location with the percentage.
+    $scope.setLocation(percentage);
+}
+
+//Set's volume as a percentage of total volume based off of user click.
+$scope.setVolume = function(percentage){
+    $scope.activeSong.volume =  percentage;
+    
+    var percentageOfVolume = $scope.activeSong.volume / 1;
+    var percentageOfVolumeSlider = document.getElementById('volumeMeter').offsetWidth * percentageOfVolume;
+    
+    document.getElementById('volumeStatus').style.width = Math.round(percentageOfVolumeSlider) + "px";
+}
+
+//Set's new volume id based off of the click on the volume bar.
+$scope.setNewVolume = function(obj,e){
+    var volumeSliderWidth = obj.offsetWidth;
+    var evtobj = window.event? event: e;
+    clickLocation = evtobj.layerX - obj.offsetLeft;
+    
+    var percentage = (clickLocation/volumeSliderWidth);
+    setVolume(percentage);
+}
+//Stop song by setting the current time to 0 and pausing the song.
+$scope.stopSong = function(){
+    $scope.activeSong.currentTime = 0;
+    $scope.activeSong.pause();
+}
+
   $scope.canPlay = function()
   {
     console.log("CALLEDDDASFDASDF");
@@ -56,9 +179,19 @@ angular.module('GeniusTracklist.controllers', [])
 
   $scope.controlWidget = function()
   {
-    var myAudio = document.getElementById("simple_player");
-    myAudio.addEventListener("ended", function(){
-     myAudio.currentTime = 0;
+    $scope.activeSong = document.getElementById("song");
+
+    $scope.activeSong.addEventListener("seeking", function(){
+      console.log("seeking");
+      $scope.updateTime();
+    });
+
+    $scope.activeSong.addEventListener("timeupdate", function(){
+      console.log("lol");
+      $scope.updateTime();
+    });
+    $scope.activeSong.addEventListener("ended", function(){
+     $scope.activeSong.currentTime = 0;
       console.log("finished Playing");
       
         if($scope.currentTrackIndex < ($scope.recommendedTracks.length-1))
@@ -92,7 +225,7 @@ angular.module('GeniusTracklist.controllers', [])
     var trackStream = "http://api.soundcloud.com/tracks/";
     trackStream += track.id;
     trackStream += "/stream?client_id=a06eaada6b3052bb0a3dff20329fdbf9";
-    var simplePlayer = document.getElementById("simple_player");
+    var simplePlayer = document.getElementById("song");
     simplePlayer.src = trackStream;
   }
 
@@ -755,10 +888,7 @@ $scope.autoCompleteUsername = function(input)
         //console.log(users);
 
         $scope.input_suggestions = users;
-        if($scope.input_suggestions.length == 0)
-          $scope.user_loading_wheel = true;
-        else
-          $scope.user_loading_wheel = false;
+        $scope.user_loading_wheel = false;
 
           $scope.$apply(function () {
             $scope.message = "Timeout called!";

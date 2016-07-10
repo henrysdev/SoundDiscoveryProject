@@ -64,8 +64,8 @@
 </div>
 
 <div class="col" ng-show="!show_fav_selection">
-  <a ng-show="show_player" class="item">
-    <div class="row">
+  <a ng-show="show_player" class="item" id="playerObj">
+    <div class="row" id="playerObj">
       <div class="col-25">
       <img src="{{playingTrack.artwork_url}}" >
       </div>
@@ -78,22 +78,27 @@
   </div>
   <p></p>
         <div>
-    <!--
-    <iframe ng-show="player_loaded" frameborder='no' height='166' scrolling='no' src='' width='100%' id="iframe_widget" color='#5933cc'></iframe>
-    -->
+          <audio id="song">
+<source src="" type="audio/mp3"/>
+  Your browser does not support the audio tag.
+</audio>
+<!-- Div that plays song, ng-click calls the javascript play function and passes the
+id of the audio tag with the appropriate song -->
+<button id="songPlayPause" ng-click="playPause('song')">PlayPause</button>
+<!-- Div that updates with current song time while playing -->
+<div id="songTime">0:00 / 0:00</div>
 
-    <audio autoplay controls ng-canplay="canPlay()" id="simple_player" height='166' width='100%'>
-    <source src="" >
-  Your browser does not support the audio element.
-  </audio>
+<img src="{{playingTrack.waveform_url}}" id="songSlider" ng-click="setSongPosition(event)">
+<div>
+<img src="img/playback_img.png" id="trackProgress">
 </div>
-
 </div>
-
-    <!--
+</div>
+<!--
+    
     <ion-spinner icon="lines" ng-show="!player_loaded">
     </ion-spinner>
-  -->
+ --> 
 </div>
   </a>
 
@@ -101,6 +106,9 @@
   <ion-spinner icon="spiral">
   </ion-spinner>
   <label id="loading_text">{{loading_text}}</label>
+  <div>
+  <label>this may take a minute... </label>
+</div>
 </div>
   <div class="item" ng-show="show_recs">
     
