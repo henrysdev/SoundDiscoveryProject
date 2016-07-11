@@ -56,6 +56,28 @@ angular.module('GeniusTracklist.services', [])
   }
 })
 
+.factory('SessionCache', function() {
+  var recommendedTracks = [];
+  var recommendedArtists = [];
+  return{
+    setList: function(recList)
+    {
+      for(var i = 0; i < recList.length; i++)
+      {
+        recommendedTracks.push(recList[i].id);
+      }
+    },
+    set: function(rec)
+    {
+      recommendedTracks.push(rec.id);
+    },
+    getTracks: function()
+    {
+      return recommendedTracks;
+    }
+  }
+})
+
 .factory('StoredEmbedLinks', function() {
   var embedLinks = [];
   var currentIndex = 0;

@@ -63,7 +63,62 @@
 <div class="button" ng-click="selectAll(toggleSelect,fav_icons)">(De)select All</div>
 </div>
 
+
 <div class="col" ng-show="!show_fav_selection">
+
+  <a id="playerObj" ng-show="show_player" ng-show=" ">
+    <div class = "row" id="playerObj" ng-show="show_player">
+      <div class = "col-25">
+        <img src="{{playingTrack.artwork_url}}" >
+      </div>
+      <div class = "col-10">
+        <!--<button id="songPlayPause" ng-click="playPause('song')">PlayPause</button>-->
+        <a id="songPlayPause" class="button button-icon icon ion-ios-pause custom-icon" ng-click="liked=!liked; playPause('song', liked)" ng-show="show_player" ng-class="{'ion-ios-pause' : liked, 'ion-ios-play' : !liked}"></a>
+
+      </div>
+      <div class = "col">
+        <div id="playerTitle">
+          {{playingTrack.title}}
+        </div>
+        <div id="playerArtist">
+          {{playingTrack.user.permalink}}
+        </div>
+          <div id="songTime" >0:00 / 0:00
+          </div>
+      </div>
+      <div class="col"></div>
+      <div class = "col-20" id="iframeOffset">
+        <iframe id="scLink" allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fmntrees&color=orange_white&size=64" style="width: 64px; height: 64px;"></iframe>
+      </div>
+    </div>
+    
+    <div class="row" ng-show="show_player" id="playerObj">
+      <audio id="song">
+<source src="" type="audio/mp3"/>
+  Your browser does not support the audio tag.
+</audio>
+      <div class="col-10" id="bckBtn">
+        <a id="songRewind" class="button button-icon icon ion-ios-skipbackward custom-icon" ng-click="skipBack()" ng-show="show_player"></a>
+        <!--<button id="songPlayPause" ng-click="playPause('song')">PlayPause</button>-->
+      </div>
+      <div class="col">
+        <div>
+        <img src="{{playingTrack.waveform_url}}" id="songSlider" ng-click="setSongPosition(event)">
+        <div>
+        <img src="img/playback_img.png" id="trackProgress">
+      </div>
+        </div>
+      
+      </div>
+      <div class="col-10" id="fwdBtn">
+        <a id="songSkip" class="button button-icon icon ion-ios-skipforward custom-icon" ng-click="skipFwd()" ng-show="show_player"></a>
+        <!--<button id="songPlayPause" ng-click="playPause('song')">PlayPause</button>-->
+      </div>
+    </div>
+  
+  </a>
+
+<!--
   <a ng-show="show_player" class="item" id="playerObj">
     <div class="row" id="playerObj">
       <div class="col-25">
@@ -82,10 +137,9 @@
 <source src="" type="audio/mp3"/>
   Your browser does not support the audio tag.
 </audio>
-<!-- Div that plays song, ng-click calls the javascript play function and passes the
-id of the audio tag with the appropriate song -->
+
 <button id="songPlayPause" ng-click="playPause('song')">PlayPause</button>
-<!-- Div that updates with current song time while playing -->
+
 <div id="songTime">0:00 / 0:00</div>
 
 <img src="{{playingTrack.waveform_url}}" id="songSlider" ng-click="setSongPosition(event)">
@@ -94,44 +148,39 @@ id of the audio tag with the appropriate song -->
 </div>
 </div>
 </div>
-<!--
-    
-    <ion-spinner icon="lines" ng-show="!player_loaded">
-    </ion-spinner>
- --> 
+
 </div>
   </a>
+-->
+
 
   <div ng-show="loading">
-  <ion-spinner icon="spiral">
-  </ion-spinner>
-  <label id="loading_text">{{loading_text}}</label>
-  <div>
-  <label>this may take a minute... </label>
-</div>
-</div>
-  <div class="item" ng-show="show_recs">
-    
-  <div style="height:400px;overflow:auto;">
-  <li class="item" ng-repeat="i_rec in recommendedTracks">
-    <button class="button button-full" ng-click="playSong(i_rec)">
+    <ion-spinner icon="spiral">
+    </ion-spinner>
+    <label id="loading_text">{{loading_text}}</label>
+    <div>
+      <label>this may take a minute... </label>
+    </div>
+  </div>
+  <div class="item" ng-show="show_recs">  
+    <div style="height:400px;overflow:auto;">
+      <li class="item" ng-repeat="i_rec in recommendedTracks">
+      <button class="button button-full" ng-click="playSong(i_rec)">
       <div class="row">
         <div class="col-10">
-      <img src="{{getIconArt(i_rec.artwork_url)}}" class="full-image" >
-
-    </div>
+          <img src="{{getIconArt(i_rec.artwork_url)}}" class="full-image" >
+        </div>
     <div class="col">
       <label>{{i_rec.title}}</label>
       <div>
-      <label>{{i_rec.user.username}}</label>
-    </div>
+        <label>{{i_rec.user.username}}</label>
+      </div>
     </div>
   </div>
-    </button>
-  </li>
-  
-</div>
-</div>
+      </button>
+      </li> 
+    </div>
+  </div>
 </div>
 
   <!--
@@ -151,6 +200,7 @@ id of the audio tag with the appropriate song -->
 
 
 </div>
+
 <div ng-show="!show_general_ui">
 <button class="button button-full button-positive" ng-click="goHome()">
   Return to Homepage
@@ -160,7 +210,6 @@ id of the audio tag with the appropriate song -->
 
 </div>
 </body>
-<p></p>
 
 </ion-content>
 </ion-view>

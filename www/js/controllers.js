@@ -1,7 +1,7 @@
 angular.module('GeniusTracklist.controllers', [])
 
 
-.controller('RecCtrl', function($scope, $state, $stateParams, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject, GlobalFunctions, FullReset) 
+.controller('RecCtrl', function($scope, $state, $stateParams, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject, GlobalFunctions, FullReset, SessionCache) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
@@ -20,7 +20,9 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.selected_favorites = [];
   var avatarPath = "";
   var widgets = [];
+
   $scope.show_fav_selection = true;
+  $scope.show_prog_bar = false;
   $scope.show_profile = true;
   $scope.done_picking_favs = true;
   $scope.loading = true;
@@ -33,6 +35,7 @@ angular.module('GeniusTracklist.controllers', [])
 
   //player-widget material
   $scope.playingTrack = null;
+  $scope.currentSoundCloudLink = "";
   //
 
   //
@@ -48,9 +51,25 @@ angular.module('GeniusTracklist.controllers', [])
   var popularity_factor = 0;//0.455
   //
 
-
 $scope.activeSong;
-//Plays the song. Just pass the id of the audio element.
+
+//Does a switch of the play/pause with one button.
+$scope.playPause = function(id,cond){
+  $scope.activeSong = document.getElementById(id);
+    //Sets the active song since one of the functions could be play.
+    
+    //Checks to see if the song is paused, if it is, play it from where it left off otherwise pause it.
+    if (cond == true/*$scope.activeSong.paused*/){
+         $scope.activeSong.play();
+    }else{
+         $scope.activeSong.pause();
+    }
+}
+//Pauses the active song.
+$scope.pause = function(){
+    $scope.activeSong.pause();
+}
+
 $scope.play = function(id){
     //Sets the active song to the song being played.  All other functions depend on this.
     $scope.activeSong = document.getElementById(id);
@@ -66,22 +85,33 @@ $scope.play = function(id){
     document.getElementById('volumeStatus').style.width = Math.round(percentageOfVolumeSlider) + "px";
   */
 }
-//Pauses the active song.
-$scope.pause = function(){
-    $scope.activeSong.pause();
-}
-//Does a switch of the play/pause with one button.
-$scope.playPause = function(id){
-    //Sets the active song since one of the functions could be play.
-    $scope.activeSong = document.getElementById(id);
-    //Checks to see if the song is paused, if it is, play it from where it left off otherwise pause it.
-    if ($scope.activeSong.paused){
-         $scope.activeSong.play();
-    }else{
-         $scope.activeSong.pause();
+
+
+$scope.skipBack = function()
+{
+  if($scope.activeSong.currentTime > 2)
+    $scope.activeSong.currentTime = 0;
+  else
+    if($scope.currentTrackIndex > 0)
+    {
+      $scope.currentTrackIndex --;
+      $scope.playSong($scope.recommendedTracks[$scope.currentTrackIndex]);
     }
+
 }
 
+$scope.skipFwd = function()
+{
+  if($scope.currentTrackIndex < $scope.recommendedTracks.length-1)
+  { 
+    $scope.currentTrackIndex ++;
+  }
+  else
+  {
+    $scope.currentTrackIndex = 0;
+  }
+  $scope.playSong($scope.recommendedTracks[$scope.currentTrackIndex]);
+}
 
 //Updates the current time function so it reflects where the user is in the song.
 //This function is called whenever the time is updated.  This keeps the visual in sync with the actual time.
@@ -97,8 +127,6 @@ $scope.updateTime = function(){
     var percentageOfSlider = document.getElementById('songSlider').offsetWidth * percentageOfSong;
     
     //Updates the track progress div.
-    console.log("song slider obj");
-    console.log(document.getElementById('songSlider'));
     document.getElementById('trackProgress').style.width = Math.round(percentageOfSlider) + "px";
     document.getElementById('trackProgress').style.height = document.getElementById('songSlider').height + "px";
 }
@@ -172,7 +200,6 @@ $scope.stopSong = function(){
 
   $scope.canPlay = function()
   {
-    console.log("CALLEDDDASFDASDF");
     $scope.player_loaded = true;
     $scope.show_player = true;
   }
@@ -181,13 +208,7 @@ $scope.stopSong = function(){
   {
     $scope.activeSong = document.getElementById("song");
 
-    $scope.activeSong.addEventListener("seeking", function(){
-      console.log("seeking");
-      $scope.updateTime();
-    });
-
     $scope.activeSong.addEventListener("timeupdate", function(){
-      console.log("lol");
       $scope.updateTime();
     });
     $scope.activeSong.addEventListener("ended", function(){
@@ -219,7 +240,13 @@ $scope.stopSong = function(){
         $scope.currentTrackIndex = i;
       }
     }
-    console.log("TRACK v");
+    $scope.currentSoundCloudLink = "https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2F";
+    console.log(track.user.permalink);
+    $scope.currentSoundCloudLink += track.user.permalink;
+    $scope.currentSoundCloudLink += "/";
+    $scope.currentSoundCloudLink += track.permalink;
+    $scope.currentSoundCloudLink += "&color=orange_white&size=64 style=width: 64px; height: 64px;"
+    document.getElementById("scLink").src = $scope.currentSoundCloudLink;
     console.log(track);
     //src="http://api.soundcloud.com/tracks/148976759/stream?client_id=a06eaada6b3052bb0a3dff20329fdbf9"
     var trackStream = "http://api.soundcloud.com/tracks/";
@@ -227,6 +254,9 @@ $scope.stopSong = function(){
     trackStream += "/stream?client_id=a06eaada6b3052bb0a3dff20329fdbf9";
     var simplePlayer = document.getElementById("song");
     simplePlayer.src = trackStream;
+    console.log("player source:");
+    console.log(simplePlayer.src);
+    $scope.play('song');
   }
 
   $scope.editCriteria = function()
@@ -252,7 +282,7 @@ $scope.stopSong = function(){
     switch(state)
     {
       case "generating":
-        //console.log("GENERATING");
+        console.log("GENERATING");
         $scope.loading = true;
         $scope.show_recs = false;
         $scope.show_tracks = false;
@@ -262,7 +292,7 @@ $scope.stopSong = function(){
         $scope.show_player = false;
         break;
       case "search_criteria":
-        //console.log("SEARCH_CRITERIA");
+        console.log("SEARCH_CRITERIA");
         $scope.loading = false;
         $scope.show_recs = false;
         $scope.show_tracks = false;
@@ -272,7 +302,7 @@ $scope.stopSong = function(){
         $scope.show_player = false;
         break;
       case "results":
-        //console.log("RESULTS");
+        console.log("RESULTS");
         $scope.loading = false;
         $scope.show_recs = true;
         $scope.show_tracks = true;
@@ -309,6 +339,15 @@ $scope.stopSong = function(){
     for(var i = 0; i < user_favorites.length; i++)
     {
       if(track.id == user_favorites[i].id)
+      {
+        return false;
+        break;
+      }
+    }
+    var track_cache = SessionCache.getTracks();
+    for(var i = 0; i < track_cache.length; i++)
+    {
+      if(track.id == track_cache[i])
       {
         return false;
         break;
@@ -423,13 +462,15 @@ $scope.stopSong = function(){
     }
     */
     $scope.UI_states("results");
+    $scope.show_fav_selection = false;
+    $scope.show_player = true;
     var stream_link = "https://w.soundcloud.com/player/?visual=false&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F13692671&show_artwork=true&auto_play=true";
     $scope.current_selected_stream = stream_link;
     //document.getElementById("iframe_widget").src = $scope.current_selected_stream;
     $scope.playSong(list_[0]);
      $scope.$apply(function () {
         $scope.recommendedTracks = list_;
-        $scope.playSong(list_[0]);
+        SessionCache.setList($scope.recommendedTracks);
           $scope.controlWidget();
         //DEBUG_TIMING
           var end = new Date().getTime();
