@@ -1,6 +1,9 @@
 angular.module('GeniusTracklist.controllers', [])
 
 
+
+
+
 .controller('RecCtrl', function($scope, $state, $stateParams, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject, GlobalFunctions, FullReset, SessionCache) 
 {
   SC.initialize({
@@ -20,7 +23,7 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.selected_favorites = [];
   var avatarPath = "";
   var widgets = [];
-
+  $scope.show_pause = true;
   $scope.show_fav_selection = true;
   $scope.show_prog_bar = false;
   $scope.show_profile = true;
@@ -51,26 +54,32 @@ angular.module('GeniusTracklist.controllers', [])
   var popularity_factor = 0;//0.455
   //
 
-$scope.activeSong;
 
+
+$scope.activeSong;
 //Does a switch of the play/pause with one button.
 $scope.playPause = function(id,cond){
   $scope.activeSong = document.getElementById(id);
-    //Sets the active song since one of the functions could be play.
+  if($scope.activeSong.paused == true)
+  {    
+    $scope.play(id);
+  }  
+  else
+  {  
+    $scope.pause(id);
+  }    //Sets the active song since one of the functions could be play.
     
     //Checks to see if the song is paused, if it is, play it from where it left off otherwise pause it.
-    if (cond == true/*$scope.activeSong.paused*/){
-         $scope.activeSong.play();
-    }else{
-         $scope.activeSong.pause();
-    }
+
 }
 //Pauses the active song.
 $scope.pause = function(){
     $scope.activeSong.pause();
+    $scope.show_pause = true;
 }
 
 $scope.play = function(id){
+    $scope.show_pause = false;
     //Sets the active song to the song being played.  All other functions depend on this.
     $scope.activeSong = document.getElementById(id);
     //Plays the song defined in the audio tag.
@@ -165,7 +174,7 @@ $scope.setSongPosition = function(e){
     var obj = document.getElementById("songSlider");
     var songSliderWidth = obj.offsetWidth;
     var evtobj=window.event? event : e;
-    clickLocation =  evtobj.layerX - obj.offsetLeft;
+    clickLocation =  (evtobj.layerX - (obj.offsetLeft)) + 10;
     
     var percentage = (clickLocation/songSliderWidth);
     console.log("percentage: " + percentage);
@@ -388,10 +397,13 @@ $scope.stopSong = function(){
     $scope.searchTimeStart = new Date().getTime();
   }
 
-  $scope.getIconArt = function(url)
+  $scope.getIconArt = function(track)
   {
+    if(track == null)
+      return;
+    var url = track.artwork_url;
     if(url == null)
-      return "http://www.polyvore.com/cgi/img-thing?.out=jpg&size=l&tid=25059535";
+      return track.user.avatar_url;
     else
       return url;
   }
@@ -863,8 +875,6 @@ $scope.stopSong = function(){
 
 
 
-
-
 .controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed, /* StoredEmbedLinks,*/ ProcessCollectionsObject, FullReset) 
 {
   SC.initialize({
@@ -988,3 +998,5 @@ $scope.newUser = function()
 
 
 });
+
+

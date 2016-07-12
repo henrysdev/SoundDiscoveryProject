@@ -39,15 +39,21 @@ h4{
  background-image: linear-gradient(to bottom, #acc4d6, #434f55);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#acc4d6, endColorstr=#434f55);
 }
 */
+#playBtnContainer
+{
+	position: relative;
+	left: 3%;
+}
+
 #songPlayPause
 {
-	left: 10px;
-	top:20px;
+	font-size: 60px;
 	color: white;
 }
 
 #songPlayPause.custom-icon:before
 {
+	text-align: center;
 	font-size: 60px;
 	color: white;
 }

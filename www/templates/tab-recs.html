@@ -44,7 +44,7 @@
       <div class="item">
         <div class="row">
           <div class="col">
-        <img width="50" heigh="50" src="{{getIconArt(track.icon.artwork_url)}}">
+        <img width="50" heigh="50" src="{{getIconArt(track.icon)}}">
       </div>
         <label class="checkbox checkbox-balanced">
           <input type="checkbox" ng-model="fav_icons[$index].checked" ng-init="selectAll(true,fav_icons)" ng-checked="default_checked" ng-change="updateChecked(track)">
@@ -69,11 +69,17 @@
   <a id="playerObj" ng-show="show_player" ng-show=" ">
     <div class = "row" id="playerObj" ng-show="show_player">
       <div class = "col-25">
-        <img src="{{playingTrack.artwork_url}}" >
+        <img src="{{getIconArt(playingTrack)}}" >
       </div>
-      <div class = "col-10">
-        <!--<button id="songPlayPause" ng-click="playPause('song')">PlayPause</button>-->
+      <div class = "col-10" id="playBtnContainer">
+        <!--
         <a id="songPlayPause" class="button button-icon icon ion-ios-pause custom-icon" ng-click="liked=!liked; playPause('song', liked)" ng-show="show_player" ng-class="{'ion-ios-pause' : liked, 'ion-ios-play' : !liked}"></a>
+        -->
+        <a ng-click="playPause('song')" ng-class="{'ion-ios-play':show_pause,'ion-ios-pause':!show_pause}" id="songPlayPause"></a>
+        <!--
+        <a id="songPause" ng-click="pause('song')" class="button button-icon icon ion-ios-pause" ng-show="!show_pause"></a>
+        <a id="songPlay" ng-click="play('song')" class="button button-icon icon ion-ios-play" ng-show="show_pause"></a>
+        -->
 
       </div>
       <div class = "col">
@@ -168,7 +174,7 @@
       <button class="button button-full" ng-click="playSong(i_rec)">
       <div class="row">
         <div class="col-10">
-          <img src="{{getIconArt(i_rec.artwork_url)}}" class="full-image" >
+          <img src="{{getIconArt(i_rec)}}" class="full-image" >
         </div>
     <div class="col">
       <label>{{i_rec.title}}</label>
