@@ -41,6 +41,7 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.currentSoundCloudLink = "";
   //
 
+  $scope.allowCalculation = true;
   //
   $scope.searchTimeStart = null;
   $scope.searchTimeEnd = null;
@@ -58,6 +59,57 @@ angular.module('GeniusTracklist.controllers', [])
 
 $scope.activeSong;
 //Does a switch of the play/pause with one button.
+
+
+$scope.keyPress = function(keyEvent) {
+  if(!$scope.show_player)
+    return;
+  switch(keyEvent.which)
+  {
+    case 37:
+      $scope.skipBack();
+      break;
+    case 39:
+      $scope.skipFwd();
+      break;
+    case 32:
+      $scope.playPause('song');
+      break;
+    case 48:
+      $scope.skipTo(0);
+      break;
+    case 49:
+      $scope.skipTo(1);
+      break;
+    case 50:
+      $scope.skipTo(2);
+      break;
+    case 51:
+      $scope.skipTo(3);
+      break;
+    case 52:
+      $scope.skipTo(4);
+      break;
+    case 53:
+      $scope.skipTo(5);
+      break;
+    case 54:
+      $scope.skipTo(6);
+      break;
+    case 55:
+      $scope.skipTo(7);
+      break;
+    case 56:
+      $scope.skipTo(8);
+      break;
+    case 57:
+      $scope.skipTo(9);
+      break;
+  }
+
+}
+
+
 $scope.playPause = function(id,cond){
   $scope.activeSong = document.getElementById(id);
   if($scope.activeSong.paused == true)
@@ -72,6 +124,7 @@ $scope.playPause = function(id,cond){
     //Checks to see if the song is paused, if it is, play it from where it left off otherwise pause it.
 
 }
+
 //Pauses the active song.
 $scope.pause = function(){
     $scope.activeSong.pause();
@@ -95,6 +148,11 @@ $scope.play = function(id){
   */
 }
 
+$scope.skipTo = function(inc)
+{
+  $scope.activeSong.currentTime = ($scope.activeSong.duration / 10) * inc;
+  $scope.updateTime();
+}
 
 $scope.skipBack = function()
 {
@@ -377,6 +435,7 @@ $scope.stopSong = function(){
         $scope.selected_favorites.push(fav_icons[i].icon)
       }
       $scope.toggleSelect = false;
+      $scope.allowCalculation = true;
       $scope.default_checked = true;
     }
     else if(cond == false)
@@ -384,6 +443,8 @@ $scope.stopSong = function(){
       $scope.selected_favorites = [];
       $scope.default_checked = false;
       $scope.toggleSelect = true;
+      $scope.allowCalculation = false;
+      console.log("deselected all");
     }
   }
 
@@ -416,6 +477,15 @@ $scope.stopSong = function(){
     {
       var index = $scope.selected_favorites.indexOf(track.icon);
       $scope.selected_favorites.splice(index,1);
+    }
+    if($scope.selected_favorites.length == 0)
+    {
+      $scope.allowCalculation = false;
+    }
+    else
+    {
+      if($scope.allowCalculation == false)
+        $scope.allowCalculation = true;
     }
   }
 
@@ -493,7 +563,6 @@ $scope.stopSong = function(){
           $scope.searchTimeEnd = new Date().getTime();
           var diff = $scope.searchTimeEnd - $scope.searchTimeStart;
           console.log('TOTAL SEARCH TIME: ' + diff);
-
           //DEBUG_TIMING
         });
 
@@ -848,6 +917,7 @@ $scope.stopSong = function(){
   }
 
   $scope.$on('$ionicView.enter', function(ev) {
+    document.getElementById("keyCatchDiv").focus();
     var artistObj = UserObject.get("user_obj");
     avatarPath = artistObj.avatar_url;
         avatarPath = avatarPath.replace("-large.jpg","-t500x500.jpg");
@@ -875,12 +945,13 @@ $scope.stopSong = function(){
 
 
 
-.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed, /* StoredEmbedLinks,*/ ProcessCollectionsObject, FullReset) 
+.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed, /* StoredEmbedLinks,*/ ProcessCollectionsObject, FullReset, GlobalFunctions) 
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
     redirect_uri: 'http://localhost:8100/#/home' //'https://soundcloud.com/user-8492062'
   });
+  $scope.GlobalFunctions = GlobalFunctions;
   $scope.UserObject = UserObject;
   $scope.input_suggestions = [];
   $scope.searchText = "";
@@ -899,8 +970,6 @@ $scope.stopSong = function(){
     }
   })
     
-
-
 
 
     $scope.GetUser = function (search_input) 

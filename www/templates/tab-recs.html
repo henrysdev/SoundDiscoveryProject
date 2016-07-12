@@ -6,6 +6,7 @@
 
   <ion-content class="padding">
     <body>
+      <div id="keyCatchDiv" tabindex="0" ng-keydown="keyPress($event)"></div>
   <div class = "row">
   <div class="col">
     
@@ -19,7 +20,7 @@
   </div>
 
 
-<div class="row" ng-show="show_general_ui">
+<div id="generalUI" class="row" ng-show="show_general_ui">
   <div class="col col-25" ng-show="show_profile">
     <div>
       
@@ -59,14 +60,14 @@
 </div>
 </div>
 <p></p>
-<div class="button" ng-click="startCalculation()">Calculate Recommendations</div>
+<div class="button" ng-click="startCalculation()" ng-disabled="!allowCalculation">Calculate Recommendations</div>
 <div class="button" ng-click="selectAll(toggleSelect,fav_icons)">(De)select All</div>
 </div>
 
 
 <div class="col" ng-show="!show_fav_selection">
 
-  <a id="playerObj" ng-show="show_player" ng-show=" ">
+  <a id="playerObj" ng-show="show_player">
     <div class = "row" id="playerObj" ng-show="show_player">
       <div class = "col-25">
         <img src="{{getIconArt(playingTrack)}}" >
@@ -123,42 +124,6 @@
     </div>
   
   </a>
-
-<!--
-  <a ng-show="show_player" class="item" id="playerObj">
-    <div class="row" id="playerObj">
-      <div class="col-25">
-      <img src="{{playingTrack.artwork_url}}" >
-      </div>
-      <div class="col">
-        <div>
-  {{playingTrack.title}}
-  </div>
-  <div>
-    {{playingTrack.user.permalink}}
-  </div>
-  <p></p>
-        <div>
-          <audio id="song">
-<source src="" type="audio/mp3"/>
-  Your browser does not support the audio tag.
-</audio>
-
-<button id="songPlayPause" ng-click="playPause('song')">PlayPause</button>
-
-<div id="songTime">0:00 / 0:00</div>
-
-<img src="{{playingTrack.waveform_url}}" id="songSlider" ng-click="setSongPosition(event)">
-<div>
-<img src="img/playback_img.png" id="trackProgress">
-</div>
-</div>
-</div>
-
-</div>
-  </a>
--->
-
 
   <div ng-show="loading">
     <ion-spinner icon="spiral">

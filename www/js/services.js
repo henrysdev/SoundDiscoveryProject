@@ -37,7 +37,18 @@ angular.module('GeniusTracklist.services', [])
   }
   return null;
   //throw "Couldn't find object with id: " + id;
-}
+},
+
+  catchNull: function(src) {
+    var defaultUrl = "http://i.stack.imgur.com/5Y4F4.jpg";
+    if(src == "" || src == null)
+    {
+      return defaultUrl;
+    }
+    else
+      return src;
+
+  }
 
   }
 })
