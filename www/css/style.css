@@ -1,1 +1,350 @@
 /* Empty. Add your own CSS if you like */
+@import url(https://fonts.googleapis.com/css?family=Racing+Sans+One);
+
+h4{
+	color: white;
+    font-size: 500%;
+    text-align: center;
+    font-family: 'Racing Sans One';
+}
+
+
+
+#playerTitle
+{
+	font-size: 14px;
+}
+#playerArtist
+{
+	font-size: 12px;
+	color: gray;
+}
+/*
+.button{
+	border:1px solid #a8c1d5; -webkit-border-radius: 3px; -moz-border-radius: 3px;border-radius: 3px;font-size:12px;font-family:arial, helvetica, sans-serif; padding: 10px 10px 10px 10px; text-decoration:none; display:inline-block;text-shadow: -1px -1px 0 rgba(0,0,0,0.3);font-weight:bold; color: #FFFFFF;
+ background-color: #CEDCE7; background-image: -webkit-gradient(linear, left top, left bottom, from(#CEDCE7), to(#596a72));
+ background-image: -webkit-linear-gradient(top, #CEDCE7, #596a72);
+ background-image: -moz-linear-gradient(top, #CEDCE7, #596a72);
+ background-image: -ms-linear-gradient(top, #CEDCE7, #596a72);
+ background-image: -o-linear-gradient(top, #CEDCE7, #596a72);
+ background-image: linear-gradient(to bottom, #CEDCE7, #596a72);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#CEDCE7, endColorstr=#596a72);
+
+}
+
+.button:hover{
+ border:1px solid #8aabc5;
+ background-color: #acc4d6; background-image: -webkit-gradient(linear, left top, left bottom, from(#acc4d6), to(#434f55));
+ background-image: -webkit-linear-gradient(top, #acc4d6, #434f55);
+ background-image: -moz-linear-gradient(top, #acc4d6, #434f55);
+ background-image: -ms-linear-gradient(top, #acc4d6, #434f55);
+ background-image: -o-linear-gradient(top, #acc4d6, #434f55);
+ background-image: linear-gradient(to bottom, #acc4d6, #434f55);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#acc4d6, endColorstr=#434f55);
+}
+*/
+
+
+#emptyProfile
+{
+	position: relative;
+	text-align: center;
+}
+
+#playlistCheck
+{
+	position: relative;
+	left: 5%;
+	font-size:45px;
+	color: green;
+}
+
+#connectLogin
+{
+	top:30%;
+	width: 240px;
+	height: 31px;
+	margin: 0 auto;
+	position: fixed;
+	left: 40%;
+	text-align: center;	
+}
+
+#playBtnContainer
+{
+	position: relative;
+	left: 3%;
+}
+
+#songPlayPause
+{
+	font-size: 60px;
+	color: white;
+}
+
+#songPlayPause.custom-icon:before
+{
+	text-align: center;
+	font-size: 60px;
+	color: white;
+}
+
+#songRewind.custom-icon:before
+{
+	font-size: 60px;
+	color: white;
+}
+
+#songSkip.custom-icon:before
+{
+	font-size: 60px;
+	color: white;
+}
+
+#audioContainer
+{
+	position: relative;
+    top: -2px;
+}
+
+
+#songSlider
+{
+	display: block;
+    margin: auto;
+
+    height: auto;
+    max-height: 100%;
+
+    width: auto;
+    max-width: 100%;
+}
+
+#waveform
+{
+	position: relative;
+	display: block;
+    margin: auto;
+
+    height: auto;
+    max-height: 100%;
+
+    width: auto;
+    max-width: 100%;
+}
+
+#trackProgress
+{
+position: fixed;
+	transform: translate(0%,-100%);
+	opacity: 0.5;
+   	pointer-events:none;
+}
+
+#bckBtn
+{
+	text-align: right;
+}
+
+#songRewind
+{
+	transform: translate(0%,50%);
+}
+
+
+#songSkip
+{
+	transform: translate(0%,50%);
+}
+
+#fwdBtn
+{
+	text-align: left;
+}
+
+#playerObj
+{
+	background-color: #181818;
+}
+#disclaimerText
+{
+	position: absolute;
+	transform: translate(0%,10%);
+    left: 0px;
+    top: 50%;
+    z-index: -1;
+}
+
+#easyFixButton
+{
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: blue;
+	color:blue;
+}
+
+.button#editSearchButton.button{
+	top: 10px;
+	position: relative;
+    left: 0px;
+    background-color: white;
+}
+.button#playlistButton.button{
+	top: 10px;
+	position: relative;
+    left: 0px;
+    background-color: white;
+}
+
+.scroll-bar {
+  position: absolute;
+}
+
+#userSuggestion.row{
+	z-index = 2;
+}
+.item-content {
+  background-color: black;
+}
+
+.scroll-content.ionic-scroll{
+	background-color: #282828;
+}
+
+.padding.scroll-content.ionic-scroll{
+	background-color: #282828;
+}
+
+/*.item.item-input-inset*/
+#enterUsername
+{
+	position: fixed;
+        top: 300%;
+        width: 100%;
+        transform: translate(0%,500%);
+        z-index = 2;
+        /*
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        */
+	/*
+	-webkit-animation: mymove 1s infinite;
+    animation: mymove 1s infinite;
+	*/
+}
+
+@-webkit-keyframes mymove {
+    from {left: -1000px;}
+    to {left: 0px;}
+}
+
+.spinner svg
+{
+	width: 100px;
+	height: 100px;
+	display : block;
+	margin: auto;
+	text-align: center;
+	stroke: #444;
+  	fill: #444;
+}
+
+.fav_window {
+  height: 400px;
+  background-color: #282828;
+}
+
+#info0{
+	position: absolute;
+    left: 0px;
+    top: 50%;
+    z-index: 0;
+}
+#info1{
+	position: absolute;
+    left: 0px;
+    top: 90%;
+    z-index: 0;
+}
+
+
+#userSuggestion
+{
+	/*
+	opacity: 0.3;
+    filter: alpha(opacity=30);
+    */
+	background-color: #707070 ;
+}
+
+.a#portfolioLink
+{
+	text-align: center;
+	color: white;
+	font-size:50%;
+}
+
+h2
+{
+	text-align: center;
+	font-family: 'Racing Sans One';
+}
+.nav-bar{
+	background-color: : #282828;
+	color: white;
+}
+.ion-nav-bar{
+	background-color: : #282828;
+	color: white;
+}
+.list{
+	background-color: : #282828;
+	color: white;
+}
+.row {
+	background-color: #282828;
+	color: white;
+}
+
+
+a:link {
+    text-decoration: underline;
+    color: gray;
+}
+
+a:visited {
+    text-decoration: underline;
+    color: gray;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: blue;
+}
+
+a:active {
+    text-decoration: underline;
+    color:white;
+}
+
+.item{
+	background-color: #282828;
+	color: white;
+}
+
+h1 {
+    color: white;
+    font-size: 250%;
+    text-align: center;
+    font-family: 'Racing Sans One';
+}
+
+h3 {
+	color: white;
+	text-align: center;
+	font-family: 'Racing Sans One';
+}
+
+p {
+    font-family: "Times New Roman";
+    font-size: 20px;
+}

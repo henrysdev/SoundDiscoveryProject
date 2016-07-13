@@ -1,9 +1,74 @@
-<ion-view view-title="Account">
+ <!--<head>
+     <link rel="shortcut icon" href="favicon.ico?"/> 
+   </head>
+-->
+<ion-view view-title="Genius Tracklist">
+
   <ion-content>
-    <ion-list>
-    <ion-toggle  ng-model="settings.enableFriends">
-        Enable Friends
-    </ion-toggle>
-    </ion-list>
+  <p></p>
+  <h4>Genius Tracklist <img src="https://developers.soundcloud.com/assets/powered_by_large_white-9c2af6a93ad2b1c541f423d9e9045980.png"></h4>
+
+<div class="list">
+  <img id="connectLogin" class="button button-clear" ng-click="loginUser()" src="http://connect.soundcloud.com/2/btn-connect-sc-l.png" >
+  <div ng-show="DEBUG">
+  <h3>or</h3>
+  <div class="item item-input-inset" >
+    <label class="item-input-wrapper">
+
+      <input id="searchField" type="text" placeholder="Soundcloud Username" ng-model="searchText" ng-change="autoCompleteUsername(searchText)" ng-model-options="{debounce:300}">" 
+    </label>
+    <button class="button button-small" ng-click="GetUser(searchText)">
+      Submit
+    </button>
+  </div>
+</div>
+  <div style="height:386px;overflow:auto;" ng-show="show_suggestions">
+  <ul class="list" ng-show="show_suggestions" id="autocomplete_list">
+        <li ng-repeat="i_suggestion in input_suggestions | limitTo:10" ng-click="selectUser(i_suggestion)" id="$index">
+        	
+          <div class="row" id="userSuggestion">
+            <div class="col col-10">
+              <img class="full-image" ng-show="show_suggestions" src="{{i_suggestion.avatar_url}}">
+            </div>
+            <div class="col">
+
+          <label>{{i_suggestion.username}}</label>
+          <label>{{extraDetails(i_suggestion)}}</label>
+
+      </div>
+  </div>
+        </li class="item">
+        
+          <div class="row" ng-show="user_loading_wheel">
+          	try re-typing if no results are found
+            <div class="col col-10">
+              <ion-spinner icon="spiral">
+          </ion-spinner>
+            </div>
+            <div class="col">
+        </div>
+    
+      </div>
+          
+      </ul>
+  </div>
+
+
+</div class="list">
+<a href="http://www.henrysdev.net/" id="portfolioLink"> Developed by Henry Warren </a>
+
+<div id="disclaimerText">
+	<h4>
+<p> *WEBSITE UNDER DEVELOPMENT (please be patient with the features)* </p>
+
+<p> For use with <a href="https://soundcloud.com/stream"> SoundCloud</a> </p>
+
+<p > Contact me at henrysdev@gmail.com </p>
+<p >
+	Genius Tracklist is a personal project of mine for the purpose of music discovery. Built using SoundCloud's API, I do not
+	own any of the music streamed through this website. 
+<p>
+</h4>
+</div>
   </ion-content>
 </ion-view>

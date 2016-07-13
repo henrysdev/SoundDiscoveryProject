@@ -1,12 +1,11 @@
 <ion-view view-title="Dashboard">
 <ion-content class="padding">
-<h2>Welcome to Ionic</h2>
-
+<h2>Artist Comparison</h2>
 <div class="list">
 
   <div class="item item-input-inset">
     <label class="item-input-wrapper">
-      <input id="firstSearchField" type="text" placeholder="Soundcloud Username" ng-model="firstSearchText" ng-change="autoCompleteUsername(firstSearchText,'1')">
+      <input id="firstSearchField" type="text" placeholder="Artist Username" ng-model="firstSearchText" ng-change="autoCompleteUsername(firstSearchText,'1')">
     </label>
     <button class="button button-small" ng-click="GetUser(firstSearchText,'1')">
       Submit
@@ -28,7 +27,7 @@
       </ul>
   <div class="item item-input-inset">
     <label class="item-input-wrapper">
-      <input id="secondSearchField" type="text" placeholder="Soundcloud Username" ng-model="secondSearchText" ng-change="autoCompleteUsername(secondSearchText, '2')">
+      <input id="secondSearchField" type="text" placeholder="Artist Username" ng-model="secondSearchText" ng-change="autoCompleteUsername(secondSearchText, '2')">
     </label>
     <button class="button button-small" ng-click="GetUser(secondSearchText,'2')">
       Submit
