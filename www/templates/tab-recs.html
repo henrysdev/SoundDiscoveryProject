@@ -6,7 +6,7 @@
 
   <ion-content class="padding">
     <body>
-      <div id="keyCatchDiv" tabindex="0" ng-keydown="keyPress($event)"></div>
+      <div id="keyCatchDiv" tabindex="1" ng-keydown="keyPress($event)"></div>
   <div class = "row">
   <div class="col">
     
@@ -31,6 +31,10 @@
     <label id="artistLabel"></label>
     <div>
     <button class="button" id="editSearchButton" ng-show="show_recs" ng-click="editCriteria()">Edit Search Criteria</button>
+  </div>
+    <p></p>
+    <div>
+    <button class="button" id="playlistButton" ng-show="show_recs" ng-click="publishPlaylist()" ng-disabled="hasMadePlaylist">Export Playlist<i id="playlistCheck" class = "icon icon ion-checkmark" ng-show="hasMadePlaylist"></i></button>
     </div>
   </div>
 
@@ -88,15 +92,17 @@
           {{playingTrack.title}}
         </div>
         <div id="playerArtist">
-          {{playingTrack.user.permalink}}
+          {{playingTrack.user.username}}
         </div>
           <div id="songTime" >0:00 / 0:00
           </div>
       </div>
       <div class="col"></div>
       <div class = "col-20" id="iframeOffset">
-        <iframe id="scLink" allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fmntrees&color=orange_white&size=64" style="width: 64px; height: 64px;"></iframe>
+        <iframe id="scLink" allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fmntrees&color=orange_transparent&size=64" style="width: 64px; height: 64px;"></iframe>
+        <!--<button ng-click="likeTrack()"> Like on Soundcloud </button>-->
       </div>
+
     </div>
     
     <div class="row" ng-show="show_player" id="playerObj">
@@ -112,7 +118,7 @@
         <div>
         <img src="{{playingTrack.waveform_url}}" id="songSlider" ng-click="setSongPosition(event)">
         <div>
-        <img src="img/playback_img.png" id="trackProgress">
+        <img src="img/playback_img.png" id="trackProgress" ng-show="show_prog_bar">
       </div>
         </div>
       

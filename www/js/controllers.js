@@ -8,7 +8,7 @@ angular.module('GeniusTracklist.controllers', [])
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
-    redirect_uri: 'http://localhost:8100/#/recs'
+    redirect_uri: 'http://localhost:8100/callback.html'
   });
 
   $scope.UserObject = UserObject;
@@ -39,6 +39,7 @@ angular.module('GeniusTracklist.controllers', [])
   //player-widget material
   $scope.playingTrack = null;
   $scope.currentSoundCloudLink = "";
+  $scope.hasMadePlaylist = false;
   //
 
   $scope.allowCalculation = true;
@@ -109,8 +110,34 @@ $scope.keyPress = function(keyEvent) {
 
 }
 
+$scope.publishPlaylist = function()
+{
+    var tracks = [];//[{id: 290}, {id: 291}, {id: 292}];
+    for(var i = 0; i < $scope.recommendedTracks.length; i++)
+    {
+      tracks.push({id: $scope.recommendedTracks[i].id});
+    }
+    var title = UserObject.get("user_obj").username;
+    title += " - Genius Tracklist"
+    SC.post('/playlists', {
+      playlist: { title: title, tracks: tracks }
+    });
+    $scope.hasMadePlaylist = true;
+}
+
+$scope.likeTrack = function()
+{
+  SC.connect().then(function() {
+  var stringToPass = "/me/favorites/";
+  stringToPass += $scope.recommendedTracks[$scope.currentTrackIndex].id;
+  //stringToPass += "&oauth_token=1-242668-228144662-7534945a1000f";
+  SC.put(stringToPass);
+  console.log("went through");
+});
+}
 
 $scope.playPause = function(id,cond){
+  document.getElementById("keyCatchDiv").focus();
   $scope.activeSong = document.getElementById(id);
   if($scope.activeSong.paused == true)
   {    
@@ -156,6 +183,7 @@ $scope.skipTo = function(inc)
 
 $scope.skipBack = function()
 {
+  document.getElementById("keyCatchDiv").focus();
   if($scope.activeSong.currentTime > 2)
     $scope.activeSong.currentTime = 0;
   else
@@ -183,6 +211,7 @@ $scope.skipFwd = function()
 //Updates the current time function so it reflects where the user is in the song.
 //This function is called whenever the time is updated.  This keeps the visual in sync with the actual time.
 $scope.updateTime = function(){
+  document.getElementById("keyCatchDiv").focus();
     var currentSeconds = (Math.floor($scope.activeSong.currentTime % 60) < 10 ? '0' : '') + Math.floor($scope.activeSong.currentTime % 60);
     var currentMinutes = Math.floor($scope.activeSong.currentTime / 60);
     //Sets the current song location compared to the song duration.
@@ -280,6 +309,7 @@ $scope.stopSong = function(){
     });
     $scope.activeSong.addEventListener("ended", function(){
      $scope.activeSong.currentTime = 0;
+     $scope.show_prog_bar = false;
       console.log("finished Playing");
       
         if($scope.currentTrackIndex < ($scope.recommendedTracks.length-1))
@@ -323,13 +353,14 @@ $scope.stopSong = function(){
     simplePlayer.src = trackStream;
     console.log("player source:");
     console.log(simplePlayer.src);
+    $scope.show_prog_bar = true;
     $scope.play('song');
   }
 
   $scope.editCriteria = function()
   {
     $scope.initialCalc = false;
-    ProcessCollectionsObject.clear_();
+    //ProcessCollectionsObject.clear_();
     $scope.fav_icons = [];
     $scope.recommendedTracks = [];
     UserObject.set("favorites", null);
@@ -453,6 +484,7 @@ $scope.stopSong = function(){
     UserObject.set("favs_to_use", $scope.selected_favorites);
     max_artists_computed = $scope.selected_favorites.length;
     //$scope.done_picking_favs = false;
+    $scope.hasMadePlaylist = false;
     $scope.UI_states("generating");
     $scope.artistList();
     $scope.searchTimeStart = new Date().getTime();
@@ -949,8 +981,9 @@ $scope.stopSong = function(){
 {
   SC.initialize({
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
-    redirect_uri: 'http://localhost:8100/#/home' //'https://soundcloud.com/user-8492062'
+    redirect_uri:  'http://localhost:8100/callback.html' //'http://www.geniustracklist.com/callback.html'
   });
+  $scope.DEBUG = false;
   $scope.GlobalFunctions = GlobalFunctions;
   $scope.UserObject = UserObject;
   $scope.input_suggestions = [];
@@ -961,6 +994,8 @@ $scope.stopSong = function(){
   var curr_input = "";
 
   $scope.$on('$ionicView.enter', function(ev) {
+
+// initiate auth popup
     if(FullReset.get() == true)
       window.location.reload(true)
     else
@@ -969,10 +1004,31 @@ $scope.stopSong = function(){
       input.select();
     }
   })
+
+  $scope.loginUser = function()
+  {
+    SC.connect().then(function() {
+    return SC.get('/me');
+  }).then(function(me) {
+    console.log(me);
+    UserObject.set("full_user_profile", me);
+    UserObject.set("user_obj", me);
+    var user_id = UserObject.get("user_obj").id;
+     var stringToPass = "/users/" + UserObject.get("user_obj").id;
+        var myDataPromise = Retrieve.getData(stringToPass);
+        myDataPromise.then(function(artistObj)
+        {
+          UserObject.set("user_obj", artistObj);
+          document.getElementById("searchField").value = "";
+          $scope.autoCompleteUsername("a",'1');
+          $state.go('recs');
+        }); 
+  });
     
+  }
 
 
-    $scope.GetUser = function (search_input) 
+    $scope.GetUser = function () 
     {  
       var stringToPass = "/resolve.json?url=http://soundcloud.com/";
       search_input = $scope.UserObject.get("user_obj").permalink;
@@ -980,12 +1036,14 @@ $scope.stopSong = function(){
       stringToPass += "&client_id=a06eaada6b3052bb0a3dff20329fdbf9";
       $scope.show_profile = true;
       $scope.show_fav_selection = true;
+      console.log("str to pass: " + stringToPass);
       SC.get(stringToPass).then(function(artistObj)
       {
+        console.log("return obj: ");
+        console.log(artistObj);
         UserObject.set("user_obj", artistObj);
         document.getElementById("searchField").value = "";
         $scope.autoCompleteUsername("a",'1');
-        
         $state.go('recs');
     });
 
@@ -1023,6 +1081,7 @@ $scope.autoCompleteUsername = function(input)
     $scope.show_suggestions = false;
   }
 }
+
 
 $scope.selectUser = function(selectedUser)
 {
@@ -1062,10 +1121,6 @@ $scope.newUser = function()
     return strToReturn;
   }
 
-
-
-
-
-});
+})
 
 

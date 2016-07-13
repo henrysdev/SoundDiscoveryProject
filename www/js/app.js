@@ -65,6 +65,12 @@ angular.module('GeniusTracklist', ['ionic', 'GeniusTracklist.controllers', 'Geni
       controller: 'HomeCtrl',
       templateUrl: 'templates/tab-account.html'
     })
+  .state('callback', {
+    cache: false,
+    url: '/callback',
+    controller: 'CallbackCtrl',
+    templateUrl: 'callback.html'
+  })
   /*
     .state('tab.chat-detail', {
       url: '/chats/:chatId',

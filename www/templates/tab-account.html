@@ -6,11 +6,13 @@
 
   <ion-content>
   <p></p>
-  <h4>Genius Tracklist</h4>
-<div class="list">
-  
-  <div class="item item-input-inset">
+  <h4>Genius Tracklist <img src="https://developers.soundcloud.com/assets/powered_by_large_white-9c2af6a93ad2b1c541f423d9e9045980.png"></h4>
 
+<div class="list">
+  <img id="connectLogin" class="button button-clear" ng-click="loginUser()" src="http://connect.soundcloud.com/2/btn-connect-sc-l.png" >
+  <div ng-show="DEBUG">
+  <h3>or</h3>
+  <div class="item item-input-inset" >
     <label class="item-input-wrapper">
 
       <input id="searchField" type="text" placeholder="Soundcloud Username" ng-model="searchText" ng-change="autoCompleteUsername(searchText)" ng-model-options="{debounce:300}">" 
@@ -19,6 +21,7 @@
       Submit
     </button>
   </div>
+</div>
   <div style="height:386px;overflow:auto;" ng-show="show_suggestions">
   <ul class="list" ng-show="show_suggestions" id="autocomplete_list">
         <li ng-repeat="i_suggestion in input_suggestions | limitTo:10" ng-click="selectUser(i_suggestion)" id="$index">

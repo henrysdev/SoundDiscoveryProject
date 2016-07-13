@@ -8,6 +8,8 @@ h4{
     font-family: 'Racing Sans One';
 }
 
+
+
 #playerTitle
 {
 	font-size: 14px;
@@ -39,6 +41,26 @@ h4{
  background-image: linear-gradient(to bottom, #acc4d6, #434f55);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#acc4d6, endColorstr=#434f55);
 }
 */
+
+#playlistCheck
+{
+	position: relative;
+	left: 5%;
+	font-size:45px;
+	color: green;
+}
+
+#connectLogin
+{
+	top:30%;
+	width: 240px;
+	height: 31px;
+	margin: 0 auto;
+	position: fixed;
+	left: 40%;
+	text-align: center;	
+}
+
 #playBtnContainer
 {
 	position: relative;
@@ -154,10 +176,18 @@ position: fixed;
 }
 
 .button#editSearchButton.button{
-	position: absolute;
+	top: 10px;
+	position: relative;
     left: 0px;
     background-color: white;
 }
+.button#playlistButton.button{
+	top: 10px;
+	position: relative;
+    left: 0px;
+    background-color: white;
+}
+
 .scroll-bar {
   position: absolute;
 }

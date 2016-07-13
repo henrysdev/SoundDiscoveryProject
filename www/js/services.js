@@ -143,10 +143,16 @@ angular.module('GeniusTracklist.services', [])
 
 .factory('Retrieve', function($http) {
     var getData = function(str, sender, lim) {
-        return SC.get(str, {limit: lim }).then(function(data_) 
+        return SC.get(str, {limit: lim }).then(function successCallback(data_) 
         {
             data_.SENDER = sender;
             return data_;
+        },
+        function errorCallback(response)
+        {
+          console.log("caught error");
+          $scope.data.error = { message: error, status: status};
+          console.log($scope.data.error.status); 
         });
     };
 
@@ -224,6 +230,7 @@ angular.module('GeniusTracklist.services', [])
 
 .factory("UserObject", function() {
 
+  var full_user_profile = null;
   var user_obj = null;
   var fav_count = 0;
   var favorites = null;
@@ -235,6 +242,9 @@ angular.module('GeniusTracklist.services', [])
     {
       switch(attr_name)
       {
+        case "full_user_profile":
+          full_user_profile = val;
+          break;
         case "user_obj":
           user_obj = val;
           break;
@@ -257,6 +267,9 @@ angular.module('GeniusTracklist.services', [])
       var thing_to_return = null;
       switch(attr_name)
       {
+        case "full_user_profile":
+          thing_to_return = full_user_profile;
+          break;
         case "user_obj":
           thing_to_return = user_obj;
           break;
@@ -277,6 +290,7 @@ angular.module('GeniusTracklist.services', [])
     },
     clear_: function()
     {
+      full_user_profile = null;
       user_obj = null;
       fav_count = null;
       favorites = null;
