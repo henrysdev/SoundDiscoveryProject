@@ -23,6 +23,7 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.selected_favorites = [];
   var avatarPath = "";
   var widgets = [];
+  $scope.show_empty_profile = false;
   $scope.show_pause = true;
   $scope.show_fav_selection = true;
   $scope.show_prog_bar = false;
@@ -30,6 +31,7 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.done_picking_favs = true;
   $scope.loading = true;
   $scope.loading_text = "";
+  $scope.detailed_loading_text = "";
   $scope.current_selected_stream = null;
   $scope.default_checked = true;
   $scope.toggleSelect = false;
@@ -42,7 +44,7 @@ angular.module('GeniusTracklist.controllers', [])
   $scope.hasMadePlaylist = false;
   //
 
-  $scope.allowCalculation = true;
+  $scope.allowCalculation = false;
   //
   $scope.searchTimeStart = null;
   $scope.searchTimeEnd = null;
@@ -61,6 +63,13 @@ angular.module('GeniusTracklist.controllers', [])
 $scope.activeSong;
 //Does a switch of the play/pause with one button.
 
+  $scope.noFavorites = function()
+  {
+    $scope.UI_states("empty_profile");
+    $scope.$apply(function (){
+      $scope.show_empty_profile = true;
+    });
+  }
 
 $scope.keyPress = function(keyEvent) {
   if(!$scope.show_player)
@@ -409,6 +418,16 @@ $scope.stopSong = function(){
         $scope.show_general_ui = true;
         $scope.show_player = true;
         break;
+      case "empty_profile":
+        console.log("EXCEPTION");
+        $scope.loading = false;
+        $scope.show_recs = false;
+        $scope.show_tracks = false;
+        $scope.show_fav_selection = false;
+        $scope.show_profile = true;
+        $scope.show_general_ui = true;
+        $scope.show_player = false;
+        break;
       default:
         $scope.loading = false;
         $scope.show_recs = false;
@@ -634,6 +653,8 @@ $scope.stopSong = function(){
       myDataPromise.then(function(responseTracks)
       {  
         console.log(p);
+        $scope.detailed_loading_text = p + "/" + max_recs_computed;
+        document.getElementById("detailed_loading_text").innerHTML = $scope.detailed_loading_text;
         if(extra_track_count > 0)
           max_tracks_local ++;
         var miniTracklist = [];
@@ -759,11 +780,15 @@ $scope.stopSong = function(){
         if(!GlobalFunctions.findById(liked_artists,allFavoritesList[i][n].user_id))
         {
           max_count++;
+
           var stringToPass = "/users/" + allFavoritesList[i][n].user_id;
           var myDataPromise = Retrieve.getData(stringToPass);
           myDataPromise.then(function(responseArtists)
           {  
             p++;
+            $scope.detailed_loading_text = p + "/" + max_count;
+            document.getElementById("detailed_loading_text").innerHTML = $scope.detailed_loading_text;
+            console.log("p: " + p + ", max_count: " + max_count);
             artistsListToPass.push(responseArtists);
             if(p == max_count)
             {
@@ -818,6 +843,8 @@ $scope.stopSong = function(){
      //   responseFavorites.PATH = artistsSaved[p].username;
         favoritesLists.push(responseFavorites);
         //console.log(p);
+        $scope.detailed_loading_text = p + "/" + max_artists_computed;
+        document.getElementById("detailed_loading_text").innerHTML = $scope.detailed_loading_text;
         if(p == max_artists_computed)
         {
           ProcessCollectionsObject.set("liked_artists_fav_lists", favoritesLists);
@@ -864,6 +891,7 @@ $scope.stopSong = function(){
           newArtist.FREQ_FACTOR = 0;
           newArtist.NEW_FACTOR = len - p;
           newArtist.COMPOSITE_VALUE = newArtist.NEW_FACTOR;
+          $scope.detailed_loading_text = p + "/" + len;
           if(likedArtists.length == 0)
           {
             likedArtists.push(newArtist);
@@ -906,7 +934,6 @@ $scope.stopSong = function(){
     }  
   }
 
-
   $scope.retrieveLikes = function()
   {
     //DEBUG_TIMING
@@ -918,13 +945,19 @@ $scope.stopSong = function(){
     var stringToPass = "/users/" + UserObject.get("user_obj").id + "/favorites";
     //console.log("CRUDE FAV COUNT: ");
     //console.log(UserObject.get("user_obj").public_favorites_count);
-
     SC.get(stringToPass, {limit: 150}).then(function(favs) 
     {
         //console.log("USEABLE FAVS COUNT: ");
         //console.log(favs.length);
         //UserObject.set_fav_count(favs.length);
+        if(favs.length == 0)
+        {
+          console.log("no favs");
+          $scope.noFavorites();
+          return;
+        }
         UserObject.set("favorites", favs);  
+
         //$scope.$apply(function () {
         for(var i = 0; i < favs.length; i++)
         {
@@ -983,7 +1016,7 @@ $scope.stopSong = function(){
     client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
     redirect_uri:  'http://localhost:8100/callback.html' //'http://www.geniustracklist.com/callback.html'
   });
-  $scope.DEBUG = false;
+  $scope.DEBUG = true;
   $scope.GlobalFunctions = GlobalFunctions;
   $scope.UserObject = UserObject;
   $scope.input_suggestions = [];

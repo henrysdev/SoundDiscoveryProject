@@ -70,7 +70,6 @@
 
 
 <div class="col" ng-show="!show_fav_selection">
-
   <a id="playerObj" ng-show="show_player">
     <div class = "row" id="playerObj" ng-show="show_player">
       <div class = "col-25">
@@ -136,6 +135,9 @@
     </ion-spinner>
     <label id="loading_text">{{loading_text}}</label>
     <div>
+    <label id="detailed_loading_text">{{detailed_loading_text}}</label>
+  </div>
+    <div>
       <label>this may take a minute... </label>
     </div>
   </div>
@@ -158,22 +160,13 @@
       </li> 
     </div>
   </div>
+  <div ng-show="show_empty_profile" id="emptyProfile">
+    <label>Your SoundCloud profile does not have enough information to generate music recommendations :(</label>
+    <p></p>
+    <label>Go like some tracks and come back or use a different profile</label>
+  </div>
 </div>
 
-  <!--
-  <div class="col" ng-show="show_recs">
-    <div class="item item-input-inset" id="recList">
-      <ul class="list" id="artist_list">
-        <li class="item" ng-repeat="i_rec in recommendedTracks"  id="repeatWidgets">
-          <a>
-            <iframe frameborder='no' height='166' scrolling='no' src='{{StoredEmbedLinks.get(i_rec.id)| trusted}}' width='100%'></iframe>
-          </a>
-        </li>
-        <ion-spinner icon="spiral" ng-show="!show_tracks"></ion-spinner>
-      </ul>
-    </div>
-  </div>
-  -->
 
 
 </div>

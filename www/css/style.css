@@ -42,6 +42,13 @@ h4{
 }
 */
 
+
+#emptyProfile
+{
+	position: relative;
+	text-align: center;
+}
+
 #playlistCheck
 {
 	position: relative;
