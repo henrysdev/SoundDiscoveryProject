@@ -6,9 +6,10 @@ angular.module('GeniusTracklist.controllers', ['ngIOS9UIWebViewPatch'])
 
 .controller('RecCtrl', function($scope, $state, $stateParams, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject, GlobalFunctions, FullReset, SessionCache) 
 {
+  var CLIENT_ID = '0c98c2110c32313f674e6a18eec6eb93'; //'a06eaada6b3052bb0a3dff20329fdbf9'
   SC.initialize({
-    client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
-    redirect_uri: 'http://localhost:8100/callback.html'
+    client_id: '0c98c2110c32313f674e6a18eec6eb93', //'a06eaada6b3052bb0a3dff20329fdbf9',
+    redirect_uri: 'http://localhost:8100/callback.html' //'http://www.geniustracklist.com/callback.html'
   });
 
   $scope.UserObject = UserObject;
@@ -372,7 +373,8 @@ $scope.stopSong = function(){
     //src="http://api.soundcloud.com/tracks/148976759/stream?client_id=a06eaada6b3052bb0a3dff20329fdbf9"
     var trackStream = "http://api.soundcloud.com/tracks/";
     trackStream += track.id;
-    trackStream += "/stream?client_id=a06eaada6b3052bb0a3dff20329fdbf9";
+    trackStream += "/stream?client_id=";
+    trackStream += CLIENT_ID;//"a06eaada6b3052bb0a3dff20329fdbf9";
     var simplePlayer = document.getElementById("song");
     simplePlayer.src = trackStream;
     $scope.show_prog_bar = true;
@@ -1123,9 +1125,8 @@ $scope.stopSong = function(){
             if(result != null)
             {
               result.FREQ_FACTOR ++;
-              result.COMPOSITE_VALUE = (result.FREQ_FACTOR * popularity_factor) + result.NEW_FACTOR;     
+              result.COMPOSITE_VALUE = (result.FREQ_FACTOR * popularity_factor) + result.NEW_FACTOR;    
             }
-     
             else
             {
               newArtist.COMPOSITE_VALUE = (newArtist.FREQ_FACTOR * popularity_factor) + newArtist.NEW_FACTOR;
@@ -1134,6 +1135,8 @@ $scope.stopSong = function(){
               
             }
           }
+          //console.log("liked artists: ");
+          //console.log(likedArtists);
           ProcessCollectionsObject.set("liked_artists", likedArtists);
           if(p == len)
           { 
@@ -1198,7 +1201,6 @@ $scope.stopSong = function(){
         if($scope.initialCalc == true)
           $scope.startCalculation();
         //DEBUG_TIMING
-
       });
   }
 
@@ -1234,7 +1236,7 @@ $scope.stopSong = function(){
 .controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed, /* StoredEmbedLinks,*/ ProcessCollectionsObject, FullReset, GlobalFunctions) 
 {
   SC.initialize({
-    client_id: 'a06eaada6b3052bb0a3dff20329fdbf9',
+    client_id: '0c98c2110c32313f674e6a18eec6eb93',//a06eaada6b3052bb0a3dff20329fdbf9',
     redirect_uri:  'http://localhost:8100/callback.html' //'http://www.geniustracklist.com/callback.html'
   });
   $scope.DEBUG = true;
