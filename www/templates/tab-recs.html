@@ -36,6 +36,7 @@
     <div>
     <button class="button" id="playlistButton" ng-show="show_recs" ng-click="publishPlaylist()" ng-disabled="hasMadePlaylist">Export Playlist<i id="playlistCheck" class = "icon icon ion-checkmark" ng-show="hasMadePlaylist"></i></button>
     </div>
+    <button ng-show="show_fav_selection" class="button" id="backToRecsBtn" ng-click="UI_states('results')">Back to Tracklist</button>
   </div>
 
 
@@ -64,7 +65,7 @@
 </div>
 </div>
 <p></p>
-<div class="button" ng-click="startCalculation()" ng-disabled="!allowCalculation">Calculate Recommendations</div>
+<div class="button" ng-click="startCalculation()" ng-disabled="!allowCalculation">Calculate Selection</div>
 <div class="button" ng-click="selectAll(toggleSelect,fav_icons)">(De)select All</div>
 </div>
 
@@ -171,7 +172,6 @@
 <!-- -->
 <!-- -->
 <!-- -->
-
 </div>
 
 <div ng-show="!show_general_ui">
