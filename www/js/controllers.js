@@ -6,10 +6,18 @@ angular.module('GeniusTracklist.controllers', ['ngIOS9UIWebViewPatch'])
 
 .controller('RecCtrl', function($scope, $state, $stateParams, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject, GlobalFunctions, FullReset, SessionCache) 
 {
-  var CLIENT_ID = '0c98c2110c32313f674e6a18eec6eb93'; //'a06eaada6b3052bb0a3dff20329fdbf9'
+  var DEBUG = true;
+  var CLIENT_ID = 'a06eaada6b3052bb0a3dff20329fdbf9';
+  var REDIRECT_URI = 'http://www.geniustracklist.com/callback.html';
+  if(DEBUG == true)
+  {
+    CLIENT_ID = '0c98c2110c32313f674e6a18eec6eb93'; //'a06eaada6b3052bb0a3dff20329fdbf9';
+    REDIRECT_URI = 'http://localhost:8100/callback.html'; 
+  }
+
   SC.initialize({
-    client_id: '0c98c2110c32313f674e6a18eec6eb93', //'a06eaada6b3052bb0a3dff20329fdbf9',
-    redirect_uri: 'http://localhost:8100/callback.html' //'http://www.geniustracklist.com/callback.html'
+    client_id: CLIENT_ID, //' a06eaada6b3052bb0a3dff20329fdbf9'
+    redirect_uri: REDIRECT_URI //'http://www.geniustracklist.com/callback.html'
   });
 
   $scope.UserObject = UserObject;
@@ -1157,8 +1165,11 @@ $scope.stopSong = function(){
     }  
   }
 
+  var tags = [];
+
   $scope.retrieveLikes = function()
   {
+
     //DEBUG_TIMING
     var start = new Date().getTime();
     //DEBUG_TIMING
@@ -1187,6 +1198,8 @@ $scope.stopSong = function(){
         {
           var new_icon = {checked : false, icon : favs[i]};
           $scope.fav_icons.push(new_icon);
+          tags.push(favs[i].tag_list);
+          console.log(favs[i]);
         }
         $scope.$apply(function () {
           $scope.fav_icons;
@@ -1197,14 +1210,37 @@ $scope.stopSong = function(){
         var end = new Date().getTime();
         var time = end - start;
         //console.log('execution time for ' + $scope.loading_text + ': ' + time);
-
-        if($scope.initialCalc == true)
-          $scope.startCalculation();
         //DEBUG_TIMING
+        if($scope.initialCalc == true)
+        {
+          $scope.startCalculation();
+        }
+        console.log(tags);
+
       });
   }
+$scope.funQuery = function()
+{
+   var query_results = [];
+        SC.get('/tracks', {
+          q: 'psydub', likes_count: {from:50}, limit: 200
+        }).then(function(tracks) {
+  for(var i = 0; i < tracks.length; i++)
+  {
+    var toPush = tracks[i];
+    if(toPush.likes_count > 0)
+      toPush.COMP_SCORE = toPush.likes_count / toPush.playback_count;
+    else
+      toPush.COMP_SCORE = 0;
+    query_results.push(toPush);
+  }
+  query_results.sort(function(a,b) {return (a.COMP_SCORE < b.COMP_SCORE) ? 1 : ((b.COMP_SCORE < a.COMP_SCORE) ? -1 : 0);} ); 
+  console.log(query_results);
+        });
 
+}
   $scope.$on('$ionicView.enter', function(ev) {
+    $scope.funQuery();
     document.getElementById("keyCatchDiv").focus();
     var artistObj = UserObject.get("user_obj");
     avatarPath = artistObj.avatar_url;
@@ -1235,11 +1271,23 @@ $scope.stopSong = function(){
 
 .controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed, /* StoredEmbedLinks,*/ ProcessCollectionsObject, FullReset, GlobalFunctions) 
 {
+  var DEBUG = true;
+  var CLIENT_ID = 'a06eaada6b3052bb0a3dff20329fdbf9';
+  var REDIRECT_URI = 'http://www.geniustracklist.com/callback.html';
+  if(DEBUG == true)
+  {
+    CLIENT_ID = '0c98c2110c32313f674e6a18eec6eb93'; //'a06eaada6b3052bb0a3dff20329fdbf9';
+    REDIRECT_URI = 'http://localhost:8100/callback.html'; 
+  }
+
   SC.initialize({
-    client_id: '0c98c2110c32313f674e6a18eec6eb93',//a06eaada6b3052bb0a3dff20329fdbf9',
-    redirect_uri:  'http://localhost:8100/callback.html' //'http://www.geniustracklist.com/callback.html'
+    client_id: CLIENT_ID, //' a06eaada6b3052bb0a3dff20329fdbf9'
+    redirect_uri: REDIRECT_URI, //'http://www.geniustracklist.com/callback.html'
+    //access_token: $cookieStore.get('scAuth'),
+    scope: 'non-expiring'
   });
-  $scope.DEBUG = true;
+
+  $scope.DEBUG = DEBUG;
   $scope.GlobalFunctions = GlobalFunctions;
   $scope.UserObject = UserObject;
   $scope.input_suggestions = [];
@@ -1265,6 +1313,8 @@ $scope.stopSong = function(){
   {
     SC.connect().then(function() {
     return SC.get('/me');
+
+
   }).then(function(me) {
     console.log(me);
     UserObject.set("full_user_profile", me);
@@ -1289,7 +1339,8 @@ $scope.stopSong = function(){
       var stringToPass = "/resolve.json?url=http://soundcloud.com/";
       search_input = $scope.UserObject.get("user_obj").permalink;
       stringToPass += search_input;
-      stringToPass += "&client_id=a06eaada6b3052bb0a3dff20329fdbf9";
+      stringToPass += "&client_id=";
+      stringToPass += CLIENT_ID; //a06eaada6b3052bb0a3dff20329fdbf9";
       $scope.show_profile = true;
       $scope.show_fav_selection = true;
       console.log("str to pass: " + stringToPass);

@@ -59,6 +59,7 @@ h4{
 
 #connectLogin
 {
+	/*
 	top:30%;
 	width: 240px;
 	height: 31px;
@@ -66,6 +67,7 @@ h4{
 	position: fixed;
 	left: 40%;
 	text-align: center;	
+	*/
 }
 
 #playBtnContainer

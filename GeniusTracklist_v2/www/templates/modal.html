@@ -1,0 +1,48 @@
+<script src="https://code.angularjs.org/1.4.9/angular.min.js"></script>
+<script src="lib/dst/angular-modal-service.js"></script>
+
+<div ng-app="GeniusTracklist">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>User Favorites</h3>
+        <div>
+        <h4>(To be Included in Calculation)</h4>
+      </div>
+      </div>
+
+      <div class="modal-body">
+        <div style="height:380px;overflow:auto;">
+          <div class="container-fluid" id="modalContainer"> 
+            <div ng-repeat="track in fav_icons">
+              <div class="row">
+                <div class="col-sm-12 btn-group-justified" id="fav_parent">
+                  <!--<div class="row list-group-item btn-primary" style="height:100px;overflow:no;" id="favRepeat" ng-model="fav_icons[$index].checked" btn-checkbox ng-click="updateChecked(track)" ng-init="selectAll(true,fav_icons)">-->
+                  <div class="btn btn-primary" id="favRepeat" ng-model="fav_icons[$index].checked" btn-checkbox ng-click="updateChecked(track)" ng-init="selectAll(true,fav_icons)">
+
+                    <div class="col-sm-3" id="favItem">
+                      <img width="50px" heigh="50px" src="{{getIconArt(track.icon)}}"> 
+                    </div>
+                    <div class="col-sm-7" id="favItem">
+                      <label style="text-align:left;" id="favItemText">{{track.icon.title}}</label>
+                    </div>
+                    <div class="col-sm-2">
+                    <!--
+                    <label class="checkbox checkbox-balanced">
+                      <input type="checkbox"  ng-init="selectAll(true,fav_icons)" ng-checked="default_checked" ng-change="updateChecked(track)" ng-checkbox>
+                    </label>
+                  -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+<div class="modal-footer">
+  <a class="btn btn-default" ng-click="close()">Cancel</a>
+  <a class="btn btn-default"  ng-click="startCalculation()" ng-disabled="!allowCalculation">Calculate Selection</a>
+  <a class="btn btn-default" ng-click="selectAll(toggleSelect,fav_icons)">(De)select All</a>
+</div>
+</div>
+
+</div>

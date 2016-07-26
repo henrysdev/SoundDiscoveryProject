@@ -1,0 +1,113 @@
+ <!--<head>
+     <link rel="shortcut icon" href="favicon.ico?"/> 
+   </head>
+-->
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h1>Genius Tracklist</h1>
+        </div>
+        
+        <button class="btn btn-default" ng-click="loginUser()" id="connectLogin">
+           <img src="http://connect.soundcloud.com/2/btn-connect-sc-l.png"> 
+        </button>
+        
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-md-offset-3">
+            <form class="search-form">
+                <div class="form-group has-feedback">
+                <label for="search" class="sr-only">Search</label>
+                <input type="text" class="form-control" name="search" id="searchField" placeholder="Soundcloud Username" ng-change="autoCompleteUsername(searchText)" ng-model="searchText" ng-model-options="{debounce:300}">
+                  <span class="glyphicon glyphicon-search form-control-feedback" ></span>
+
+              </div>
+
+            </form>
+            <div id="searchlist" class="list-group" ng-show="show_suggestions">
+            <a class="list-group-item" ng-repeat="i_suggestion in input_suggestions | limitTo:10" ng-click="selectUser(i_suggestion)" id="$index">
+              <div class="row" id="userSuggestion">
+                <div class="col-sm-2">
+                  <img class="full-image" ng-show="show_suggestions" src="{{i_suggestion.avatar_url}}">
+                </div>
+                <div class="col-sm-10">
+                  <label>{{i_suggestion.username}}</label>
+                  <label>{{extraDetails(i_suggestion)}}</label>
+                </div>
+              </div>
+            </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--
+  <p></p>
+  <h4>Genius Tracklist <img src="https://developers.soundcloud.com/assets/powered_by_large_white-9c2af6a93ad2b1c541f423d9e9045980.png"></h4>
+
+<div class="list">
+  <img id="connectLogin" class="button button-clear" ng-click="loginUser()" src="http://connect.soundcloud.com/2/btn-connect-sc-l.png" ng-show="DEBUG">
+  <div>
+  <h3 ng-show="DEBUG">or</h3>
+  <div class="item item-input-inset" >
+    <label class="item-input-wrapper">
+
+      <input id="searchField" type="text" placeholder="Soundcloud Username" ng-model="searchText" ng-change="autoCompleteUsername(searchText)" ng-model-options="{debounce:300}">" 
+    </label>
+    <button class="button button-small" ng-click="GetUser(searchText)">
+      Submit
+    </button>
+  </div>
+</div>
+  <div style="height:386px;overflow:auto;" ng-show="show_suggestions">
+  <ul class="list" ng-show="show_suggestions" id="autocomplete_list">
+        <li ng-repeat="i_suggestion in input_suggestions | limitTo:10" ng-click="selectUser(i_suggestion)" id="$index">
+        	
+          <div class="row" id="userSuggestion">
+            <div class="col col-10">
+              <img class="full-image" ng-show="show_suggestions" src="{{i_suggestion.avatar_url}}">
+            </div>
+            <div class="col">
+
+          <label>{{i_suggestion.username}}</label>
+          <label>{{extraDetails(i_suggestion)}}</label>
+
+      </div>
+  </div>
+        </li class="item">
+        
+          <div class="row" ng-show="user_loading_wheel">
+          	try re-typing if no results are found
+            <div class="col col-10">
+              <ion-spinner icon="spiral">
+          </ion-spinner>
+            </div>
+            <div class="col">
+        </div>
+    
+      </div>
+          
+      </ul>
+  </div>
+
+
+</div class="list">
+<a href="http://www.henrysdev.net/" id="portfolioLink"> Developed by Henry Warren </a>
+
+<div id="disclaimerText">
+	<h4>
+<p> *WEBSITE UNDER DEVELOPMENT (please be patient with the features)* </p>
+
+<p> For use with <a href="https://soundcloud.com/stream"> SoundCloud</a> </p>
+
+<p > Contact me at henrysdev@gmail.com </p>
+<p >
+	Genius Tracklist is a personal project of mine for the purpose of music discovery. Built using SoundCloud's API, I do not
+	own any of the music streamed through this website. 
+<p>
+</h4>
+</div>
+-->
+

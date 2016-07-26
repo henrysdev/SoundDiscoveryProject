@@ -39,6 +39,17 @@ angular.module('GeniusTracklist.services', [])
   return null;
   //throw "Couldn't find object with id: " + id;
 },
+findByString: function(source, str) {
+  for (var i = 0; i < source.length; i++) 
+  {
+    if (source[i] === str) 
+    {
+      return source[i];
+    }
+  }
+  return null;
+  //throw "Couldn't find object with id: " + id;
+},
 
   catchNull: function(src) {
     var defaultUrl = "http://i.stack.imgur.com/5Y4F4.jpg";
@@ -143,17 +154,21 @@ angular.module('GeniusTracklist.services', [])
 })
 
 .factory('Retrieve', function($http) {
+  var lastData = null;
     var getData = function(str, sender, lim) {
         return SC.get(str, {limit: lim }).then(function successCallback(data_) 
         {
             data_.SENDER = sender;
+            lastData = data_;
             return data_;
         },
         function errorCallback(response)
         {
           console.log("caught error");
           console.log(response);
-          return null;
+          console.log("LAST SUCCESSFULLY RETRIEVED DATA: ");
+          console.log(lastData);
+          return lastData;
         });
     };
 

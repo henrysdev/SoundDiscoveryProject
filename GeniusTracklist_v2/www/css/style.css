@@ -1,0 +1,402 @@
+/* Empty. Add your own CSS if you like */
+@import url(https://fonts.googleapis.com/css?family=Racing+Sans+One);
+
+/* HEADERS */
+h1 
+{
+	font-size: 40px;
+	color: white;
+}
+
+h2
+{
+	text-align: center;
+	font-size: 40px;
+	color: black;
+}
+
+h3
+{
+	text-align: center;
+	font-size: 30px;
+	color: black;
+}
+
+h4
+{
+	text-align: center;
+	font-size: 20px;
+	color: #303030;
+}
+
+#scLinkUser
+{
+	position: absolute;
+	transform: translate(0,-25%);
+	pointer-events: none;
+}
+
+div.row.list-group-item
+{
+	background-color: white;
+	color: black;
+}
+
+#muteBtn
+{
+	transform: translate(0%, 25%);
+}
+
+#modalContainer
+{
+	border-radius:10px;
+	border-style: solid;
+	border-width: 5px;
+	border-color: black;
+	font-size:12px;
+}
+
+#favItemText
+{
+	white-space: nowrap;
+    width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#favRepeat
+{
+	transform: translate(2%,0);
+}
+
+#fav_parent
+{
+
+}
+
+
+.modal-body
+{
+	color: white;
+	background-color: black;
+}
+
+#fav_parent
+{
+	text-align: center;
+	right:10px;
+}
+
+
+#removeBtn
+{
+	text-align: left;
+}
+
+#fav_icon
+{
+	text-align: center;
+
+}
+#tableContainer
+{
+	display:table;
+	width:100%;
+  height:100%; 
+    margin-top: -50px;
+    padding: 50px 0 0 0; /*set left/right padding according to needs*/
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+#generalUI
+{
+	border: none;
+    outline:none;
+	display: table-row;
+	height: 100%;
+	  background:
+    linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+    linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+    linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+    linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+    linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+    linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+  background-color: #131313;
+  background-size: 20px 20px;
+	/*
+		text-align: center;
+	background: rgb(76,76,76); 
+background: -moz-linear-gradient(top,  rgba(76,76,76,1) 0%, rgba(89,89,89,1) 12%, rgba(102,102,102,1) 25%, rgba(71,71,71,1) 39%, rgba(44,44,44,1) 50%, rgba(0,0,0,1) 51%, rgba(17,17,17,1) 60%, rgba(43,43,43,1) 76%, rgba(28,28,28,1) 91%, rgba(19,19,19,1) 100%); 
+background: -webkit-linear-gradient(top,  rgba(76,76,76,1) 0%,rgba(89,89,89,1) 12%,rgba(102,102,102,1) 25%,rgba(71,71,71,1) 39%,rgba(44,44,44,1) 50%,rgba(0,0,0,1) 51%,rgba(17,17,17,1) 60%,rgba(43,43,43,1) 76%,rgba(28,28,28,1) 91%,rgba(19,19,19,1) 100%); 
+background: linear-gradient(to bottom,  rgba(76,76,76,1) 0%,rgba(89,89,89,1) 12%,rgba(102,102,102,1) 25%,rgba(71,71,71,1) 39%,rgba(44,44,44,1) 50%,rgba(0,0,0,1) 51%,rgba(17,17,17,1) 60%,rgba(43,43,43,1) 76%,rgba(28,28,28,1) 91%,rgba(19,19,19,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', endColorstr='#131313',GradientType=0 );
+*/
+}
+
+
+
+.btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+  border: none;
+   outline:none;
+}
+.btn-circle.btn-lg {
+  width: 50px;
+  height: 50px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 25px;
+    border: none;
+   outline:none;
+}
+.btn-circle.btn-xl {
+  width: 70px;
+  height: 70px;
+  padding: 10px 16px;
+  font-size: 24px;
+  line-height: 1.33;
+  border-radius: 35px;
+    border: none;
+   outline:none;
+}
+
+#profCol
+{
+	display: table-cell;
+	float: none;
+}
+
+#trackCol
+{
+	display: table-cell;
+	float: none;
+}
+body { 
+	font-size: 14px;
+	color:#D8D8D8 ;
+		height: 100%;
+	  background:
+    linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+    linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+    linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+    linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+    linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+    linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+  background-color: #131313;
+  background-size: 20px 20px;
+	/*
+  margin:0; 
+  padding:0; 
+  height:100%; 
+  */
+}
+
+#prof_content
+{
+	text-align: center;
+	/*
+	background: rgb(76,76,76); 
+background: -moz-linear-gradient(top,  rgba(76,76,76,1) 0%, rgba(89,89,89,1) 12%, rgba(102,102,102,1) 25%, rgba(71,71,71,1) 39%, rgba(44,44,44,1) 50%, rgba(0,0,0,1) 51%, rgba(17,17,17,1) 60%, rgba(43,43,43,1) 76%, rgba(28,28,28,1) 91%, rgba(19,19,19,1) 100%); 
+background: -webkit-linear-gradient(top,  rgba(76,76,76,1) 0%,rgba(89,89,89,1) 12%,rgba(102,102,102,1) 25%,rgba(71,71,71,1) 39%,rgba(44,44,44,1) 50%,rgba(0,0,0,1) 51%,rgba(17,17,17,1) 60%,rgba(43,43,43,1) 76%,rgba(28,28,28,1) 91%,rgba(19,19,19,1) 100%); 
+background: linear-gradient(to bottom,  rgba(76,76,76,1) 0%,rgba(89,89,89,1) 12%,rgba(102,102,102,1) 25%,rgba(71,71,71,1) 39%,rgba(44,44,44,1) 50%,rgba(0,0,0,1) 51%,rgba(17,17,17,1) 60%,rgba(43,43,43,1) 76%,rgba(28,28,28,1) 91%,rgba(19,19,19,1) 100%); 
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', endColorstr='#131313',GradientType=0 );
+*/
+}
+
+#profileCol
+{
+
+}
+
+.col-sm-3.col-height.col-top
+{
+	
+/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+1,4c4c4c+17,0d0d0d+46,010101+50,0a0a0a+53,4e4e4e+76,383838+87,1b1b1b+100 */
+background: rgb(255,255,255); /* Old browsers */
+background: -moz-linear-gradient(top,  rgba(255,255,255,1) 1%, rgba(76,76,76,1) 17%, rgba(13,13,13,1) 46%, rgba(1,1,1,1) 50%, rgba(10,10,10,1) 53%, rgba(78,78,78,1) 76%, rgba(56,56,56,1) 87%, rgba(27,27,27,1) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 1%,rgba(76,76,76,1) 17%,rgba(13,13,13,1) 46%,rgba(1,1,1,1) 50%,rgba(10,10,10,1) 53%,rgba(78,78,78,1) 76%,rgba(56,56,56,1) 87%,rgba(27,27,27,1) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom,  rgba(255,255,255,1) 1%,rgba(76,76,76,1) 17%,rgba(13,13,13,1) 46%,rgba(1,1,1,1) 50%,rgba(10,10,10,1) 53%,rgba(78,78,78,1) 76%,rgba(56,56,56,1) 87%,rgba(27,27,27,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#1b1b1b',GradientType=0 ); /* IE6-9 */
+
+}
+
+#scLink
+{
+	position: absolute;
+	bottom:37%;
+}
+
+#parentWaveform
+{
+	width: 100%;
+}
+
+#sliderBackdrop
+{
+	position: absolute;
+	width: 100%;
+	height: 50px;
+
+}
+
+#songSlider
+{
+	background-color: #FF5500;
+	text-align: center;
+	position: absolute;
+	width: 100%;
+	height: 50px;
+}
+
+#trackProgress
+{
+	background-color: black;
+	position: absolute;
+	height: 50px;
+	opacity: 0.8;
+   	pointer-events:none;
+}
+
+#resultsScroll
+{
+	background-color: black;
+	border-radius: 5px;
+	border-style: solid;
+	border-width: 10px;
+	border-color: black;
+}
+
+/*
+#resultsContainer
+{
+	background-color: black;
+	border-radius: 5px;
+	border-style: solid;
+	border-width: 10px;
+	border-color: black;
+}
+*/
+
+a:link {
+    color: white;
+    text-decoration: none;
+}
+
+/* visited link */
+a:visited {
+    color: white;
+    text-decoration: none;
+}
+
+/* mouse over link */
+a:hover {
+    color: gray;
+    text-decoration: none;
+}
+
+/* selected link */
+a:active {
+    color: gray;
+    text-decoration: none;
+}
+
+
+#editCol
+{
+	background: rgb(76,76,76); 
+background: -moz-linear-gradient(top,  rgba(76,76,76,1) 0%, rgba(89,89,89,1) 12%, rgba(102,102,102,1) 25%, rgba(71,71,71,1) 39%, rgba(44,44,44,1) 50%, rgba(0,0,0,1) 51%, rgba(17,17,17,1) 60%, rgba(43,43,43,1) 76%, rgba(28,28,28,1) 91%, rgba(19,19,19,1) 100%); 
+background: -webkit-linear-gradient(top,  rgba(76,76,76,1) 0%,rgba(89,89,89,1) 12%,rgba(102,102,102,1) 25%,rgba(71,71,71,1) 39%,rgba(44,44,44,1) 50%,rgba(0,0,0,1) 51%,rgba(17,17,17,1) 60%,rgba(43,43,43,1) 76%,rgba(28,28,28,1) 91%,rgba(19,19,19,1) 100%); 
+background: linear-gradient(to bottom,  rgba(76,76,76,1) 0%,rgba(89,89,89,1) 12%,rgba(102,102,102,1) 25%,rgba(71,71,71,1) 39%,rgba(44,44,44,1) 50%,rgba(0,0,0,1) 51%,rgba(17,17,17,1) 60%,rgba(43,43,43,1) 76%,rgba(28,28,28,1) 91%,rgba(19,19,19,1) 100%); 
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', endColorstr='#131313',GradientType=0 ); 
+display: table-row;
+}
+
+#artistLabel
+{
+	font-size: 20px;
+}
+
+#playerObj
+{
+	border-style: solid;
+	border-radius: 5px;
+	border-width: 5px;
+	border-color: black;
+	background-color :rgba(0,0,0,0.5);
+}
+
+
+#playerArtist
+{
+	color: #D8D8D8;
+}
+
+#playerArtist
+{
+	color: white;
+	font-weight: bold;
+}
+
+
+#songSkip
+{
+	text-align: left;
+}
+
+#fwdBtn
+{
+	text-align: left;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.body
+{
+	background: navy !important;
+}
+
+.scroll-bar {
+  position: absolute;
+}
+
+.div#generalUI.row{
+  background: red; /* For browsers that do not support gradients */
+  background: -webkit-linear-gradient(left, red , yellow); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(right, red, yellow); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(right, red, yellow); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(to right, red , yellow); /* Standard syntax */
+
+}
+
+.scroll-content.ionic-scroll{
+  background: red; /* For browsers that do not support gradients */
+  background: -webkit-linear-gradient(left, red , yellow); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(right, red, yellow); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(right, red, yellow); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(to right, red , yellow); /* Standard syntax */
+}
+
+.padding.scroll-content.ionic-scroll{
+  background: red; /* For browsers that do not support gradients */
+  background: -webkit-linear-gradient(left, red , yellow); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(right, red, yellow); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(right, red, yellow); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(to right, red , yellow); /* Standard syntax */
+}
+
+.nav-bar{
+	  background: red; /* For browsers that do not support gradients */
+  background: -webkit-linear-gradient(left, red , yellow); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(right, red, yellow); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(right, red, yellow); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(to right, red , yellow); /* Standard syntax */
+}
+
+
