@@ -2,8 +2,142 @@
 @import url(https://fonts.googleapis.com/css?family=Racing+Sans+One);
 
 /* HEADERS */
+#modalFavFooter
+{
+	text-align: left;
+}
+
+#titleHeader
+{
+	position: absolute;
+	top: 0px;
+}
+
+#loading_text
+{
+	text-align: center;
+	font-size: 30px;
+}
+
+#detailed_loading_text
+{
+	text-align: center;
+	font-size: 30px;
+}
+
+#loadingContainer
+{
+	text-align: center;
+}
+
+li#favGrid
+{
+	width: 129px;
+	min-height: 65px;
+	border: 1px solid #000;
+	display: -moz-inline-stack;
+	display: inline-block;
+	vertical-align: top;
+	margin: 1px;
+	zoom: 1;
+	*display: inline;
+	_height: 65px;
+}
+
+.zoom {      
+-webkit-transition: all 0.35s ease-in-out;    
+-moz-transition: all 0.35s ease-in-out;    
+transition: all 0.35s ease-in-out;     
+cursor: -webkit-zoom-in;      
+cursor: -moz-zoom-in;      
+cursor: zoom-in;  
+}     
+
+.zoom:hover,  
+.zoom:active,   
+.zoom:focus {
+/**adjust scale to desired size, 
+add browser prefixes**/
+-ms-transform: scale(1.5);    
+-moz-transform: scale(1.5);  
+-webkit-transform: scale(1.5);  
+-o-transform: scale(1.5);  
+transform: scale(1.5);    
+position:relative;      
+z-index:100;  
+}
+
+#userSearchRec
+{
+	z-index:2;
+}
+
+#userLoading
+{
+	z-index:2;
+}
+
+#noResults
+{
+	z-index:2;
+}
+
+#searchList
+{
+}
+
+
+#connectToSC
+{
+	height:30px;
+	width:225px;
+}
+
+#creditText
+{
+	z-index:1;
+	top:50%;
+	position: absolute; 
+	left: 50%;
+}
+
+#creditChild
+{
+	position: relative;
+	left: -50%;
+	text-align: center;
+}
+
+#orLabel
+{
+	font-size: 30px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#formWrapper
+{
+	margin-top: 8px;
+	margin-left: 15%;
+	margin-right: 15%;
+}
+
+#algoExplanationImage
+{
+    max-height: 100%;
+    max-width: 100%;
+}
+
+button#connectLogin
+{
+	height:40px;
+	background-color: transparent;
+}
+
 h1 
 {
+	transform: translate(0,-20%);
+	text-align: center;
 	font-size: 40px;
 	color: white;
 }
@@ -42,6 +176,17 @@ div.row.list-group-item
 	color: black;
 }
 
+#iconGridBtn
+{
+	height: 90px;
+}
+
+#innerRowFavIcon
+{
+	position: absolute;
+	top:7px;
+}
+
 #muteBtn
 {
 	transform: translate(0%, 25%);
@@ -56,10 +201,25 @@ div.row.list-group-item
 	font-size:12px;
 }
 
-#favItemText
+#favItemTitle
 {
+	width: 70%;
+	height:50%;
+	position: absolute;
 	white-space: nowrap;
-    width: 80%;
+    /*width: 100%;*/
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#favItemArtist
+{
+	top:70%;
+	width: 70%;
+	height:50%;
+	position: absolute;
+	white-space: nowrap;
+	word-wrap: break-word;
+    /*width: 100%;*/
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -67,11 +227,6 @@ div.row.list-group-item
 #favRepeat
 {
 	transform: translate(2%,0);
-}
-
-#fav_parent
-{
-
 }
 
 
@@ -167,17 +322,33 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', end
    outline:none;
 }
 
+
+#searchPage
+{
+	font-size: 16px;
+}
+
 #profCol
 {
 	display: table-cell;
-	float: none;
+
+	border-style: solid;
+	border-width: 5px;
+	border-radius: 10px;
+	border-color: black;
 }
 
 #trackCol
 {
 	display: table-cell;
-	float: none;
+
 }
+
+div#trackCol.col-sm-9.col-height.col-top
+{
+	top:0px;
+}
+
 body { 
 	font-size: 14px;
 	color:#D8D8D8 ;
@@ -217,14 +388,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', end
 
 .col-sm-3.col-height.col-top
 {
-	
-/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+1,4c4c4c+17,0d0d0d+46,010101+50,0a0a0a+53,4e4e4e+76,383838+87,1b1b1b+100 */
-background: rgb(255,255,255); /* Old browsers */
-background: -moz-linear-gradient(top,  rgba(255,255,255,1) 1%, rgba(76,76,76,1) 17%, rgba(13,13,13,1) 46%, rgba(1,1,1,1) 50%, rgba(10,10,10,1) 53%, rgba(78,78,78,1) 76%, rgba(56,56,56,1) 87%, rgba(27,27,27,1) 100%); /* FF3.6-15 */
-background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 1%,rgba(76,76,76,1) 17%,rgba(13,13,13,1) 46%,rgba(1,1,1,1) 50%,rgba(10,10,10,1) 53%,rgba(78,78,78,1) 76%,rgba(56,56,56,1) 87%,rgba(27,27,27,1) 100%); /* Chrome10-25,Safari5.1-6 */
-background: linear-gradient(to bottom,  rgba(255,255,255,1) 1%,rgba(76,76,76,1) 17%,rgba(13,13,13,1) 46%,rgba(1,1,1,1) 50%,rgba(10,10,10,1) 53%,rgba(78,78,78,1) 76%,rgba(56,56,56,1) 87%,rgba(27,27,27,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#1b1b1b',GradientType=0 ); /* IE6-9 */
-
+	background-color:rgba(0, 0, 0, 0.4);
 }
 
 #scLink
@@ -329,19 +493,13 @@ display: table-row;
 	border-radius: 5px;
 	border-width: 5px;
 	border-color: black;
-	background-color :rgba(0,0,0,0.5);
+	background-color :rgba(0,0,0,0.4);
 }
 
 
 #playerArtist
 {
 	color: #D8D8D8;
-}
-
-#playerArtist
-{
-	color: white;
-	font-weight: bold;
 }
 
 
@@ -375,21 +533,6 @@ display: table-row;
 
 }
 
-.scroll-content.ionic-scroll{
-  background: red; /* For browsers that do not support gradients */
-  background: -webkit-linear-gradient(left, red , yellow); /* For Safari 5.1 to 6.0 */
-  background: -o-linear-gradient(right, red, yellow); /* For Opera 11.1 to 12.0 */
-  background: -moz-linear-gradient(right, red, yellow); /* For Firefox 3.6 to 15 */
-  background: linear-gradient(to right, red , yellow); /* Standard syntax */
-}
-
-.padding.scroll-content.ionic-scroll{
-  background: red; /* For browsers that do not support gradients */
-  background: -webkit-linear-gradient(left, red , yellow); /* For Safari 5.1 to 6.0 */
-  background: -o-linear-gradient(right, red, yellow); /* For Opera 11.1 to 12.0 */
-  background: -moz-linear-gradient(right, red, yellow); /* For Firefox 3.6 to 15 */
-  background: linear-gradient(to right, red , yellow); /* Standard syntax */
-}
 
 .nav-bar{
 	  background: red; /* For browsers that do not support gradients */
@@ -398,5 +541,25 @@ display: table-row;
   background: -moz-linear-gradient(right, red, yellow); /* For Firefox 3.6 to 15 */
   background: linear-gradient(to right, red , yellow); /* Standard syntax */
 }
+
+.loader{
+  margin: 0 0 2em;
+  height: 100px;
+  width: 20%;
+  text-align: center;
+  padding: 1em;
+  margin: 0 auto 1em;
+  display: inline-block;
+  vertical-align: top;
+}
+
+/*
+  Set the color of the icon
+*/
+svg path,
+svg rect{
+  fill: #FF6700;
+}
+
 
 

@@ -142,11 +142,21 @@ $scope.show = function() {
         });
     }
 */
-$scope.openModal=function(){
+
+$scope.openFavModal=function(){
     $scope.modalInstance=$uibModal.open({
-        templateUrl: 'templates/modal.html',
+        templateUrl: 'templates/modal_fav.html',
         scope:$scope
     });
+
+}
+
+$scope.openInfoModal=function(){
+    $scope.modalInstance=$uibModal.open({
+        templateUrl: 'templates/modal_info.html',
+        scope:$scope
+    });
+
 }
 
 $scope.close=function(){
@@ -231,6 +241,9 @@ $scope.keyPress = function(keyEvent) {
 
 $scope.publishPlaylist = function()
 {
+  console.log("Called");
+  if(localStorage.getItem('loggedIn') == "true")
+  {
     var tracks = [];//[{id: 290}, {id: 291}, {id: 292}];
     for(var i = 0; i < $scope.recommendedTracks.length; i++)
     {
@@ -242,6 +255,28 @@ $scope.publishPlaylist = function()
       playlist: { title: title, tracks: tracks }
     });
     $scope.hasMadePlaylist = true;
+    console.log("made it to end of it");
+  }
+  else
+  {
+    SC.connect().then(function() {
+      localStorage.setItem('loggedIn', "true");
+      $scope.publishPlaylist();
+      /*
+      var tracks = [];//[{id: 290}, {id: 291}, {id: 292}];
+    for(var i = 0; i < $scope.recommendedTracks.length; i++)
+    {
+      tracks.push({id: $scope.recommendedTracks[i].id});
+    }
+    var title = UserObject.get("user_obj").username;
+    title += " - Genius Tracklist"
+    SC.post('/playlists', {
+      playlist: { title: title, tracks: tracks }
+    });
+    $scope.hasMadePlaylist = true;
+    */
+    });
+  }
 }
 
 $scope.likeTrack = function()
@@ -431,7 +466,7 @@ $scope.stopSong = function(){
 
   $scope.canPlay = function()
   {
-    $scope.player_loaded = true;
+    $scope.player_loafded = true;
     $scope.show_player = true;
   }
 
@@ -565,13 +600,17 @@ $scope.stopSong = function(){
         break;
       case "empty_profile":
         console.log("EXCEPTION");
-         $scope.loading = false;
-        $scope.show_recs = true;
-        $scope.show_tracks = true;
-        $scope.show_fav_selection = true;
+        $scope.loading = false;
+        $scope.show_recs = false;
+        $scope.show_tracks = false;
+        $scope.show_fav_selection = false;
         $scope.show_profile = true;
         $scope.show_general_ui = true;
-        $scope.show_player = true;
+        $scope.show_player = false;
+        $scope.$apply(function () {
+          $scope.show_recs = false;
+      });
+
         /*
         $scope.loading = false;
         $scope.show_recs = false;
@@ -589,7 +628,7 @@ $scope.stopSong = function(){
         $scope.show_fav_selection = true;
         $scope.show_profile = true;
         $scope.show_general_ui = true;
-        $scope.show_player = true;
+        $scope.show_player = false;
         break;
     }
   }
@@ -638,33 +677,12 @@ $scope.stopSong = function(){
     return true;
   }
 
-  
-
-  $scope.selectAll = function(cond, fav_icons)
-  {
-    if(cond == true)
-    {
-      $scope.selected_favorites = [];
-      for(var i = 0; i < fav_icons.length; i++)
-      {
-        $scope.selected_favorites.push(fav_icons[i].icon)
-      }
-      $scope.toggleSelect = false;
-      $scope.allowCalculation = true;
-      $scope.default_checked = true;
-    }
-    else if(cond == false)
-    {
-      $scope.selected_favorites = [];
-      $scope.default_checked = false;
-      $scope.toggleSelect = true;
-      $scope.allowCalculation = false;
-    }
-    $scope.availability = {fav_icons:fav_icons};
-  }
 
   $scope.startCalculation = function()
   {
+    if($scope.allowCalculation == false)
+      return;
+    console.log("hello?");
     //clearInterval(tt);   
     $scope.functIter = 0;
     if($scope.initialCalc)
@@ -677,6 +695,8 @@ $scope.stopSong = function(){
       //NEEDS CONDITION TO ONLY CALL IF FAV_ICONS IS OPEN
       $scope.modalInstance.dismiss();
     }
+    console.log("favs to use:");
+    console.log($scope.selected_favorites);
     UserObject.set("favs_to_use", $scope.selected_favorites);
     max_artists_computed = $scope.selected_favorites.length;
     //$scope.done_picking_favs = false;
@@ -697,12 +717,101 @@ $scope.stopSong = function(){
       return url;
   }
 
-  $scope.updateChecked = function(track)
+   $scope.selectAllIcons = function(cond)
   {
-    console.log(track);
-    if(track.checked == true)
+    $scope.selected_favorites = [];
+    for(var i = 0; i < $scope.fav_icons.length; i++)
+    {
+      $scope.fav_icons[i].checked_ = cond;
+      if(cond == true)
+      {
+        $scope.selected_favorites.push($scope.fav_icons[i].icon);
+      }
+    }
+    if(cond == true)
+    {
+      $scope.toggleSelect = false;
+      $scope.allowCalculation = true;
+      $scope.default_checked = true;
+      if(document.getElementById("selectionToggleBtn"))
+        document.getElementById("selectionToggleBtn").innerHTML = "Deselect All";
+    }
+    else if(cond == false)
+    {
+      $scope.toggleSelect = true;
+      $scope.allowCalculation = false;
+      $scope.default_checked = false;
+      if(document.getElementById("selectionToggleBtn"))
+        document.getElementById("selectionToggleBtn").innerHTML = "Select All";
+    }
+    console.log("selected_favorites after SELECT ALL " + cond + ": ");
+    console.log($scope.selected_favorites);
+    console.log("fav_icons after SELECT ALL " + cond + ": ");
+    console.log($scope.fav_icons);
+
+  }
+
+  $scope.randomIcons = function()
+  {
+    console.log("called");
+    $scope.selected_favorites = [];
+    for(var i = 0; i < $scope.fav_icons.length; i++)
+    {
+      $scope.fav_icons[i].checked_ = false;
+    }
+    for(var i = 0; i < $scope.fav_icons.length; i++)
+    {
+      var rand = Math.random();
+      if(rand >= 0.5)
+      {
+        $scope.fav_icons[i].checked_ = true;
+        $scope.selected_favorites.push($scope.fav_icons[i].icon);
+      }
+    }
+    if($scope.selected_favorites.length > 0)
+    {
+      $scope.allowCalculation = true;
+    }
+    console.log("Selected favs after random method:");
+    console.log($scope.selected_favorites);
+  }  
+
+  $scope.toggleChecked = function(ind,cond)
+  {
+    console.log($scope.fav_icons[ind]);
+    if(cond == true)
+    {
+      console.log("handing checked == true");
+      $scope.selected_favorites.push($scope.fav_icons[ind].icon);
+    }
+    else if(cond == false)
+    {
+      console.log("handling checked == false");
+      var index = $scope.selected_favorites.indexOf($scope.fav_icons[ind]);
+      $scope.selected_favorites.splice(index,1);
+    }
+    if($scope.selected_favorites.length == 0)
+    {
+      $scope.allowCalculation = false;
+    }
+    else
+    {
+      if($scope.allowCalculation == false)
+        $scope.allowCalculation = true;
+    }
+    console.log("updated inclusion list:");
+    console.log($scope.selected_favorites);
+    //$scope.fav_icons[ind].checked = $scope.fav_icons[ind].checked === false ? true: false;
+  }
+
+
+/*
+  $scope.updateChecked = function(track,ind)
+  {
+    console.log("update checked called");
+    if(track.checked_ == true)
       $scope.selected_favorites.push(track.icon);
-    else if(track.checked == false)
+    else if(track.checked_ == false)
     {
       var index = $scope.selected_favorites.indexOf(track.icon);
       $scope.selected_favorites.splice(index,1);
@@ -716,7 +825,9 @@ $scope.stopSong = function(){
       if($scope.allowCalculation == false)
         $scope.allowCalculation = true;
     }
+    $scope.fav_icons[ind].checked_ = !$scope.fav_icons[ind].checked_;
   }
+*/
 
   $scope.newUser = function()
   {
@@ -773,6 +884,7 @@ $scope.stopSong = function(){
     }
     */
     $scope.UI_states("results");
+    document.getElementById("resultsScroll").scrollTop = 0;
     $scope.show_fav_selection = false;
     $scope.show_player = true;
     var stream_link = "https://w.soundcloud.com/player/?visual=false&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F13692671&show_artwork=true&auto_play=true";
@@ -1104,7 +1216,6 @@ $scope.stopSong = function(){
             pseudoFavList.push(responseTracks[0]);
             if(p == responseFollowings.length)
             {
-              console.log("DONE");
               return pseudoFavList;
             }
           });
@@ -1344,7 +1455,7 @@ $scope.stopSong = function(){
         //$scope.$apply(function () {
         for(var i = 0; i < favs.length; i++)
         {
-          var new_icon = {checked : false, icon : favs[i]};
+          var new_icon = {checked_ : false, icon : favs[i]};
           $scope.fav_icons.push(new_icon);
         }
         $scope.$apply(function () {
@@ -1359,9 +1470,9 @@ $scope.stopSong = function(){
 
         if($scope.initialCalc == true)
         {
+          //console.log("INITIAL");
           UserObject.set("favs_to_use", favs);
-          $scope.selected_favorites = favs;
-          console.log("initial calc");
+          $scope.selectAllIcons(true);
           $scope.startCalculation();
         }
         //DEBUG_TIMING
@@ -1369,8 +1480,21 @@ $scope.stopSong = function(){
   }
   var init = function () 
   {
+
     document.getElementById("keyCatchDiv").focus();
-    var artistObj = UserObject.get("user_obj");
+    /*
+    var saved = localStorage.getItem("user_obj");
+    var artistObj = (localStorage.getItem('user_obj') !== null) ? JSON.parse($scope.saved) : [ {text: 'Learn AngularJS', done: false}, {text: 'Build an Angular app', done: false} ];
+  localStorage.setItem('user_obj', JSON.stringify($scope.artistObj));
+*/
+    console.log(localStorage);
+    console.log("retrieved obj: ");
+    var artistObj = JSON.parse(localStorage.getItem('userObject'));//JSON.parse($localStorage['userObject'] || '{}');
+    UserObject.set("user_obj",artistObj);
+    console.log(artistObj);
+    //console.log(UserObject.get("user_obj"));
+    //var artistObj = $localStorage.userObject;
+    //var artistObj = UserObject.get("user_obj");
     avatarPath = artistObj.avatar_url;
     avatarPath = avatarPath.replace("-large.jpg","-t500x500.jpg");
     var doc = document.getElementById("avatar_img");
@@ -1396,7 +1520,7 @@ $scope.stopSong = function(){
 
 
 
-app.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed, /* StoredEmbedLinks,*/ ProcessCollectionsObject, FullReset, GlobalFunctions) 
+app.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed, ProcessCollectionsObject, FullReset, GlobalFunctions) 
 {
   console.log("HOME CTRL CALLED");
   var DEBUG = true;
@@ -1422,6 +1546,7 @@ app.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed,
   $scope.searchText = "";
   $scope.show_suggestions = true;
   $scope.user_loading_wheel = false;
+  $scope.user_no_results = false;
   var input = document.getElementById('searchField');
   var curr_input = "";
 
@@ -1442,7 +1567,9 @@ app.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed,
         {
           UserObject.set("user_obj", artistObj);
           document.getElementById("searchField").value = "";
-          $scope.autoCompleteUsername("a",'1');
+          var objToStore = JSON.stringify(artistObj);
+          localStorage.setItem('userObject', objToStore);
+          localStorage.setItem('loggedIn', "true");
           $state.go('recs');
         }); 
   });
@@ -1461,10 +1588,12 @@ app.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed,
       //console.log("str to pass: " + stringToPass);
       SC.get(stringToPass).then(function(artistObj)
       {
-        console.log("return obj: ");
-        console.log(artistObj);
         UserObject.set("user_obj", artistObj);
         document.getElementById("searchField").value = "";
+        var objToStore = JSON.stringify(artistObj);
+        //$localStorage.userObject = objToStore;    
+        localStorage.setItem('userObject', objToStore);
+        localStorage.setItem('loggedIn', "false");
         $state.go('recs');
     });
 
@@ -1472,9 +1601,10 @@ app.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed,
 
 $scope.autoCompleteUsername = function(input)
 {
-  console.log("called");
     if(input)
     {
+      $scope.user_no_results = false;
+      console.log("called w/ input");
       if(input.length >= 3)
       {
         $scope.user_loading_wheel = true;
@@ -1485,15 +1615,27 @@ $scope.autoCompleteUsername = function(input)
       $scope.input_suggestions = [];
       SC.get('/users', {q: input, limit: 200, track_count: {from: 2}}).then(function(users) 
       {
-        //console.log(users);
-
         $scope.input_suggestions = users;
-        $scope.user_loading_wheel = false;
-
           $scope.$apply(function () {
-            $scope.message = "Timeout called!";
+                      if(users.length == 0)
+          {
+            $scope.user_loading_wheel = false;
+            $scope.user_no_results = true;
+          }
+          else
+          {
+            $scope.user_loading_wheel = false;
+            $scope.user_no_results = false;
+          }
           });
     });
+    }
+    else
+    {
+      $scope.user_loading_wheel = false;
+      $scope.input_suggestions = [];
+      $scope.show_suggestions = false;
+      $scope.user_no_results = false;
     }
   }
   else
@@ -1501,6 +1643,7 @@ $scope.autoCompleteUsername = function(input)
     $scope.user_loading_wheel = false;
     $scope.input_suggestions = [];
     $scope.show_suggestions = false;
+    $scope.user_no_results = false;
   }
 }
 
@@ -1529,6 +1672,17 @@ $scope.newUser = function()
 
   }
 
+  $scope.getIcon = function(url)
+  {
+    if(url == null)
+    {
+      console.log("failed icon!");
+      return "http://a1.sndcdn.com/images/default_avatar_large.png?1469110696";
+    }
+    else
+      return url;
+  }
+
   $scope.extraDetails = function(suggestion)
   {
     var strToReturn = "";
@@ -1546,14 +1700,28 @@ $scope.newUser = function()
 
   var init = function () 
 {
+
+  window.addEventListener('error', function(e) {
+    console.log(e);
+    console.log(e.target.src);
+    e.target.src = e.target.src;
+    $scope.$apply(function () {
+            $scope.message = "Timeout called!";
+          });
+}, true);
+  
+
   console.log("init");
    if(FullReset.get() == true)
+   {
       window.location.reload(true)
+    }
     else
     {
       input.focus();
       input.select();
     }
+
 };
 
   init();

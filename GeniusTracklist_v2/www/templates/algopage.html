@@ -1,0 +1,342 @@
+
+<div id="keyCatchDiv" tabindex="1" ng-keydown="keyPress($event)"></div>
+
+<nav class="navbar navbar-inverse" style="height:70px;">
+  <div class="container-fluid">
+      <a class="btn" ng-click="goHome()" href="#" style="position:fixed;top:20px;z-index:3;"><i class="glyphicon glyphicon-arrow-left" ></i> Homepage</a>
+    <div style="text-align:center;">
+      <h1>Genius Tracklist</h1>
+    </div>
+  </div>
+
+
+</nav>
+
+
+
+<div class="container-fluid fill" id="tableContainer">
+  <div id="generalUI" class="row" ng-show="show_general_ui">
+
+    <!-- FIRST COLUMN -->
+    <div class="col-sm-3 col-height col-top" id="profCol">
+    <div id="prof_content">
+    <p></p>
+     <div class="profile-header-container-fluid">  
+        <div class="profile-header-img">
+          <img width="150px" height="150px" class="img-circle" src="" id="avatar_img"/>
+          <!-- badge -->
+          <div class="rank-label-container-fluid">
+            <span class="label label-default rank-label" id="artistLabel">user_name</span>
+          </div>
+        </div>
+      </div>
+      <p></p>
+      <ul class="nav nav-pills nav-stacked" style="margin-top:20px;margin-bottom:20px;">
+        <li class="btn btn-default btn-positive" ng-show="show_recs" ng-click="openFavModal()">Edit Search Criteria</li>
+        <p></p>
+        <li class="btn btn-default btn-positive" id="playlistButton" ng-show="show_recs" ng-click="publishPlaylist()" ng-disabled="hasMadePlaylist">Export Playlist
+          <span> <iframe id="scLinkUser" allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=j&color=orange_transparent&size=32" style="width: 32px; height: 32px;">
+              </iframe></span>
+        </li>
+        <p></p>
+        <li class="btn btn-default btn-positive" ng-show="show_recs" ng-click="openInfoModal()">How Does This Work?</li>
+        <p></p>
+      </ul>
+        
+    
+  </div>
+</div>
+
+
+    <!-- SECOND COLUMN -->
+<!-- -->
+    <div class="col-sm-9 col-height col-top" id="trackCol">
+
+      <!-- loading -->
+       <div ng-show="loading" id="loadingContainer">
+        <label id="loading_text">{{loading_text}}</label>
+        <div>
+          <label id="detailed_loading_text">{{detailed_loading_text}}</label>
+        </div>
+        <img src="img/circles.svg" height="40%" width="40%"/>
+      </div>
+
+      <!-- empty profile exception -->
+      <div ng-show="show_empty_profile" id="emptyProfile">
+        <label>Your SoundCloud profile does not have enough information to generate music recommendations :(</label>
+        <p></p>
+        <label>Go like some tracks and come back or use a different profile</label>
+      </div>
+      <!-- player -->
+      <div class="card" id="playerObj" ng-show="show_player" style="padding-left:10px;padding-top:10px;padding-right:10px;padding-right:10px;padding-bottom:20px;"ng-show="show_player">
+        <div class="row">
+          <div class="col-xs-2">
+            <img src="{{getIconArt(playingTrack)}}" ng-click="likeTrack()">
+            <!--     -->
+            <iframe id="scLink" allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fmntrees&color=orange_transparent&size=64" style="width: 64px; height: 64px;">
+              </iframe>
+          </div>
+           <div class="col-xs-2">
+               <button id="songPlayPause" type="button" class="btn btn-default btn-circle btn-xl" ng-click="playPause('song')"><i ng-class="{'glyphicon glyphicon-play':show_pause,'glyphicon glyphicon-pause':!show_pause}"></i></button>
+               <p></p>
+               <div id="songTime" >0:00 / 0:00
+            </div>
+          </div>
+          <div class="col-xs-5">
+            <div id="playerTitle">
+              {{playingTrack.title}}
+            </div>
+            <div id="playerArtist">
+              <a href="{{playingTrack.user.permalink_url}}" target="_blank">{{playingTrack.user.username}}</a>
+            </div>
+          </div>
+          <div class="col-xs-3">
+
+            <a id="removeBtn" class="btn btn-primary btn-danger" ng-click="removeTrack()"><span class="glyphicon glyphicon-ban-circle"></span> remove track</a>
+
+              <button id="muteBtn" type="button" class="btn btn-default btn-circle btn-lg" ng-click="muteUnmute('song')"><i ng-class="{'glyphicon glyphicon-volume-up':show_mute,' glyphicon glyphicon-volume-off':!show_mute}"></i></button>
+          
+          </div>
+        </div>
+        <audio id="song">
+          <source src="" type="audio/mp3"/>
+          Your browser does not support the audio tag.
+        </audio>
+        <p></p>
+        <div class="row">
+          <div class="col-sm-1" id="bckBtn">
+            <button id="songRewind" type="button" class="btn btn-default btn-circle btn-lg" ng-click="skipBack()" ng-show="show_player"><i class="glyphicon glyphicon-step-backward" ></i></button>
+          </div>
+          <div class="col-sm-10">
+            <div id="waveContainer">
+              <svg id="parentWaveform" height="60px">
+                <defs>
+                  <filter id="color-change">
+                    <feColorMatrix values="
+                    -2 0 0 0 1
+                    0 -2 0 0 1
+                    0 0 -2 0 1
+                    0 0 0 0 1
+                    " />
+                  </filter>
+                  <mask id="mask">
+                    <image id="sliderBackdrop" xlink:href="{{playingTrack.waveform_url | trusted}}"  filter="url(#color-change)" preserveAspectRatio="none" />
+                  </mask>
+                </defs>
+                <image id="songSlider" x="0" y="0" xlink:href="img/playback_img.png" preserveAspectRatio="none" mask="url(#mask)" ng-click="setSongPosition(event)"/>
+                <rect id="trackProgress" x="0" y="0" fill="#FF5500" mask="url(#mask)" />
+              </svg>
+            </div>
+          </div>
+          <div class="col-sm-1" id="fwdBtn">
+            <button id="songSkip" type="button" class="btn btn-default btn-circle btn-lg" ng-click="skipFwd()" ng-show="show_player" ><i class="glyphicon glyphicon-step-forward" ></i></button>
+          </div>
+        </div>
+      </div>
+      <p></p>
+      <!-- results -->
+      <div  ng-show="show_recs" id="resultsContainer">  
+        <div style="height:340px;overflow:auto;" id="resultsScroll">
+          <div class="list-group">
+          <button type="button"class="list-group-item" ng-click="playSong(i_rec)" ng-repeat="i_rec in recommendedTracks">
+              <div class="row">
+                <div class="col-sm-1">
+                  <img src="{{getIconArt(i_rec)}}" style="height:50px;width:50px;" class="full-image" >
+                </div>
+                <div class="col-sm-11">
+                  <label>{{i_rec.title}}</label>
+                  <div>
+                    <label>{{i_rec.user.username}}</label>
+                  </div>
+                </div>
+              </div>
+            </button>
+        </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- THIRD COLUMN -->
+        <!--<div class="col-sm-2 col-height col-middle" ng-show="show_profile" id="profileCol"> 
+    </div>
+    -->
+  
+
+
+
+  </div>
+  </div>
+  </div>
+
+
+
+<!--  IONIC LAYOUT
+<body>
+      <div id="keyCatchDiv" tabindex="1" ng-keydown="keyPress($event)"></div>
+  <div class = "row">
+  <div class="col">
+    
+    <button class="button" ng-click="goHome()"> <-Change User</button>
+  
+  </div>
+  <div class="col">
+  <h1>Genius Tracklist<h1>
+  </div>
+  <div class="col"></div>
+  </div>
+
+
+<div id="generalUI" class="row" ng-show="show_general_ui">
+  <div class="col col-25" ng-show="show_profile">
+    <div>
+      
+      <div class="item item-input-inset">   
+        <img id="avatar_img" class="full-image" src="">
+      </div>
+    </div>
+    <label id="artistLabel"></label>
+    <div>
+    <button class="button" id="editSearchButton" ng-show="show_recs" ng-click="editCriteria()">Edit Search Criteria</button>
+  </div>
+    <p></p>
+    <div>
+    <button class="button" id="playlistButton" ng-show="show_recs" ng-click="publishPlaylist()" ng-disabled="hasMadePlaylist">Export Playlist<i id="playlistCheck" class = "icon icon ion-checkmark" ng-show="hasMadePlaylist"></i></button>
+    </div>
+    <button ng-show="show_fav_selection" class="button" id="backToRecsBtn" ng-click="UI_states('results')">Back to Tracklist</button>
+  </div>
+
+
+  <div class="col" ng-show="show_fav_selection">
+    <h3>User Favorites (Included in Calculation)</h3>
+
+   <div style="height:386px;overflow:auto;">
+  <div class="row row-wrap">
+  <div class="col-25" ng-repeat="track in fav_icons" item="track" >
+    
+      <div class="item">
+        <div class="row">
+          <div class="col">
+        <img width="50" heigh="50" src="{{getIconArt(track.icon)}}">
+      </div>
+        <label class="checkbox checkbox-balanced">
+          <input type="checkbox" ng-model="fav_icons[$index].checked" ng-init="selectAll(true,fav_icons)" ng-checked="default_checked" ng-change="updateChecked(track)">
+        </label>
+        
+        </div>
+        <div><label>{{track.icon.title}}</label></div>
+        <div>{{track.user.username}}</div>
+      </div>
+    
+  </div>
+</div>
+</div>
+<p></p>
+<div class="button" ng-click="startCalculation()" ng-disabled="!allowCalculation">Calculate Selection</div>
+<div class="button" ng-click="selectAll(toggleSelect,fav_icons)">(De)select All</div>
+</div>
+
+
+<div class="col" ng-show="!show_fav_selection">
+  <a id="playerObj" ng-show="show_player">
+    <div class = "row" id="playerObj" ng-show="show_player">
+      <div class = "col-25">
+        <img src="{{getIconArt(playingTrack)}}" >
+      </div>
+      <div class = "col-10" id="playBtncontainer-fluid">
+        <a ng-click="playPause('song')" ng-class="{'ion-ios-play':show_pause,'ion-ios-pause':!show_pause}" id="songPlayPause"></a>
+
+      </div>
+      <div class = "col">
+        <div id="playerTitle">
+          {{playingTrack.title}}
+        </div>
+        <div id="playerArtist">
+          {{playingTrack.user.username}}
+        </div>
+          <div id="songTime" >0:00 / 0:00
+          </div>
+      </div>
+      <div class="col"></div>
+      <div class = "col-20" id="iframeOffset">
+        <iframe id="scLink" allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fmntrees&color=orange_transparent&size=64" style="width: 64px; height: 64px;"></iframe>
+      </div>
+
+    </div>
+    
+    <div class="row" ng-show="show_player" id="playerObj">
+      <audio id="song">
+<source src="" type="audio/mp3"/>
+  Your browser does not support the audio tag.
+</audio>
+      <div class="col-10" id="bckBtn">
+        <a id="songRewind" class="button button-icon icon ion-ios-skipbackward custom-icon" ng-click="skipBack()" ng-show="show_player"></a>
+      </div>
+      <div class="col">
+        <div>
+        <img src="{{playingTrack.waveform_url}}" id="songSlider" ng-click="setSongPosition(event)">
+        <div>
+        <img src="img/playback_img.png" id="trackProgress" ng-show="show_prog_bar">
+      </div>
+        </div>
+      
+      </div>
+      <div class="col-10" id="fwdBtn">
+        <a id="songSkip" class="button button-icon icon ion-ios-skipforward custom-icon" ng-click="skipFwd()" ng-show="show_player"></a>
+      </div>
+    </div>
+  
+  </a>
+
+  <div ng-show="loading">
+    <ion-spinner icon="spiral">
+    </ion-spinner>
+    <label id="loading_text">{{loading_text}}</label>
+    <div>
+    <label id="detailed_loading_text">{{detailed_loading_text}}</label>
+  </div>
+    <div>
+      <label>this may take a minute... </label>
+    </div>
+  </div>
+  <div class="item" ng-show="show_recs">  
+    <div style="height:400px;overflow:auto;">
+      <li class="item" ng-repeat="i_rec in recommendedTracks">
+      <button class="button button-full" ng-click="playSong(i_rec)">
+      <div class="row">
+        <div class="col-10">
+          <img src="{{getIconArt(i_rec)}}" class="full-image" >
+        </div>
+    <div class="col">
+      <label>{{i_rec.title}}</label>
+      <div>
+        <label>{{i_rec.user.username}}</label>
+      </div>
+    </div>
+  </div>
+      </button>
+      </li> 
+    </div>
+  </div>
+  <div ng-show="show_empty_profile" id="emptyProfile">
+    <label>Your SoundCloud profile does not have enough information to generate music recommendations :(</label>
+    <p></p>
+    <label>Go like some tracks and come back or use a different profile</label>
+  </div>
+</div>
+
+</div>
+
+<div ng-show="!show_general_ui">
+<button class="button button-full button-positive" ng-click="goHome()">
+  Return to Homepage
+</button>
+
+
+
+</div>
+</body>
+-->
+
+
