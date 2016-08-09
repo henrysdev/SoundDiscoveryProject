@@ -18,8 +18,6 @@ var ModalInstanceCtrl = function ($scope, $uibModalInstance, items) {
 
 app.controller('RecCtrl', function($uibModal, $log, $scope, $state, ModalService, $stateParams, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject, GlobalFunctions, FullReset, SessionCache) 
 {
-  console.log("REC CTRL CALLED");
-  console.log(angular.module);
   var DEBUG = true;
   var CLIENT_ID = 'a06eaada6b3052bb0a3dff20329fdbf9';
   var REDIRECT_URI = 'http://www.geniustracklist.com/callback.html';
@@ -86,6 +84,7 @@ $scope.availability = null;
   $scope.timedOut = false;
   $scope.functIter = 0;
   $scope.earlyFunctIter = 0;
+  $scope.waveformName = "songSlider";
   //
 
   //scaling limits for get calls
@@ -281,13 +280,24 @@ $scope.publishPlaylist = function()
 
 $scope.likeTrack = function()
 {
-  SC.connect().then(function() {
-  var stringToPass = "/me/favorites/";
-  stringToPass += $scope.recommendedTracks[$scope.currentTrackIndex].id;
-  //stringToPass += "&oauth_token=1-242668-228144662-7534945a1000f";
-  SC.put(stringToPass);
-  console.log("went through");
-});
+  if(localStorage.getItem('loggedIn') == "true")
+  {
+    var stringToPass = "/me/favorites/";
+    stringToPass += $scope.recommendedTracks[$scope.currentTrackIndex].id;
+    //stringToPass += "&oauth_token=1-242668-228144662-7534945a1000f";
+    SC.put(stringToPass);
+    console.log("went through");
+  }
+  else
+  {
+    SC.connect().then(function() {
+    var stringToPass = "/me/favorites/";
+    stringToPass += $scope.recommendedTracks[$scope.currentTrackIndex].id;
+    //stringToPass += "&oauth_token=1-242668-228144662-7534945a1000f";
+    SC.put(stringToPass);
+    console.log("went through");
+    });
+  }
 }
 
 $scope.muteUnmute = function(id)
@@ -389,7 +399,7 @@ $scope.updateTime = function(){
 
     //Fills out the slider with the appropriate position.
     var percentageOfSong = ($scope.activeSong.currentTime/$scope.activeSong.duration);
-    var factor = document.getElementById('songSlider').getBoundingClientRect().width;
+    var factor = document.getElementById($scope.waveformName).getBoundingClientRect().width;
     var percentageOfSlider = factor * percentageOfSong;
     //console.log("prct of slider: " + percentageOfSlider);
     //Updates the track progress div.
@@ -427,10 +437,13 @@ $scope.setLocation = function(percentage){
 Gets the percentage of the click on the slider to set the song position accordingly.
 Source for Object event and offset: http://website-engineering.blogspot.com/2011/04/get-x-y-coordinates-relative-to-div-on.html
 */
-$scope.setSongPosition = function(e){
+$scope.setSongPosition = function(e, waveform){
     //Gets the offset from the left so it gets the exact location.
-    var obj = document.getElementById("songSlider");
+    $scope.waveformName = waveform;
+    var obj = document.getElementById($scope.waveformName);
     var songSliderWidth = obj.getBoundingClientRect().width;
+    console.log("songSliderWidth: ");
+    console.log(songSliderWidth);
     var evtobj=window.event? event : e;
     var parent = document.getElementById("waveContainer");
     clickLocation =  (evtobj.layerX - parent.offsetLeft);
@@ -501,6 +514,7 @@ $scope.stopSong = function(){
   {
     document.getElementById("trackProgress").style.width = "0px";
     $scope.playingTrack = track;
+    //document.getElementById("sliderBackdrop").attributes[1].value = playingTrack.waveform_url;
     for(var i = 0; i < $scope.recommendedTracks.length; i++)
     {
       if(track.id == $scope.recommendedTracks[i].id)
@@ -549,7 +563,7 @@ $scope.stopSong = function(){
     switch(state)
     {
       case "generating":
-        console.log("GENERATING");  
+        //console.log("GENERATING");  
         $scope.loading = true;
         $scope.show_recs = false;
         $scope.show_tracks = false;
@@ -568,7 +582,7 @@ $scope.stopSong = function(){
         */
         break;
       case "search_criteria":
-        console.log("SEARCH_CRITERIA");
+        //console.log("SEARCH_CRITERIA");
         /*
         $scope.loading = false;
         $scope.show_recs = false;
@@ -580,8 +594,8 @@ $scope.stopSong = function(){
         */
         break;
       case "results":
-        console.log("RESULTS");
-         $scope.loading = false;
+        //console.log("RESULTS");
+        $scope.loading = false;
         $scope.show_recs = true;
         $scope.show_tracks = true;
         $scope.show_fav_selection = true;
@@ -599,7 +613,7 @@ $scope.stopSong = function(){
         */
         break;
       case "empty_profile":
-        console.log("EXCEPTION");
+        //console.log("EXCEPTION");
         $scope.loading = false;
         $scope.show_recs = false;
         $scope.show_tracks = false;
@@ -682,7 +696,6 @@ $scope.stopSong = function(){
   {
     if($scope.allowCalculation == false)
       return;
-    console.log("hello?");
     //clearInterval(tt);   
     $scope.functIter = 0;
     if($scope.initialCalc)
@@ -695,8 +708,6 @@ $scope.stopSong = function(){
       //NEEDS CONDITION TO ONLY CALL IF FAV_ICONS IS OPEN
       $scope.modalInstance.dismiss();
     }
-    console.log("favs to use:");
-    console.log($scope.selected_favorites);
     UserObject.set("favs_to_use", $scope.selected_favorites);
     max_artists_computed = $scope.selected_favorites.length;
     //$scope.done_picking_favs = false;
@@ -744,16 +755,10 @@ $scope.stopSong = function(){
       if(document.getElementById("selectionToggleBtn"))
         document.getElementById("selectionToggleBtn").innerHTML = "Select All";
     }
-    console.log("selected_favorites after SELECT ALL " + cond + ": ");
-    console.log($scope.selected_favorites);
-    console.log("fav_icons after SELECT ALL " + cond + ": ");
-    console.log($scope.fav_icons);
-
   }
 
   $scope.randomIcons = function()
   {
-    console.log("called");
     $scope.selected_favorites = [];
     for(var i = 0; i < $scope.fav_icons.length; i++)
     {
@@ -781,12 +786,10 @@ $scope.stopSong = function(){
     console.log($scope.fav_icons[ind]);
     if(cond == true)
     {
-      console.log("handing checked == true");
       $scope.selected_favorites.push($scope.fav_icons[ind].icon);
     }
     else if(cond == false)
     {
-      console.log("handling checked == false");
       var index = $scope.selected_favorites.indexOf($scope.fav_icons[ind]);
       $scope.selected_favorites.splice(index,1);
     }
@@ -799,8 +802,6 @@ $scope.stopSong = function(){
       if($scope.allowCalculation == false)
         $scope.allowCalculation = true;
     }
-    console.log("updated inclusion list:");
-    console.log($scope.selected_favorites);
     //$scope.fav_icons[ind].checked = $scope.fav_icons[ind].checked === false ? true: false;
   }
 
@@ -903,7 +904,6 @@ $scope.stopSong = function(){
 
           $scope.searchTimeEnd = new Date().getTime();
           var diff = $scope.searchTimeEnd - $scope.searchTimeStart;
-          console.log('TOTAL SEARCH TIME: ' + diff);
           //DEBUG_TIMING
         });
 
@@ -1105,7 +1105,6 @@ $scope.stopSong = function(){
 
     var allArtistsList = ProcessCollectionsObject.get("sec_gen_liked_artists");
     var masterArtistList = [];
-    console.log(allArtistsList.length);
     for(var i = 0; i < allArtistsList.length; i++)
     {
       var currentArtist = allArtistsList[i];
@@ -1251,7 +1250,6 @@ $scope.stopSong = function(){
     for(i = 0; i < max_artists_computed; i++)
     {
       var stringToPass = "/users/" + artistsSaved[i].id + "/favorites";
-      console.log("MAX FAVLIST LEN: " + liked_artists_max_favlist_length);
       var myDataPromise = Retrieve.getData(stringToPass, artistsSaved[i].username, liked_artists_max_favlist_length);
       myDataPromise.then(function(responseFavorites)
       { 
@@ -1370,7 +1368,6 @@ $scope.stopSong = function(){
     liked_artists_max_favlist_length = Math.ceil(200 / likedTracks.length);
     if(liked_artists_max_favlist_length < 10)
       liked_artists_max_favlist_length = 20;//Math.floor(Math.random() * (20 - 8 + 1)) + 8;
-    console.log("CALCULATING SUGGESTIONS FOR : " + likedTracks.length);
     for(i = 0; i < len; i++)
     {
       var stringToPass = "/users/" + likedTracks[i].user_id;
@@ -1480,7 +1477,8 @@ $scope.stopSong = function(){
   }
   var init = function () 
   {
-
+    if(UserObject.get("user_obj") == null)
+      localStorage.setItem('loggedIn', "false");
     document.getElementById("keyCatchDiv").focus();
     /*
     var saved = localStorage.getItem("user_obj");
@@ -1522,7 +1520,6 @@ $scope.stopSong = function(){
 
 app.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed, ProcessCollectionsObject, FullReset, GlobalFunctions) 
 {
-  console.log("HOME CTRL CALLED");
   var DEBUG = true;
   var CLIENT_ID = 'a06eaada6b3052bb0a3dff20329fdbf9';
   var REDIRECT_URI = 'http://www.geniustracklist.com/callback.html';
@@ -1579,13 +1576,13 @@ app.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed,
 
     $scope.GetUser = function () 
     {  
-      var stringToPass = "/resolve.json?url=http://soundcloud.com/";
+      /*
+      var stringToPass = "http://soundcloud.com/";
       search_input = $scope.UserObject.get("user_obj").permalink;
       stringToPass += search_input;
       stringToPass += "&client_id=";
       stringToPass += CLIENT_ID; //a06eaada6b3052bb0a3dff20329fdbf9";
-
-      //console.log("str to pass: " + stringToPass);
+      console.log("str to pass: " + stringToPass);
       SC.get(stringToPass).then(function(artistObj)
       {
         UserObject.set("user_obj", artistObj);
@@ -1596,6 +1593,21 @@ app.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed,
         localStorage.setItem('loggedIn', "false");
         $state.go('recs');
     });
+*/
+      var stringToPass = "https://soundcloud.com/";
+      stringToPass += $scope.UserObject.get("user_obj").permalink;
+      console.log("OK");
+      console.log(stringToPass);
+      SC.resolve(stringToPass).then(function (artistObj)
+      {
+        UserObject.set("user_obj", artistObj);
+        document.getElementById("searchField").value = "";
+        var objToStore = JSON.stringify(artistObj);
+        //$localStorage.userObject = objToStore;    
+        localStorage.setItem('userObject', objToStore);
+        localStorage.setItem('loggedIn', "false");
+        $state.go('recs');
+      });
 
 }
 
@@ -1678,6 +1690,17 @@ $scope.newUser = function()
     {
       console.log("failed icon!");
       return "http://a1.sndcdn.com/images/default_avatar_large.png?1469110696";
+    }
+    else
+      return url;
+  }
+
+  $scope.getWaveform = function(url)
+  {
+    if(playingTrack == null)
+    {
+      console.log("nope");
+      return "";
     }
     else
       return url;

@@ -82,11 +82,6 @@ z-index:100;
 	z-index:2;
 }
 
-#searchList
-{
-}
-
-
 #connectToSC
 {
 	height:30px;
@@ -96,8 +91,8 @@ z-index:100;
 #creditText
 {
 	z-index:1;
-	top:50%;
 	position: absolute; 
+	top:320px;
 	left: 50%;
 }
 
@@ -246,6 +241,8 @@ div.row.list-group-item
 #removeBtn
 {
 	text-align: left;
+	margin:0px;
+	padding:0px;
 }
 
 #fav_icon
@@ -391,10 +388,45 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', end
 	background-color:rgba(0, 0, 0, 0.4);
 }
 
+#playingIcon
+{
+	position: absolute;
+	height: auto;
+	width: auto;
+	padding: 0;
+}
+
 #scLink
 {
 	position: absolute;
-	bottom:37%;
+}
+
+button#scLink{
+	/*
+	-webkit-appearance: none;
+	outline: none;
+	border: 0;
+	background: transparent;
+	*/
+	background-color: white;
+	text-align: center;
+	padding: 0px;
+	padding-right:3px;
+}
+
+#songTime
+{
+	background-color:black;
+	margin-right:0px;
+	padding-right:0px;
+}
+
+#favGlyph
+{
+	color:#FF5500;
+	font-size:25px;
+	text-align:center;
+	padding:0px;
 }
 
 #parentWaveform
@@ -415,15 +447,12 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', end
 	background-color: #FF5500;
 	text-align: center;
 	position: absolute;
-	width: 100%;
-	height: 50px;
 }
 
 #trackProgress
 {
 	background-color: black;
 	position: absolute;
-	height: 50px;
 	opacity: 0.8;
    	pointer-events:none;
 }
@@ -437,7 +466,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', end
 	border-color: black;
 }
 
-/*
+
 #resultsContainer
 {
 	background-color: black;
@@ -446,7 +475,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', end
 	border-width: 10px;
 	border-color: black;
 }
-*/
+
 
 a:link {
     color: white;
@@ -510,7 +539,7 @@ display: table-row;
 
 #fwdBtn
 {
-	text-align: left;
+	text-align: center;
 	padding-left: 0;
 	padding-right: 0;
 }
