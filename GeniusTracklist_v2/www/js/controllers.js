@@ -1,21 +1,6 @@
 
 var app = angular.module('GeniusTracklist');
 
-
-/* CORRECT WAY TO DO MODAL
-var ModalInstanceCtrl = function ($scope, $uibModalInstance, items) {
-  $scope.ok = function () {
-    console.log("called ok");
-    $uibModalInstance.close($scope.selected.item);
-  };
-
-  $scope.cancel = function () {
-    console.log("called cancel");
-    $uibModalInstance.dismiss('cancel');
-  };
-};
-*/
-
 app.controller('RecCtrl', function($uibModal, $log, $scope, $state, ModalService, $stateParams, UserObject, Retrieve, Embed, StoredEmbedLinks, ProcessCollectionsObject, GlobalFunctions, FullReset, SessionCache) 
 {
   var DEBUG = true;
@@ -240,7 +225,6 @@ $scope.keyPress = function(keyEvent) {
 
 $scope.publishPlaylist = function()
 {
-  console.log("Called");
   if(localStorage.getItem('loggedIn') == "true")
   {
     var tracks = [];//[{id: 290}, {id: 291}, {id: 292}];
@@ -254,7 +238,6 @@ $scope.publishPlaylist = function()
       playlist: { title: title, tracks: tracks }
     });
     $scope.hasMadePlaylist = true;
-    console.log("made it to end of it");
   }
   else
   {
@@ -286,7 +269,6 @@ $scope.likeTrack = function()
     stringToPass += $scope.recommendedTracks[$scope.currentTrackIndex].id;
     //stringToPass += "&oauth_token=1-242668-228144662-7534945a1000f";
     SC.put(stringToPass);
-    console.log("went through");
   }
   else
   {
@@ -295,7 +277,6 @@ $scope.likeTrack = function()
     stringToPass += $scope.recommendedTracks[$scope.currentTrackIndex].id;
     //stringToPass += "&oauth_token=1-242668-228144662-7534945a1000f";
     SC.put(stringToPass);
-    console.log("went through");
     });
   }
 }
@@ -442,8 +423,6 @@ $scope.setSongPosition = function(e, waveform){
     $scope.waveformName = waveform;
     var obj = document.getElementById($scope.waveformName);
     var songSliderWidth = obj.getBoundingClientRect().width;
-    console.log("songSliderWidth: ");
-    console.log(songSliderWidth);
     var evtobj=window.event? event : e;
     var parent = document.getElementById("waveContainer");
     clickLocation =  (evtobj.layerX - parent.offsetLeft);
@@ -528,7 +507,6 @@ $scope.stopSong = function(){
     $scope.currentSoundCloudLink += track.permalink;
     $scope.currentSoundCloudLink += "&color=orange_white&size=64 style=width: 64px; height: 64px;"
     document.getElementById("scLink").src = $scope.currentSoundCloudLink;
-    console.log(track);
     //src="http://api.soundcloud.com/tracks/148976759/stream?client_id=a06eaada6b3052bb0a3dff20329fdbf9"
     var trackStream = "http://api.soundcloud.com/tracks/";
     trackStream += track.id;
@@ -682,8 +660,6 @@ $scope.stopSong = function(){
       {
         if(track.user_id == blacklist_cache[i])
         {
-          console.log("found a blacklist item: ");
-          console.log(track);
           return false;
         }
       }
@@ -777,8 +753,6 @@ $scope.stopSong = function(){
     {
       $scope.allowCalculation = true;
     }
-    console.log("Selected favs after random method:");
-    console.log($scope.selected_favorites);
   }  
 
   $scope.toggleChecked = function(ind,cond)
@@ -805,30 +779,6 @@ $scope.stopSong = function(){
     //$scope.fav_icons[ind].checked = $scope.fav_icons[ind].checked === false ? true: false;
   }
 
-
-/*
-  $scope.updateChecked = function(track,ind)
-  {
-    console.log("update checked called");
-    if(track.checked_ == true)
-      $scope.selected_favorites.push(track.icon);
-    else if(track.checked_ == false)
-    {
-      var index = $scope.selected_favorites.indexOf(track.icon);
-      $scope.selected_favorites.splice(index,1);
-    }
-    if($scope.selected_favorites.length == 0)
-    {
-      $scope.allowCalculation = false;
-    }
-    else
-    {
-      if($scope.allowCalculation == false)
-        $scope.allowCalculation = true;
-    }
-    $scope.fav_icons[ind].checked_ = !$scope.fav_icons[ind].checked_;
-  }
-*/
 
   $scope.newUser = function()
   {
@@ -1029,7 +979,8 @@ $scope.stopSong = function(){
             max_time_allowed = 45;
             break;
         }
-        console.log(max_time_allowed + ' : loadingStage' + $scope.loadingStage);
+        //((((((((((((((STAGE TIMING DEBUG)))))))))))))))))
+        //console.log(max_time_allowed + ' : loadingStage' + $scope.loadingStage);
         if(counter >= max_time_allowed) 
         {
           //clearInterval(tt);
@@ -1485,11 +1436,8 @@ $scope.stopSong = function(){
     var artistObj = (localStorage.getItem('user_obj') !== null) ? JSON.parse($scope.saved) : [ {text: 'Learn AngularJS', done: false}, {text: 'Build an Angular app', done: false} ];
   localStorage.setItem('user_obj', JSON.stringify($scope.artistObj));
 */
-    console.log(localStorage);
-    console.log("retrieved obj: ");
     var artistObj = JSON.parse(localStorage.getItem('userObject'));//JSON.parse($localStorage['userObject'] || '{}');
     UserObject.set("user_obj",artistObj);
-    console.log(artistObj);
     //console.log(UserObject.get("user_obj"));
     //var artistObj = $localStorage.userObject;
     //var artistObj = UserObject.get("user_obj");
@@ -1554,7 +1502,6 @@ app.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed,
 
 
   }).then(function(me) {
-    console.log(me);
     UserObject.set("full_user_profile", me);
     UserObject.set("user_obj", me);
     var user_id = UserObject.get("user_obj").id;
@@ -1596,8 +1543,6 @@ app.controller('HomeCtrl', function($scope, $state, UserObject, Retrieve, Embed,
 */
       var stringToPass = "https://soundcloud.com/";
       stringToPass += $scope.UserObject.get("user_obj").permalink;
-      console.log("OK");
-      console.log(stringToPass);
       SC.resolve(stringToPass).then(function (artistObj)
       {
         UserObject.set("user_obj", artistObj);
@@ -1616,7 +1561,6 @@ $scope.autoCompleteUsername = function(input)
     if(input)
     {
       $scope.user_no_results = false;
-      console.log("called w/ input");
       if(input.length >= 3)
       {
         $scope.user_loading_wheel = true;
@@ -1688,7 +1632,7 @@ $scope.newUser = function()
   {
     if(url == null)
     {
-      console.log("failed icon!");
+      //console.log("failed icon!");
       return "http://a1.sndcdn.com/images/default_avatar_large.png?1469110696";
     }
     else
@@ -1699,7 +1643,7 @@ $scope.newUser = function()
   {
     if(playingTrack == null)
     {
-      console.log("nope");
+      //console.log("nope");
       return "";
     }
     else
@@ -1734,7 +1678,7 @@ $scope.newUser = function()
 }, true);
   
 
-  console.log("init");
+  //console.log("init");
    if(FullReset.get() == true)
    {
       window.location.reload(true)
